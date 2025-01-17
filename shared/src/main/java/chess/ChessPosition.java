@@ -23,7 +23,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return row;
+        return row  ;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -32,7 +32,7 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return col;
+        return col ;
         //throw new RuntimeException("Not implemented");
     }
 
