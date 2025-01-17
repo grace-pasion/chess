@@ -11,7 +11,16 @@ import java.util.*;
  */
 public class ChessPiece {
 
+    public ChessGame.TeamColor pieceColor;
+    public PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        if (pieceColor == null || type == null) {
+            throw new IllegalArgumentException("The chess pieces and color can't be null");
+        }
+        this.pieceColor = pieceColor;
+        this.type = type;
+
     }
 
 
@@ -31,14 +40,16 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
+        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -53,4 +64,31 @@ public class ChessPiece {
         return new ArrayList<>();
         //throw new RuntimeException("Not implemented");
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        //made by code -> generate -> equals/hashCode
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        //made by code -> generate -> equals/hashCode
+        return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        //code -> generate -> toString
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
+
 }

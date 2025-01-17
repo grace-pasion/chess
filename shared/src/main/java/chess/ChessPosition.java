@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents a single square position on a chess board
  * <p>
@@ -32,5 +34,31 @@ public class ChessPosition {
     public int getColumn() {
         return col;
         //throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        //generates -> code -> equals/hash
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPosition that = (ChessPosition) o;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        //generates -> code -> equals/hash
+        return Objects.hash(row, col);
+    }
+
+
+    @Override
+    public String toString() {
+        //generates -> code -> toString
+        return "ChessPosition{" +
+                "row=" + row +
+                ", col=" + col +
+                '}';
     }
 }
