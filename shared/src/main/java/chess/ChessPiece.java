@@ -69,6 +69,8 @@ public class ChessPiece {
              return new BishopMovesCalculator().pieceMoves(board, myPosition);
          } else if (type == PieceType.QUEEN) {
              return new QueenMovesCalculator().pieceMoves(board, myPosition);
+         } else if (type == PieceType.KING) {
+             return new KingMovesCalculator().pieceMoves(board, myPosition);
          }
         return new ArrayList<>();
         //throw new RuntimeException("Not implemented");

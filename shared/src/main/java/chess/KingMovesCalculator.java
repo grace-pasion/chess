@@ -29,7 +29,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
             if (occupier == null || occupier.getTeamColor() != board.getPiece(position).getTeamColor()) {
                 ChessMove move = new ChessMove(position, newPos, null);
-                if (!riskyMove(board, move,board.getPiece(position).getTeamColor())) {
+                if (!riskyMove(board, newPos ,board.getPiece(position).getTeamColor())) {
                     kingFinal.add(move);
                 }
             }
@@ -39,7 +39,23 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         return kingFinal;
     }
 
-    private boolean riskyMove(ChessBoard board, ChessMove move,ChessGame.TeamColor color) {
-        return true;
+    private boolean riskyMove(ChessBoard board, ChessPosition kingPos,ChessGame.TeamColor color) {
+        for (int i = 1; i <= 8; i++) { //row
+            for (int j =1; j<=8; j++) { //col
+                ChessPosition pos = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(pos);
+
+                if (piece != null && piece.getTeamColor() != color) {
+                    Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
+
+                    for (ChessMove move : enemyMoves) {
+                        if (move.getEndPosition().equals(kingPos)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
