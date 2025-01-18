@@ -14,14 +14,18 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         row = position.getRow();
         col = position.getColumn();
 
-        //right possibilites
-        finalMoves.addAll(calculateRightMoves(board, position));
+        //up possibilities
+        finalMoves.addAll(calculateUpMoves(board, position));
+
+        //down possibilites
+        finalMoves.addAll(calculateDownMoves(board, position));
 
         //left possibilites
         finalMoves.addAll(calculateLeftMoves(board, position));
 
-        //up possibilities
-        finalMoves.addAll(calculateUpMoves(board, position));
+        //right possibilites
+        finalMoves.addAll(calculateRightMoves(board, position));
+
 
         return finalMoves;
     }
@@ -29,7 +33,6 @@ public class RookMovesCalculator implements PieceMovesCalculator {
     //helperFunction for left movements
     private Collection<ChessMove> calculateLeftMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> leftMovesFinal = new ArrayList<ChessMove>();
-        //initializing the space of the og piece
 
         //left
         int leftRow = row;
