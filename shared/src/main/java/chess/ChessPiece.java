@@ -61,6 +61,9 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         //make sure to implement this
+         if (type == PieceType.KNIGHT) {
+            return new KnightMovesCalculator().pieceMoves(board, myPosition);
+         }
         return new ArrayList<>();
         //throw new RuntimeException("Not implemented");
     }
