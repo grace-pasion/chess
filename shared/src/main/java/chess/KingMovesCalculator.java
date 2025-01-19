@@ -44,13 +44,34 @@ public class KingMovesCalculator implements PieceMovesCalculator {
             for (int j =1; j<=8; j++) { //col
                 ChessPosition pos = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(pos);
+                if (piece == null) {
+                    continue;
+                } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                    int direction;
+                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        direction = 1;
+                    } else {
+                        direction = -1;
+                    }
 
-                if (piece != null && piece.getTeamColor() != color) {
-                    Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
+                    int pawnRow = pos.getRow();
+                    int pawnCol = pos.getColumn();
 
-                    for (ChessMove move : enemyMoves) {
-                        if (move.getEndPosition().equals(kingPos)) {
-                            return true;
+                    ChessPosition leftDiagonal = new ChessPosition(pawnRow+ direction, pawnCol -1);
+                    ChessPosition rightDiagonal = new ChessPosition(pawnRow + direction, pawnCol +1);
+
+                    if (kingPos.equals(leftDiagonal) || kingPos.equals(rightDiagonal)) {
+                        return true;
+                    }
+
+                } else {
+                    if (piece.getTeamColor() != color) {
+                        Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
+
+                        for (ChessMove move : enemyMoves) {
+                            if (move.getEndPosition().equals(kingPos)) {
+                                return true;
+                            }
                         }
                     }
                 }

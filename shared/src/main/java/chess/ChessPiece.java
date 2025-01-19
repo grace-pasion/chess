@@ -69,14 +69,14 @@ public class ChessPiece {
              return new BishopMovesCalculator().pieceMoves(board, myPosition);
          } else if (type == PieceType.QUEEN) {
              return new QueenMovesCalculator().pieceMoves(board, myPosition);
-         } else if (type == PieceType.KING) {
-             return new KingMovesCalculator().pieceMoves(board, myPosition);
          } else if (type == PieceType.PAWN) {
              return new PawnMovesCalculator().pieceMoves(board, myPosition);
-         } else {
-             //error case
-             return new ArrayList<>();
+         } else if (type == PieceType.KING) {
+             return new KingMovesCalculator().pieceMoves(board, myPosition);
          }
+         //error case
+         return new ArrayList<>();
+
     }
 
 
