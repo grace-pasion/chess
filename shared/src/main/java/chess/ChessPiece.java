@@ -11,8 +11,8 @@ import java.util.*;
  */
 public class ChessPiece {
 
-    public ChessGame.TeamColor pieceColor;
-    public PieceType type;
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         if (pieceColor == null || type == null) {
@@ -71,9 +71,12 @@ public class ChessPiece {
              return new QueenMovesCalculator().pieceMoves(board, myPosition);
          } else if (type == PieceType.KING) {
              return new KingMovesCalculator().pieceMoves(board, myPosition);
+         } else if (type == PieceType.PAWN) {
+             return new PawnMovesCalculator().pieceMoves(board, myPosition);
+         } else {
+             //error case
+             return new ArrayList<>();
          }
-        return new ArrayList<>();
-        //throw new RuntimeException("Not implemented");
     }
 
 
