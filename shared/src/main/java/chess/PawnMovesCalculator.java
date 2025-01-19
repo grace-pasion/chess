@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PawnMovesCalculator implements PieceMovesCalculator {
-    private static int row;
-    private static int col;
+    private int row;
+    private int col;
     private ChessGame.TeamColor currentColor;
 
     @Override
@@ -35,12 +35,12 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return pawnFinal;
     }
 
-    private boolean promoted(ChessBoard board, ChessPosition position, ChessGame.TeamColor color ) {
+    private boolean promoted(ChessPosition position, ChessGame.TeamColor color ) {
         int currentRow = position.getRow();
-        if ((color ==ChessGame.TeamColor.WHITE && currentRow == 7)) {
+        if ((color ==ChessGame.TeamColor.WHITE && currentRow == 8)) {
             return true;
         }
-        return (color == ChessGame.TeamColor.BLACK && currentRow == 2);
+        return (color == ChessGame.TeamColor.BLACK && currentRow == 1);
     }
 
 
@@ -57,7 +57,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPosition newPos = new ChessPosition(regMove, col);
             ChessPiece piece = board.getPiece(newPos);
             if (piece == null) {
-                if (promoted(board, newPos, board.getPiece(position).getTeamColor())) {
+                if (promoted(newPos, board.getPiece(position).getTeamColor())) {
                     pawnOne.add(new ChessMove(position, newPos, ChessPiece.PieceType.QUEEN));
                     pawnOne.add(new ChessMove(position, newPos, ChessPiece.PieceType.BISHOP));
                     pawnOne.add(new ChessMove(position, newPos, ChessPiece.PieceType.ROOK));
@@ -75,15 +75,18 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     private Collection<ChessMove> doubleSpace(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> doubleOne = new ArrayList<ChessMove>();
         int doubleMove = row;
+        int singleMove = row;
         if (currentColor == ChessGame.TeamColor.WHITE) {
             doubleMove+=2;
+            singleMove++;
         } else {
             doubleMove-=2;
+            singleMove--;
         }
 
         ChessPosition doublePos = new ChessPosition(doubleMove, col);
         //check to see if noting is blocking it
-        ChessPosition singlePos = new ChessPosition(doubleMove-1, col);
+        ChessPosition singlePos = new ChessPosition(singleMove, col);
         ChessPiece doublePiece = board.getPiece(doublePos);
         ChessPiece singlePiece = board.getPiece(singlePos);
         if (doublePiece == null && singlePiece == null) {
@@ -109,7 +112,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPosition leftPos = new ChessPosition(leftRow, leftCol);
             ChessPiece leftPiece = board.getPiece(leftPos);
             if (leftPiece != null && leftPiece.getTeamColor() != currentColor) {
-                if (promoted(board, leftPos, board.getPiece(position).getTeamColor())) {
+                if (promoted(leftPos, board.getPiece(position).getTeamColor())) {
                     leftFinal.add(new ChessMove(position, leftPos, ChessPiece.PieceType.QUEEN));
                     leftFinal.add(new ChessMove(position, leftPos, ChessPiece.PieceType.BISHOP));
                     leftFinal.add(new ChessMove(position, leftPos, ChessPiece.PieceType.ROOK));
@@ -127,8 +130,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         Collection<ChessMove> rightFinal = new ArrayList<ChessMove>();
 
         //find if white or black move
-        int rightCol = col;
-        int rightRow = row +1;
+        int rightCol = col+1;
+        int rightRow = row;
         if (currentColor == ChessGame.TeamColor.WHITE) {
             rightRow++;
         } else {
@@ -139,7 +142,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPosition rightPos = new ChessPosition(rightRow, rightCol);
             ChessPiece rightPiece = board.getPiece(rightPos);
             if (rightPiece != null && rightPiece.getTeamColor() != currentColor) {
-                if (promoted(board, rightPos, board.getPiece(position).getTeamColor())) {
+                if (promoted(rightPos, board.getPiece(position).getTeamColor())) {
                     rightFinal.add(new ChessMove(position, rightPos, ChessPiece.PieceType.QUEEN));
                     rightFinal.add(new ChessMove(position, rightPos, ChessPiece.PieceType.BISHOP));
                     rightFinal.add(new ChessMove(position, rightPos, ChessPiece.PieceType.ROOK));
