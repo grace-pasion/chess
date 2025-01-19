@@ -3,7 +3,21 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This class calculates the knights possible moves
+ */
 public class KnightMovesCalculator implements PieceMovesCalculator {
+
+    /**
+     * It will iterator through the possible moves a knight can make.
+     * If the move is possible (ie: the spot is not off the board,
+     * empty, or an enemy is there) it will add it to a list of
+     * movements it can make
+     *
+     * @param board the current chessBoard
+     * @param position the current position
+     * @return a collection of chessMoves the knight can make
+     */
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> finalMoves = new ArrayList<ChessMove>();

@@ -11,9 +11,22 @@ import java.util.*;
  */
 public class ChessPiece {
 
+    /**
+     * The current color of the piece
+     */
     private final ChessGame.TeamColor pieceColor;
+
+    /**
+     * The current type of that piece
+     */
     private final PieceType type;
 
+    /**
+     * Just a constructor for this class
+     *
+     * @param pieceColor the color of the piece
+     * @param type the type of the chess piece
+     */
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         if (pieceColor == null || type == null) {
             throw new IllegalArgumentException("The chess pieces and color can't be null");
@@ -80,6 +93,13 @@ public class ChessPiece {
     }
 
 
+    /**
+     * Tests whether two chess pieces are
+     * equal
+     *
+     * @param o an object
+     * @return whether they are equal
+     */
     @Override
     public boolean equals(Object o) {
         //made by code -> generate -> equals/hashCode
@@ -90,12 +110,22 @@ public class ChessPiece {
         return pieceColor == that.pieceColor && type == that.type;
     }
 
+    /**
+     *
+     * @return the hashCode
+     */
     @Override
     public int hashCode() {
         //made by code -> generate -> equals/hashCode
         return Objects.hash(pieceColor, type);
     }
 
+    /**
+     * the string representation of the piece
+     * including its piece color and type
+     *
+     * @return a string representing the class
+     */
     @Override
     public String toString() {
         //code -> generate -> toString

@@ -11,10 +11,18 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
+
+    /**
+     * This is the chessboard represented as a 2d array
+     */
     private final ChessPiece[][] squares = new ChessPiece[8][8];
 
+    /**
+     * The constructor for the chessBoard class
+     */
     public ChessBoard() {
-        //should i have this or have nothing in here?
+        //should I have this or have nothing in here?
+        //Maybe for a future phase
         //resetBoard();
     }
 
@@ -47,16 +55,11 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        //1. Turn everything back to null
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col] = null;
             }
         }
-        //2. make a new piece
-        //3. make a new position
-        //add that position to the square using the add piece method
-        //helper functions so this function doesn't get too long
         resetPawns();
         resetRooks();
         resetKnight();
@@ -65,6 +68,10 @@ public class ChessBoard {
         resetKing();
     }
 
+    /**
+     * This resets the pawns in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetPawns() {
         for (int col = 1; col <= 8; col++) {
             //white
@@ -77,6 +84,10 @@ public class ChessBoard {
         }
     }
 
+    /**
+     * This resets the rooks in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetRooks() {
         //white
         addPiece(new ChessPosition(1, 1),
@@ -94,6 +105,10 @@ public class ChessBoard {
 
     }
 
+    /**
+     * This resets the knights in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetKnight() {
         //white
         addPiece(new ChessPosition(1, 2),
@@ -110,6 +125,10 @@ public class ChessBoard {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
     }
 
+    /**
+     * This resets the bishops in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetBishops() {
         //white
         addPiece(new ChessPosition(1, 3),
@@ -125,6 +144,10 @@ public class ChessBoard {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
     }
 
+    /**
+     * This resets the queen in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetQueen() {
         //white
         addPiece(new ChessPosition(1, 4),
@@ -135,6 +158,10 @@ public class ChessBoard {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
     }
 
+    /**
+     * This resets the king in the correct position
+     * It is simply a helper function for restBoard()
+     */
     public void resetKing() {
         //white
         addPiece(new ChessPosition(1, 5),
@@ -146,7 +173,10 @@ public class ChessBoard {
     }
 
     /**
+     * Checks whether two chessboards are the same
      *
+     * @param o another object
+     * @return true if the chessboards are equal to each other
      */
     @Override
     public boolean equals(Object o) {
@@ -158,8 +188,12 @@ public class ChessBoard {
         return Objects.deepEquals(squares, that.squares);
     }
 
+
     /**
+     * overrides the hashCode methods for
+     * this specific class
      *
+     * @return an integer hashCode
      */
     @Override
     public int hashCode() {
@@ -168,7 +202,10 @@ public class ChessBoard {
     }
 
     /**
+     * Turns the squares in the chessboard and prints
+     * it out.
      *
+     * @return the string of the chessBoard
      */
     @Override
     public String toString() {

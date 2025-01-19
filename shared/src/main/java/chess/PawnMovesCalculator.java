@@ -3,11 +3,35 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This is class that calculates all the possible
+ * movements a pawn can make
+ */
 public class PawnMovesCalculator implements PieceMovesCalculator {
+    /**
+     * the row a pawn is on
+     */
     private int row;
+
+    /**
+     * the column a pawn is on
+     */
     private int col;
+
+    /**
+     * the current color of the pawn
+     */
     private ChessGame.TeamColor currentColor;
 
+    /**
+     * This method checks whether a single forward move,
+     * a double forward move, or a diagonal capture is valid.
+     * If so, it will add it to the list.
+     *
+     * @param board the current chessboard
+     * @param position the current position
+     * @return a collection of all the possible moves a pawn can make
+     */
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
 
@@ -35,6 +59,14 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return pawnFinal;
     }
 
+    /**
+     * This method checks to see if the pawn is at the end of the board.
+     * If so, it can change into a queen, bishop, rook, or knight
+     *
+     * @param position the current position of the piece
+     * @param color the color of the piece
+     * @return whether a pawn can be promoted
+     */
     private boolean promoted(ChessPosition position, ChessGame.TeamColor color ) {
         int currentRow = position.getRow();
         if ((color ==ChessGame.TeamColor.WHITE && currentRow == 8)) {
@@ -44,7 +76,15 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     }
 
 
-    //helper function for reg move
+    /**
+     * This is a helper function for the pieceMoves function. It checks to see
+     * if a one space move is possible for the current pawn. If so, it returns
+     * a list which has the one move inside of it
+     *
+     * @param board the current chessboard
+     * @param position the current position of the piece
+     * @return a collection containing the one space move
+     */
     private Collection<ChessMove> oneSpace(ChessBoard board, ChessPosition position ) {
         Collection<ChessMove> pawnOne = new ArrayList<ChessMove>();
         int regMove = row;
@@ -71,7 +111,16 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return pawnOne;
     }
 
-    //helper function for double move
+    /**
+     * This is a helper function for the pieceMoves function. It checks to see
+     * if a double space move is possible for the current pawn. A double
+     * space move is only possible if there is nothing in those two spots, and it
+     * is the first move. If so, it returns a list which has the double move inside of it/
+     *
+     * @param board the current board
+     * @param position the current position of the piece
+     * @return a collection containing the double space move
+     */
     private Collection<ChessMove> doubleSpace(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> doubleOne = new ArrayList<ChessMove>();
         int doubleMove = row;
@@ -95,7 +144,15 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return doubleOne;
     }
 
-    //helper function for diagonal enemy
+    /**
+     * It checks to see if an enemy is on the diagonal of the pawn. If so,
+     * it can capture it diagonally. It will then add that to a list, which
+     * it returns.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection containing the diagonal move
+     */
     private Collection<ChessMove> leftDiagonal(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> leftFinal = new ArrayList<ChessMove>();
 
@@ -126,6 +183,16 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return leftFinal;
     }
 
+    /**
+     * Very similar to the left diagonal method, instead it goes right.
+     * It checks if there is an enemy to the upper right. If so,
+     * it can move to capture it. It will then add this move to a list,
+     * which it will return.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of hte piece
+     * @return a collection containing the right diagonal move
+     */
     private Collection<ChessMove> RightDiagonal(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> rightFinal = new ArrayList<ChessMove>();
 

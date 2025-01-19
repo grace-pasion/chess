@@ -3,10 +3,29 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This is a class that calculates all the possible moves a rook can make
+ */
 public class RookMovesCalculator implements PieceMovesCalculator {
+
+   /**
+    * This is the current row a rook is on
+    */
     private static int row;
+
+    /**
+     * This is the current column a rook is on
+     */
     private static int col;
 
+    /**
+     * This function calls the helper functions, which is used
+     * to see all the possible moves the rook can make.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection of moves the rook can make
+     */
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         //collecting the moves
@@ -30,7 +49,14 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         return finalMoves;
     }
 
-    //helperFunction for left movements
+    /**
+     * This is a helper function for pieceMoves. It calculates all the possible moves
+     * the rook can make to it's left.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection of moves the rook can make
+     */
     private Collection<ChessMove> calculateLeftMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> leftMovesFinal = new ArrayList<ChessMove>();
 
@@ -62,7 +88,14 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         return leftMovesFinal;
     }
 
-    //helper function for right movement
+    /**
+     * This is a helper function for pieceMoves. It calculates all the possible moves
+     * the rook can make to it's right.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection of moves the rook can make
+     */
     private Collection<ChessMove> calculateRightMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> rightMovesFinal = new ArrayList<ChessMove>();
 
@@ -94,7 +127,14 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         return rightMovesFinal;
     }
 
-    //helper function for up movement
+    /**
+     * This is a helper function for pieceMoves. It calculates all the possible moves
+     * the rook can make up.
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection of moves the rook can make
+     */
     private Collection<ChessMove> calculateUpMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> upMovesFinal = new ArrayList<ChessMove>();
         //initializing the space of the og piece
@@ -127,7 +167,14 @@ public class RookMovesCalculator implements PieceMovesCalculator {
         return upMovesFinal;
     }
 
-    //helper function down
+    /**
+     * This is a helper function for pieceMoves. It calculates all the possible moves
+     * the rook can make down
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the piece
+     * @return a collection of moves the rook can make
+     */
     private Collection<ChessMove> calculateDownMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> downMovesFinal = new ArrayList<ChessMove>();
 

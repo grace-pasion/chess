@@ -9,10 +9,30 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessMove {
+    /**
+     * The initial position of the piece
+     */
     private final ChessPosition startPosition;
+
+    /**
+     * The final position of the piece after the piece
+     */
     private final ChessPosition endPosition;
+
+    /**
+     * The piece that it transforms to after the move
+     * (Really only applicable to pawns after reaching the
+     * end of the board).
+     */
     private final ChessPiece.PieceType promotionPiece;
 
+    /**
+     * This is simply the constructor for the class
+     *
+     * @param startPosition the initial position of the piece
+     * @param endPosition the ending position of the piece
+     * @param promotionPiece the piece it turns into after the turn
+     */
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
@@ -44,11 +64,24 @@ public class ChessMove {
         return promotionPiece;
     }
 
+    /**
+     * Just shows the chessMove has taken place
+     * By printing out a statement
+     *
+     * @return the string ChessMove{}
+     */
     @Override
     public String toString() {
         return "ChessMove{}";
     }
 
+    /**
+     * Checks to see if an object
+     * is equal to the current chessMove
+     *
+     * @param o another object
+     * @return whether the two moves are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -58,6 +91,11 @@ public class ChessMove {
         return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
+    /**
+     * Overrides the hashCode
+     *
+     * @return the hashCode
+     */
     @Override
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);

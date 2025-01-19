@@ -10,9 +10,22 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
+    /**
+     * The row of a piece
+     */
     private final int row;
+
+    /**
+     * The column of a piece
+     */
     private final int col;
 
+    /**
+     * This is just the constructor for the class
+     *
+     * @param row the current row
+     * @param col the current column
+     */
     public ChessPosition(int row, int col) {
         this.row = row;
         this.col = col;
@@ -36,6 +49,11 @@ public class ChessPosition {
         //throw new RuntimeException("Not implemented");
     }
 
+    /**
+     * Sees if two positions are the same
+     * @param o an object
+     * @return if they are equal
+     */
     @Override
     public boolean equals(Object o) {
         //generates -> code -> equals/hash
@@ -46,6 +64,10 @@ public class ChessPosition {
         return row == that.row && col == that.col;
     }
 
+    /**
+     *
+     * @return the hashCode
+     */
     @Override
     public int hashCode() {
         //generates -> code -> equals/hash
@@ -53,6 +75,10 @@ public class ChessPosition {
     }
 
 
+    /**
+     *
+     * @return a string representation of the class
+     */
     @Override
     public String toString() {
         //generates -> code -> toString

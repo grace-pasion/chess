@@ -2,9 +2,21 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
+/**
+ * A class that uses the interface of the PieceMovesCalculator
+ * It calculates all the possible moves a king can make
+ */
 public class KingMovesCalculator implements PieceMovesCalculator {
 
+    /**
+     * It iterators through the possible moves can make.
+     * It will add it to the list if it is possible for
+     *  the king to move there
+     *
+     * @param board the current chessBoard
+     * @param position the current position of the king
+     * @return a collection of all the moves a chess board can make
+     */
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> kingFinal = new ArrayList<ChessMove>();
@@ -39,6 +51,20 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         return kingFinal;
     }
 
+
+    /**
+     * This method takes in a position a king can move to.
+     * It then decides if that is a risky decision. It will do this by iterating
+     * over the whole chessboard. Once it finds a piece, it will see if it is a pawn.
+     * If it is a pawn, it will make sure it cannot diagonally get it. If it is not
+     * a pawn, it will make sure the collection of moves it can make will not harm
+     * it.
+     *
+     * @param board the current chessBoard
+     * @param kingPos the position of the king
+     * @param color the color of the king
+     * @return whether it is risky to move
+     */
     private boolean riskyMove(ChessBoard board, ChessPosition kingPos,ChessGame.TeamColor color) {
         for (int i = 1; i <= 8; i++) { //row
             for (int j =1; j<=8; j++) { //col

@@ -3,7 +3,22 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * a class that uses the PieceMoveCalculator interface.
+ * It calculates all the possible moves a bishop
+ * can make.
+ */
 public class BishopMovesCalculator implements PieceMovesCalculator {
+
+
+    /**
+     * This method loops through the steps a bishop can make.
+     * If that move is valid, it will add it to the list.
+     *
+     * @param board the ChessBoard that we are currently working on
+     * @param position the current position of the bishop
+     * @return a collection of all the possible moves the bishop can make
+     */
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> finalBishop = new ArrayList<ChessMove>();
