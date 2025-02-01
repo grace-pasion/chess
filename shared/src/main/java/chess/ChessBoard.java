@@ -23,7 +23,7 @@ public class ChessBoard {
     public ChessBoard() {
         //should I have this or have nothing in here?
         //Maybe for a future phase
-        //resetBoard();
+        resetBoard();
     }
 
     /**
