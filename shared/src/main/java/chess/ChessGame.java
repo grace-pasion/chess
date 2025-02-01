@@ -60,8 +60,8 @@ public class ChessGame {
         Collection<ChessMove> safeMoves = new ArrayList<>();
         for (ChessMove move : allPosMoves) {
             ChessPosition newPos = move.getEndPosition();
-            //copy the chess board
-            //simulate the move
+            ChessBoard clonedBoard = board.clone();
+            //clonedBoard.
 
             //if king is in not in check add it safe moves
         }
@@ -75,7 +75,45 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPos = move.getStartPosition();
+        ChessPosition endPos = move.getEndPosition();
+        ChessPiece piece = board.getPiece(startPos);
+        //just handling my exceptions
+        if (piece == null) {
+            throw new InvalidMoveException("No piece is found");
+        }
+        if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("Not your color's turn");
+        }
+
+        Collection<ChessMove> validMoves = validMoves(startPos);
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Cannot move like that");
+        }
+        //####move the piece here
+        if (isInCheck(teamTurn)) {
+            throw new InvalidMoveException("Would cause the king to be in check");
+        }
+
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            int row;
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                row = 8;
+            } else {
+                row = 1;
+            }
+            if (endPos.getRow() == row) {
+                //#####promote the pawn
+            }
+        }
+
+        //updating turn
+        if (teamTurn == ChessGame.TeamColor.WHITE) {
+            teamTurn = ChessGame.TeamColor.BLACK;
+        } else {
+            teamTurn = ChessGame.TeamColor.WHITE;
+        }
+
     }
 
     /**
