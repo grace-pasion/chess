@@ -60,8 +60,13 @@ public class ChessGame {
         Collection<ChessMove> safeMoves = new ArrayList<>();
         for (ChessMove move : allPosMoves) {
             ChessPosition newPos = move.getEndPosition();
+            ChessPosition ogPos = move.getStartPosition();
             ChessBoard clonedBoard = board.clone();
-            //clonedBoard.
+            clonedBoard.movePiece(ogPos, newPos);
+
+            if (!isInCheck(piece.getTeamColor())) {
+                safeMoves.add(move); //clonedBoard.
+            }
 
             //if king is in not in check add it safe moves
         }

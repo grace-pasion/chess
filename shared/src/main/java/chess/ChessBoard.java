@@ -172,6 +172,15 @@ public class ChessBoard implements Cloneable {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
     }
 
+
+    public void movePiece(ChessPosition startPos, ChessPosition endPos) {
+        ChessPiece piece = getPiece(startPos);
+        if (piece == null) {
+            return;
+        }
+        addPiece(startPos, null);
+        addPiece(endPos, piece);
+    }
     /**
      * Checks whether two chessboards are the same
      *
