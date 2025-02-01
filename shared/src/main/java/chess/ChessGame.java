@@ -54,7 +54,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) {
-            return null; //in case nothing is in the starting position
+            return null;
         }
         Collection<ChessMove> allPosMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> safeMoves = new ArrayList<>();
@@ -65,10 +65,8 @@ public class ChessGame {
             clonedBoard.movePiece(ogPos, newPos);
 
             if (!isInCheck(piece.getTeamColor())) {
-                safeMoves.add(move); //clonedBoard.
+                safeMoves.add(move);
             }
-
-            //if king is in not in check add it safe moves
         }
         return safeMoves;
     }
@@ -95,7 +93,9 @@ public class ChessGame {
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Cannot move like that");
         }
-        //####move the piece here
+
+        board.movePiece(startPos, endPos);
+
         if (isInCheck(teamTurn)) {
             throw new InvalidMoveException("Would cause the king to be in check");
         }
@@ -108,7 +108,9 @@ public class ChessGame {
                 row = 1;
             }
             if (endPos.getRow() == row) {
-                //#####promote the pawn
+                ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.QUEEN);
+                board.addPiece(endPos, null);
+                board.addPiece(endPos, newPiece);
             }
         }
 
@@ -166,7 +168,21 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+
+        ChessPosition kingPos = kingLocation(teamColor);
+        ChessPiece kingPiece = board.getPiece(kingPos);
+        Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
+        for (ChessMove move : kingMoves) {
+            ChessPosition newPos = move.getEndPosition();
+            boolean isRisky = new KingMovesCalculator().getRiskyMove(board, newPos, teamColor);
+            if (!isRisky) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
