@@ -23,7 +23,7 @@ public class ChessBoard implements Cloneable {
     public ChessBoard() {
         //should I have this or have nothing in here?
         //Maybe for a future phase
-        resetBoard();
+        //resetBoard();
     }
 
     /**
@@ -224,14 +224,18 @@ public class ChessBoard implements Cloneable {
                 '}';
     }
 
-    @Override
+   @Override
     public ChessBoard clone() {
         try {
             ChessBoard clonedBoard = (ChessBoard)super.clone();
             for (int row =0; row <8 ; row++) {
                 for (int col = 0; col < 8; col++) {
                     ChessPiece piece = this.squares[row][col];
-                    clonedBoard.squares[row][col] = piece.clone();
+                    if (piece != null) {
+                        clonedBoard.squares[row][col] = piece.clone();
+                    } else {
+                        clonedBoard.squares[row][col] = null;
+                    }
                 }
             }
             return clonedBoard;

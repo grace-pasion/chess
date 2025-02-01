@@ -14,6 +14,7 @@ public class ChessGame {
     private TeamColor teamTurn;
     public ChessGame() {
         this.board = new ChessBoard();
+        board.resetBoard();
         //Set to white, since White is what starts it
         this.teamTurn = TeamColor.WHITE;
     }
@@ -109,7 +110,6 @@ public class ChessGame {
             }
             if (endPos.getRow() == row) {
                 ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.QUEEN);
-                board.addPiece(endPos, null);
                 board.addPiece(endPos, newPiece);
             }
         }
