@@ -51,6 +51,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         return kingFinal;
     }
 
+    public boolean getRiskyMove(ChessBoard board, ChessPosition kingPos, ChessGame.TeamColor color) {
+        return riskyMove(board, kingPos,color);
+    }
 
     /**
      * This method takes in a position a king can move to.

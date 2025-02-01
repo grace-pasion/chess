@@ -72,15 +72,10 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //need to find the king
-        //loops through all the positions in the board
-        //if that position has a piece that is the opposite color
-        // then get that pieces move
-        //the loop through those possible moves
-        //if that move equals the current king position
-        //then return true
-        //else return false
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPos = kingLocation(teamColor);
+        //I am just reusing my code from phase 0
+        //Because I realized I already dealt with that
+        return new KingMovesCalculator().getRiskyMove(board, kingPos, teamColor);
     }
 
     /**
@@ -90,15 +85,19 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //first check if it is in check (call the other function)
-        //find king position (maybe do a helper function since needs to
-        //do it also in isInCheck?)
-        //then get all the possible king moves by calling my
-        //kingMoveCalcualtor
-        //Then loop through these chess moves
-        //i can just call risky moves from my kingMovesCalculator
-        //if there is not a risky move return false
-        //everything else, return true
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        ChessPosition kingPos = kingLocation(teamColor);
+        ChessPiece kingPiece = board.getPiece(kingPos);
+        Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
+        for (ChessMove move : kingMoves) {
+            ChessPosition newPos = move.getEndPosition();
+            boolean isRisky = new KingMovesCalculator().getRiskyMove(board, newPos, teamColor);
+            if (!isRisky) {
+                return false;
+            }
+        }
         return true;
 
     }
@@ -132,5 +131,19 @@ public class ChessGame {
     public ChessBoard getBoard() {
 
         return board;
+    }
+
+    private ChessPosition kingLocation(TeamColor teamColor) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+                    return pos;
+                }
+            }
+        }
+        throw new IllegalArgumentException("King not found for team "+teamColor);
+
     }
 }
