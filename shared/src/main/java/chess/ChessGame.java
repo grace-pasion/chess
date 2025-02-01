@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,12 +52,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        //from the phase 1 video:
-        //we will delegate most of the chesspiece classes and ask what move they are
-        //most movement algorithm not in class, but will remove movements pieces if
-        //they could cause check make issues
-        //so the job of this class is to filter it down
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null; //in case nothing is in the starting position
+        }
+        Collection<ChessMove> allPosMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> safeMoves = new ArrayList<>();
+        for (ChessMove move : allPosMoves) {
+            ChessPosition newPos = move.getEndPosition();
+            //copy the chess board
+            //simulate the move
+
+            //if king is in not in check add it safe moves
+        }
+        return safeMoves;
     }
 
     /**

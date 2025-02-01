@@ -9,7 +9,7 @@ import java.util.*;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessPiece {
+public class ChessPiece implements Cloneable{
 
     /**
      * The current color of the piece
@@ -135,4 +135,12 @@ public class ChessPiece {
                 '}';
     }
 
+    @Override
+    public ChessPiece clone() {
+        try {
+            return (ChessPiece)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
