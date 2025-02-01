@@ -109,7 +109,7 @@ public class ChessGame {
                 row = 1;
             }
             if (endPos.getRow() == row) {
-                ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.QUEEN);
+                ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
                 board.addPiece(endPos, newPiece);
             }
         }
@@ -133,7 +133,7 @@ public class ChessGame {
         ChessPosition kingPos = kingLocation(teamColor);
         //I am just reusing my code from phase 0
         //Because I realized I already dealt with that
-        return new KingMovesCalculator().getRiskyMove(board, kingPos, teamColor);
+        return riskyMove( kingPos, teamColor);
     }
 
     /**
@@ -151,7 +151,7 @@ public class ChessGame {
         Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
         for (ChessMove move : kingMoves) {
             ChessPosition newPos = move.getEndPosition();
-            boolean isRisky = new KingMovesCalculator().getRiskyMove(board, newPos, teamColor);
+            boolean isRisky = riskyMove( newPos, teamColor);
             if (!isRisky) {
                 return false;
             }
@@ -172,16 +172,24 @@ public class ChessGame {
             return false;
         }
 
-        ChessPosition kingPos = kingLocation(teamColor);
-        ChessPiece kingPiece = board.getPiece(kingPos);
-        Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
-        for (ChessMove move : kingMoves) {
-            ChessPosition newPos = move.getEndPosition();
-            boolean isRisky = new KingMovesCalculator().getRiskyMove(board, newPos, teamColor);
-            if (!isRisky) {
-                return false;
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece == null || piece.getTeamColor() != teamColor) {
+                    continue;
+                }
+                Collection<ChessMove> moves = piece.pieceMoves(board, pos);
+                for (ChessMove move : moves) {
+                    ChessPosition newPos = move.getEndPosition();
+                    if (!riskyMove(newPos, teamColor)) {
+                        return false;
+                    }
+                }
+
             }
         }
+
         return true;
     }
 
@@ -210,12 +218,68 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
-                if (piece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+                if (piece == null) {
+                    continue;
+                }
+                if (piece.getPieceType() == (ChessPiece.PieceType.KING)) {
                     return pos;
                 }
             }
         }
         throw new IllegalArgumentException("King not found for team "+teamColor);
 
+    }
+
+    /**
+     * This method takes in a position a king can move to.
+     * It then decides if that is a risky decision. It will do this by iterating
+     * over the whole chessboard. Once it finds a piece, it will see if it is a pawn.
+     * If it is a pawn, it will make sure it cannot diagonally get it. If it is not
+     * a pawn, it will make sure the collection of moves it can make will not harm
+     * it.
+     *
+     * @param kingPos the position of the king
+     * @param color the color of the king
+     * @return whether it is risky to move
+     */
+    private boolean riskyMove(ChessPosition kingPos,ChessGame.TeamColor color) {
+        for (int i = 1; i <= 8; i++) { //row
+            for (int j =1; j<=8; j++) { //col
+                ChessPosition pos = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece == null) {
+                    continue;
+                } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                    int direction;
+                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        direction = 1;
+                    } else {
+                        direction = -1;
+                    }
+
+                    int pawnRow = pos.getRow();
+                    int pawnCol = pos.getColumn();
+
+                    ChessPosition leftDiagonal = new ChessPosition(pawnRow+ direction, pawnCol -1);
+                    ChessPosition rightDiagonal = new ChessPosition(pawnRow + direction, pawnCol +1);
+
+                    if (kingPos.equals(leftDiagonal) || kingPos.equals(rightDiagonal)) {
+                        return true;
+                    }
+
+                } else {
+                    if (piece.getTeamColor() != color) {
+                        Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
+
+                        for (ChessMove move : enemyMoves) {
+                            if (move.getEndPosition().equals(kingPos)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
