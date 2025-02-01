@@ -72,6 +72,14 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        //need to find the king
+        //loops through all the positions in the board
+        //if that position has a piece that is the opposite color
+        // then get that pieces move
+        //the loop through those possible moves
+        //if that move equals the current king position
+        //then return true
+        //else return false
         throw new RuntimeException("Not implemented");
     }
 
@@ -82,7 +90,17 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //first check if it is in check (call the other function)
+        //find king position (maybe do a helper function since needs to
+        //do it also in isInCheck?)
+        //then get all the possible king moves by calling my
+        //kingMoveCalcualtor
+        //Then loop through these chess moves
+        //i can just call risky moves from my kingMovesCalculator
+        //if there is not a risky move return false
+        //everything else, return true
+        return true;
+
     }
 
     /**
