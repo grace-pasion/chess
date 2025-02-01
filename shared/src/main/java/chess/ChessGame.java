@@ -52,6 +52,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        //from the phase 1 video:
+        //we will delegate most of the chesspiece classes and ask what move they are
+        //most movement algorithm not in class, but will remove movements pieces if
+        //they could cause check make issues
+        //so the job of this class is to filter it down
         throw new RuntimeException("Not implemented");
     }
 
