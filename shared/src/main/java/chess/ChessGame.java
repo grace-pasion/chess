@@ -12,6 +12,7 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+
     public ChessGame() {
         this.board = new ChessBoard();
         board.resetBoard();
@@ -55,7 +56,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) {
-            return null;
+            return new ArrayList<>();
         }
         Collection<ChessMove> allPosMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> safeMoves = new ArrayList<>();
@@ -65,7 +66,7 @@ public class ChessGame {
             ChessBoard clonedBoard = board.clone();
             clonedBoard.movePiece(ogPos, newPos);
 
-            if (!isInCheck(piece.getTeamColor())) {
+            if (isInCheckCloned(piece.getTeamColor(), clonedBoard)) {
                 safeMoves.add(move);
             }
         }
@@ -130,10 +131,17 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPos = kingLocation(teamColor);
+        ChessPosition kingPos = kingLocation(teamColor, board);
         //I am just reusing my code from phase 0
         //Because I realized I already dealt with that
-        return riskyMove( kingPos, teamColor);
+        return riskyMove( kingPos, teamColor, board);
+    }
+
+    public boolean isInCheckCloned(TeamColor teamColor, ChessBoard clonedBoard) {
+        ChessPosition kingPos = kingLocation(teamColor, clonedBoard);
+        //I am just reusing my code from phase 0
+        //Because I realized I already dealt with that
+        return !riskyMove(kingPos, teamColor, clonedBoard);
     }
 
     /**
@@ -146,18 +154,34 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        ChessPosition kingPos = kingLocation(teamColor);
+        for (int row = 1; row<= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> posMoves = piece.pieceMoves(board, pos);
+                    for (ChessMove move : posMoves) {
+                        ChessBoard clonedBoard = board.clone();
+                        clonedBoard.movePiece(move.getStartPosition(), move.getEndPosition());
+                        if (isInCheckCloned(teamColor, clonedBoard)){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+        /*ChessPosition kingPos = kingLocation(teamColor);
         ChessPiece kingPiece = board.getPiece(kingPos);
         Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
         for (ChessMove move : kingMoves) {
             ChessPosition newPos = move.getEndPosition();
-            boolean isRisky = riskyMove( newPos, teamColor);
+            boolean isRisky = riskyMove( newPos, teamColor, board);
             if (!isRisky) {
                 return false;
             }
         }
-        return true;
-
+        return true; */
     }
 
     /**
@@ -182,7 +206,7 @@ public class ChessGame {
                 Collection<ChessMove> moves = piece.pieceMoves(board, pos);
                 for (ChessMove move : moves) {
                     ChessPosition newPos = move.getEndPosition();
-                    if (!riskyMove(newPos, teamColor)) {
+                    if (!riskyMove(newPos, teamColor, board)) {
                         return false;
                     }
                 }
@@ -213,7 +237,7 @@ public class ChessGame {
         return board;
     }
 
-    private ChessPosition kingLocation(TeamColor teamColor) {
+    private ChessPosition kingLocation(TeamColor teamColor, ChessBoard board) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
@@ -221,7 +245,8 @@ public class ChessGame {
                 if (piece == null) {
                     continue;
                 }
-                if (piece.getPieceType() == (ChessPiece.PieceType.KING)) {
+                if (piece.getPieceType() == (ChessPiece.PieceType.KING)
+                        && piece.getTeamColor() == teamColor) {
                     return pos;
                 }
             }
@@ -238,16 +263,16 @@ public class ChessGame {
      * a pawn, it will make sure the collection of moves it can make will not harm
      * it.
      *
-     * @param kingPos the position of the king
+     * @param kingPos the position of the piece we are testing
      * @param color the color of the king
      * @return whether it is risky to move
      */
-    private boolean riskyMove(ChessPosition kingPos,ChessGame.TeamColor color) {
+    private boolean riskyMove(ChessPosition kingPos,ChessGame.TeamColor color, ChessBoard board) {
         for (int i = 1; i <= 8; i++) { //row
             for (int j =1; j<=8; j++) { //col
                 ChessPosition pos = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(pos);
-                if (piece == null) {
+                if (piece == null || piece.getTeamColor() == color) {
                     continue;
                 } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                     int direction;
@@ -268,13 +293,11 @@ public class ChessGame {
                     }
 
                 } else {
-                    if (piece.getTeamColor() != color) {
-                        Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
+                    Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
 
-                        for (ChessMove move : enemyMoves) {
-                            if (move.getEndPosition().equals(kingPos)) {
-                                return true;
-                            }
+                    for (ChessMove move : enemyMoves) {
+                        if (move.getEndPosition().equals(kingPos)) {
+                            return true;
                         }
                     }
                 }
@@ -282,4 +305,6 @@ public class ChessGame {
         }
         return false;
     }
+
+
 }
