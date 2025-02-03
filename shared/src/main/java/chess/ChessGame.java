@@ -66,7 +66,7 @@ public class ChessGame {
             ChessBoard clonedBoard = board.clone();
             clonedBoard.movePiece(ogPos, newPos);
 
-            if (!isInCheckCloned(piece.getTeamColor(), clonedBoard)) {
+            if (!isInCheck(piece.getTeamColor(), clonedBoard)) {
                 safeMoves.add(move);
             }
         }
@@ -137,7 +137,7 @@ public class ChessGame {
         return riskyMove( kingPos, teamColor, board);
     }
 
-    public boolean isInCheckCloned(TeamColor teamColor, ChessBoard clonedBoard) {
+    public boolean isInCheck(TeamColor teamColor, ChessBoard clonedBoard) {
         ChessPosition kingPos = kingLocation(teamColor, clonedBoard);
         //I am just reusing my code from phase 0
         //Because I realized I already dealt with that
@@ -163,7 +163,7 @@ public class ChessGame {
                     for (ChessMove move : posMoves) {
                         ChessBoard clonedBoard = board.clone();
                         clonedBoard.movePiece(move.getStartPosition(), move.getEndPosition());
-                        if (!isInCheckCloned(teamColor, clonedBoard)){
+                        if (!isInCheck(teamColor, clonedBoard)){
                             return false;
                         }
                     }
