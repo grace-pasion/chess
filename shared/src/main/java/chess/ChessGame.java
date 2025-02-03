@@ -171,17 +171,6 @@ public class ChessGame {
             }
         }
         return true;
-        /*ChessPosition kingPos = kingLocation(teamColor);
-        ChessPiece kingPiece = board.getPiece(kingPos);
-        Collection<ChessMove> kingMoves = kingPiece.pieceMoves(board, kingPos);
-        for (ChessMove move : kingMoves) {
-            ChessPosition newPos = move.getEndPosition();
-            boolean isRisky = riskyMove( newPos, teamColor, board);
-            if (!isRisky) {
-                return false;
-            }
-        }
-        return true; */
     }
 
     /**
@@ -195,25 +184,22 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-
-        for (int row = 1; row <= 8; row++) {
+        for (int row = 1; row<= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
-                if (piece == null || piece.getTeamColor() != teamColor) {
-                    continue;
-                }
-                Collection<ChessMove> moves = piece.pieceMoves(board, pos);
-                for (ChessMove move : moves) {
-                    ChessPosition newPos = move.getEndPosition();
-                    if (!riskyMove(newPos, teamColor, board)) {
-                        return false;
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> posMoves = piece.pieceMoves(board, pos);
+                    for (ChessMove move : posMoves) {
+                        ChessBoard clonedBoard = board.clone();
+                        clonedBoard.movePiece(move.getStartPosition(), move.getEndPosition());
+                        if (!isInCheck(teamColor, clonedBoard)){
+                            return false;
+                        }
                     }
                 }
-
             }
         }
-
         return true;
     }
 

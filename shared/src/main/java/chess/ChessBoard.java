@@ -234,8 +234,6 @@ public class ChessBoard implements Cloneable {
                     ChessPiece piece = this.squares[row][col];
                     if (piece != null) {
                         clonedBoard.squares[row][col] = piece;
-                    } else {
-                        clonedBoard.squares[row][col] = null;
                     }
                 }
             }
