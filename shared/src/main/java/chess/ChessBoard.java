@@ -15,7 +15,7 @@ public class ChessBoard implements Cloneable {
     /**
      * This is the chessboard represented as a 2d array
      */
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
 
     /**
      * The constructor for the chessBoard class
@@ -228,6 +228,7 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard clonedBoard = (ChessBoard)super.clone();
+            clonedBoard.squares = new ChessPiece[8][8];
             for (int row =0; row <8 ; row++) {
                 for (int col = 0; col < 8; col++) {
                     ChessPiece piece = this.squares[row][col];

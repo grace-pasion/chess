@@ -141,7 +141,7 @@ public class ChessGame {
         ChessPosition kingPos = kingLocation(teamColor, clonedBoard);
         //I am just reusing my code from phase 0
         //Because I realized I already dealt with that
-        return !riskyMove(kingPos, teamColor, clonedBoard);
+        return riskyMove(kingPos, teamColor, clonedBoard);
     }
 
     /**
@@ -163,7 +163,7 @@ public class ChessGame {
                     for (ChessMove move : posMoves) {
                         ChessBoard clonedBoard = board.clone();
                         clonedBoard.movePiece(move.getStartPosition(), move.getEndPosition());
-                        if (isInCheckCloned(teamColor, clonedBoard)){
+                        if (!isInCheckCloned(teamColor, clonedBoard)){
                             return false;
                         }
                     }
@@ -274,24 +274,6 @@ public class ChessGame {
                 ChessPiece piece = board.getPiece(pos);
                 if (piece == null || piece.getTeamColor() == color) {
                     continue;
-                } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                    int direction;
-                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        direction = 1;
-                    } else {
-                        direction = -1;
-                    }
-
-                    int pawnRow = pos.getRow();
-                    int pawnCol = pos.getColumn();
-
-                    ChessPosition leftDiagonal = new ChessPosition(pawnRow+ direction, pawnCol -1);
-                    ChessPosition rightDiagonal = new ChessPosition(pawnRow + direction, pawnCol +1);
-
-                    if (kingPos.equals(leftDiagonal) || kingPos.equals(rightDiagonal)) {
-                        return true;
-                    }
-
                 } else {
                     Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
 
