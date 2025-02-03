@@ -233,7 +233,7 @@ public class ChessBoard implements Cloneable {
                 for (int col = 0; col < 8; col++) {
                     ChessPiece piece = this.squares[row][col];
                     if (piece != null) {
-                        clonedBoard.squares[row][col] = piece.clone();
+                        clonedBoard.squares[row][col] = piece;
                     } else {
                         clonedBoard.squares[row][col] = null;
                     }
