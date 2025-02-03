@@ -274,24 +274,6 @@ public class ChessGame {
                 ChessPiece piece = board.getPiece(pos);
                 if (piece == null || piece.getTeamColor() == color) {
                     continue;
-                } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                    int direction;
-                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        direction = 1;
-                    } else {
-                        direction = -1;
-                    }
-
-                    int pawnRow = pos.getRow();
-                    int pawnCol = pos.getColumn();
-
-                    ChessPosition leftDiagonal = new ChessPosition(pawnRow+ direction, pawnCol -1);
-                    ChessPosition rightDiagonal = new ChessPosition(pawnRow + direction, pawnCol +1);
-
-                    if (kingPos.equals(leftDiagonal) || kingPos.equals(rightDiagonal)) {
-                        return true;
-                    }
-
                 } else {
                     Collection<ChessMove> enemyMoves  = piece.pieceMoves(board, pos);
 
