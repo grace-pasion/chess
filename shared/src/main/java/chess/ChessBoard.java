@@ -21,9 +21,6 @@ public class ChessBoard implements Cloneable {
      * The constructor for the chessBoard class
      */
     public ChessBoard() {
-        //should I have this or have nothing in here?
-        //Maybe for a future phase
-        //resetBoard();
     }
 
     /**
@@ -34,8 +31,6 @@ public class ChessBoard implements Cloneable {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
-        //throw new RuntimeException("Not implemented");
-
     }
 
     /**
@@ -47,7 +42,6 @@ public class ChessBoard implements Cloneable {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
-        //throw new RuntimeException("Not implemented")
     }
 
     /**
@@ -173,6 +167,14 @@ public class ChessBoard implements Cloneable {
     }
 
 
+    /**
+     * This function takes in the starting position and ending position.
+     * Then it moves that piece by setting the ending position equal to the piece
+     * and the starting position to null.
+     *
+     * @param startPos the starting position of a piece
+     * @param endPos the ending position after a move
+     */
     public void movePiece(ChessPosition startPos, ChessPosition endPos) {
         ChessPiece piece = getPiece(startPos);
         if (piece == null) {
@@ -181,6 +183,7 @@ public class ChessBoard implements Cloneable {
         addPiece(startPos, null);
         addPiece(endPos, piece);
     }
+
     /**
      * Checks whether two chessboards are the same
      *
@@ -224,7 +227,14 @@ public class ChessBoard implements Cloneable {
                 '}';
     }
 
-   @Override
+
+    /**
+     * This overrides the clone method. It makes a deep copy of the
+     * current chessBoard
+     *
+     * @return a deep copy of the current ChessBoard
+     */
+    @Override
     public ChessBoard clone() {
         try {
             ChessBoard clonedBoard = (ChessBoard)super.clone();
