@@ -51,7 +51,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
 
         //capture diagonally to the right
-        pawnFinal.addAll(RightDiagonal(board, position));
+        pawnFinal.addAll(rightDiagonal(board, position));
 
         //capture diagonally to the left
         pawnFinal.addAll(leftDiagonal(board, position));
@@ -193,7 +193,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
      * @param position the current position of hte piece
      * @return a collection containing the right diagonal move
      */
-    private Collection<ChessMove> RightDiagonal(ChessBoard board, ChessPosition position) {
+    private Collection<ChessMove> rightDiagonal(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> rightFinal = new ArrayList<ChessMove>();
 
         //find if white or black move
