@@ -1,5 +1,11 @@
 package server;
 
+
+import exception.ResponseException;
+import dataaccess.UserDAO;
+import dataaccess.MemoryUserDAO;
+import service.UserService;
+import server.handler.RegisterHandler;
 import spark.*;
 
 public class Server {
@@ -9,7 +15,10 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        RegisterHandler registerHandler = new RegisterHandler();
+
         // Register your endpoints and handle exceptions here.
+        Spark.post("/user",registerHandler::registerEndpoint);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -21,5 +30,11 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+
+    private void exceptionHandler(ResponseException ex, Request req, Response res) {
+        res.status(ex.StatusCode());
+        res.body(ex.toJson());
     }
 }
