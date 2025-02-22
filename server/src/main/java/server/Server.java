@@ -1,7 +1,5 @@
 package server;
 
-
-import exception.ResponseException;
 import dataaccess.UserDAO;
 import dataaccess.MemoryUserDAO;
 import service.UserService;
@@ -18,7 +16,7 @@ public class Server {
         RegisterHandler registerHandler = new RegisterHandler();
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user",registerHandler::registerEndpoint);
+        Spark.post("/user",registerHandler);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -32,9 +30,4 @@ public class Server {
         Spark.awaitStop();
     }
 
-
-    private void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
-        res.body(ex.toJson());
-    }
 }

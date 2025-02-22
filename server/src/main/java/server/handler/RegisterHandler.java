@@ -1,24 +1,28 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import exception.ResponseException;
 import spark.*;
 import service.UserService;
-import server.request.RegisterRequest;
-import server.result.RegisterResult;
+import request.RegisterRequest;
+import chess.result.RegisterResult;
 
-public class RegisterHandler {
+public class RegisterHandler implements Route {
 
-    public Object registerEndpoint(Request req, Response res) {
+    public Object handle(Request req, Response res) throws ServerExceptions {
         try {
             RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
-            RegisterResult result = UserService.register(registerRequest);
+            if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+                throw new ServerExceptions(ClassError.BAD_REQUEST);
 
+            }
+            RegisterResult result = UserService.register(registerRequest);
+            //could have handler implement route
             res.type("application/json");
             return new Gson().toJson(result);
-        } catch (ResponseException e) {
-            res.status(e.StatusCode());
-            return e.toJson();
+        } catch (ServerExceptions e) {
+            res.status(e.getError().getStatusCode());
+            return String.format("{\"message\": \"%s\", \"status\": %d}",
+                    e.getError().getMessage(), e.getError().getStatusCode());
         }
 
     }
