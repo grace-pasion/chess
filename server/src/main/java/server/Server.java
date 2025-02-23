@@ -1,5 +1,8 @@
 package server;
 
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import server.handler.RegisterHandler;
 import service.UserService;
 import service.GameService;
@@ -11,6 +14,10 @@ public class Server {
     private GameService gameService;
 
     public int run(int desiredPort) {
+        //do i need to set up service before hand?
+        this.userService = new UserService(new MemoryUserDAO(),new MemoryAuthDAO(), new MemoryGameDAO());
+        this.gameService = new GameService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
