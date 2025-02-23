@@ -1,10 +1,13 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import spark.*;
 import service.UserService;
 import request.RegisterRequest;
-import chess.result.RegisterResult;
+import result.RegisterResult;
 
 public class RegisterHandler implements Route {
 
@@ -15,7 +18,8 @@ public class RegisterHandler implements Route {
                 throw new ServerExceptions(ClassError.BAD_REQUEST);
 
             }
-            RegisterResult result = UserService.register(registerRequest);
+            UserService userService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
+            RegisterResult result = userService.register(registerRequest);
             //could have handler implement route
             res.type("application/json");
             return new Gson().toJson(result);

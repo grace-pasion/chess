@@ -1,10 +1,15 @@
 package service;
-
+//my data access interfaces
 import dataaccess.UserDAO;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+//my record classes for request/result
 import request.RegisterRequest;
-import chess.result.RegisterResult;
+import result.RegisterResult;
+//my record classes for data and stuff
 import model.UserData;
 import model.AuthData;
+//my exception classes
 import server.handler.ClassError;
 import server.handler.ServerExceptions;
 
@@ -12,9 +17,13 @@ import java.util.UUID;
 
 public class UserService {
     private final UserDAO userDao;
+    private final AuthDAO authDao;
+    private final GameDAO gameDao;
 
-    public UserService(UserDAO userDao) {
+    public UserService(UserDAO userDao, AuthDAO authDao, GameDAO gameDao) {
         this.userDao = userDao;
+        this.authDao = authDao;
+        this.gameDao = gameDao;
     }
 
     public RegisterResult register(RegisterRequest request) throws ServerExceptions {
@@ -31,7 +40,7 @@ public class UserService {
 
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, request.username());
-        userDao.createAuth(authData);
+        authDao.createAuth(authData);
 
         return new RegisterResult(request.username(), authToken);
     }

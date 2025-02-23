@@ -1,8 +1,5 @@
 package server;
 
-import dataaccess.UserDAO;
-import dataaccess.MemoryUserDAO;
-import service.UserService;
 import server.handler.RegisterHandler;
 import spark.*;
 
@@ -14,9 +11,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         RegisterHandler registerHandler = new RegisterHandler();
-
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user",registerHandler);
+        Spark.post("/user", registerHandler);
+
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
