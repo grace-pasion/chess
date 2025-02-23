@@ -1,4 +1,4 @@
-package server.handler;
+package server.Errors;
 
 public enum ClassError {
     BAD_REQUEST(400, "Error: bad request"),

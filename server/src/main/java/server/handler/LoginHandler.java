@@ -1,24 +1,25 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import request.LoginRequest;
+import result.RegisterResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
-import spark.*;
 import service.UserService;
-import request.RegisterRequest;
-import result.RegisterResult;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
-public class RegisterHandler implements Route {
-
+public class LoginHandler implements Route {
     private final UserService userService;
 
-    public RegisterHandler(UserService userService) {
+    public LoginHandler(UserService userService) {
         this.userService = userService;
     }
 
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
+            LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
             if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
                 throw new ServerExceptions(ClassError.BAD_REQUEST);
 

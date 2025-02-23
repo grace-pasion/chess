@@ -1,4 +1,4 @@
-package server.handler;
+package server.Errors;
 
 public class ServerExceptions extends Exception {
     private final ClassError error;

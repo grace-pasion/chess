@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import result.RegisterResult;
-import server.handler.ClassError;
-import server.handler.ServerExceptions;
+import server.Errors.ClassError;
+import server.Errors.ServerExceptions;
 
 import static org.junit.jupiter.api.Assertions.*;
 

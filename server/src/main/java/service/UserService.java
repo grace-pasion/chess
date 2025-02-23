@@ -10,8 +10,8 @@ import result.RegisterResult;
 import model.UserData;
 import model.AuthData;
 //my exception classes
-import server.handler.ClassError;
-import server.handler.ServerExceptions;
+import server.Errors.ClassError;
+import server.Errors.ServerExceptions;
 
 import java.util.UUID;
 

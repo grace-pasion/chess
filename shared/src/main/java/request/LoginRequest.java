@@ -1,6 +1,6 @@
 package request;
 
-public record RegisterRequest(String username, String password, String email) {
+public record LoginRequest(String username, String password) {
     @Override
     public String username() {
         return username;
@@ -9,10 +9,5 @@ public record RegisterRequest(String username, String password, String email) {
     @Override
     public String password() {
         return password;
-    }
-
-    @Override
-    public String email() {
-        return email;
     }
 }
