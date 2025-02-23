@@ -45,5 +45,10 @@ public class UserService {
         return new RegisterResult(request.username(), authToken);
     }
 
+    public void clear() {
+        userDao.clear();
+        authDao.clear();
+        gameDao.clear();
+    }
 
 }
