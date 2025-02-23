@@ -22,7 +22,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        RegisterHandler registerHandler = new RegisterHandler();
+        RegisterHandler registerHandler = new RegisterHandler(userService);
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.delete("/db", (req, res) -> {

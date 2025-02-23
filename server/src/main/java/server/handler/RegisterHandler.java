@@ -1,9 +1,6 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import spark.*;
 import service.UserService;
 import request.RegisterRequest;
@@ -11,6 +8,11 @@ import result.RegisterResult;
 
 public class RegisterHandler implements Route {
 
+    private final UserService userService;
+
+    public RegisterHandler(UserService userService) {
+        this.userService = userService;
+    }
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
             RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
@@ -18,7 +20,6 @@ public class RegisterHandler implements Route {
                 throw new ServerExceptions(ClassError.BAD_REQUEST);
 
             }
-            UserService userService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
             RegisterResult result = userService.register(registerRequest);
             //could have handler implement route
             res.type("application/json");
