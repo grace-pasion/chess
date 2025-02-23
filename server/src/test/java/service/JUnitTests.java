@@ -8,8 +8,7 @@ import result.RegisterResult;
 import server.handler.ClassError;
 import server.handler.ServerExceptions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JUnitTests {
     //NEED 13 in total
@@ -17,6 +16,7 @@ public class JUnitTests {
     private AuthDAO authDao;
     private GameDAO gameDao;
     private UserService userService;
+    private GameService gameService;
 
     @BeforeEach
     public void setUp() {
@@ -24,6 +24,7 @@ public class JUnitTests {
         authDao = new MemoryAuthDAO();
         gameDao = new MemoryGameDAO();
         userService = new UserService(userDao, authDao, gameDao);
+        gameService = new GameService(userDao, authDao, gameDao);
     }
 
     @Test
@@ -55,4 +56,22 @@ public class JUnitTests {
 
     }
 
+    @Test
+    public void clearSuccess() throws ServerExceptions {
+        RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
+        userService.register(registerRequest);
+
+        assertNotNull(userDao.getUserByUsername("grace"));
+        assertNotNull(authDao.getAuthData("grace"));
+        assertFalse(authDao.getAuthMap().isEmpty());
+        assertFalse(userDao.getUserMap().isEmpty());
+
+        userService.clear();
+        gameService.clear();
+
+        assertNull(userDao.getUserByUsername("grace"));
+        assertNull(authDao.getAuthData("grace"));
+        assertTrue(authDao.getAuthMap().isEmpty());
+        assertTrue(userDao.getUserMap().isEmpty());
+    }
 }

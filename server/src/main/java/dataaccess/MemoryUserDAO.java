@@ -23,4 +23,9 @@ public class MemoryUserDAO implements UserDAO {
     public void clear() {
         users.clear();
     }
+
+    @Override
+    public HashMap<String, UserData> getUserMap() {
+        return users;
+    }
 }
