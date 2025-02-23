@@ -3,7 +3,10 @@ package server.Errors;
 public enum ClassError {
     BAD_REQUEST(400, "Error: bad request"),
     ALREADY_TAKEN(403, "Error: already taken"),
+    USER_NOT_FOUND(401, "Error: unauthorized"),
+    INVALID_PASSWORD(401, "Error: unauthorized"),
     INTERNAL_ERROR(500, "Error: internal server error");
+
 
     private final int statusCode;
     private final String message;

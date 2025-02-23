@@ -2,6 +2,7 @@ package server.handler;
 
 import com.google.gson.Gson;
 import request.LoginRequest;
+import result.LoginResult;
 import result.RegisterResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
@@ -20,11 +21,8 @@ public class LoginHandler implements Route {
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
             LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
-            if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
-                throw new ServerExceptions(ClassError.BAD_REQUEST);
 
-            }
-            RegisterResult result = userService.register(registerRequest);
+            LoginResult result = userService.login(loginRequest);
             //could have handler implement route
             res.type("application/json");
             return new Gson().toJson(result);

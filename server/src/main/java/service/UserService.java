@@ -4,7 +4,9 @@ import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 //my record classes for request/result
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 //my record classes for data and stuff
 import model.UserData;
@@ -43,6 +45,20 @@ public class UserService {
         authDao.createAuth(authData);
 
         return new RegisterResult(request.username(), authToken);
+    }
+
+    public LoginResult login(LoginRequest request) throws ServerExceptions {
+        UserData user = userDao.getUserByUsername(request.username());
+        if (user == null) {
+            throw new ServerExceptions(ClassError.USER_NOT_FOUND);
+        }
+        if (!user.password().equals(request.password())) {
+            throw new ServerExceptions(ClassError.INVALID_PASSWORD);
+        }
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, request.username());
+        authDao.createAuth(authData);
+        return new LoginResult(request.username(), authToken);
     }
 
     public void clear() {
