@@ -4,6 +4,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import server.handler.LoginHandler;
+import server.handler.LogoutHandler;
 import server.handler.RegisterHandler;
 import service.UserService;
 import service.GameService;
@@ -25,9 +26,11 @@ public class Server {
 
         RegisterHandler registerHandler = new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);
+        LogoutHandler logoutHandler = new LogoutHandler(userService);
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
+        Spark.post("/session", logoutHandler);
         Spark.delete("/db", (req, res) -> {
                 try {
                     userService.clear();

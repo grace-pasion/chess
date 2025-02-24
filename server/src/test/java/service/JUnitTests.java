@@ -3,8 +3,10 @@ package service;
 import dataaccess.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.LoginRequest;
 import request.RegisterRequest;
 import result.RegisterResult;
+import result.LoginResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
 
@@ -73,5 +75,40 @@ public class JUnitTests {
         assertNull(authDao.getAuthData("grace"));
         assertTrue(authDao.getAuthMap().isEmpty());
         assertTrue(userDao.getUserMap().isEmpty());
+    }
+
+    @Test
+    public void loginFailure() throws ServerExceptions {
+        //test when user DNE:
+        LoginRequest loginRequest = new LoginRequest("I don't exist", "password?");
+        try {
+            userService.login(loginRequest);
+            fail("This is supposed to fail (1)");
+        } catch (ServerExceptions e) {
+            assertEquals(ClassError.USER_NOT_FOUND, e.getError());
+        }
+        //test when user does exist, but password wrong
+        RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
+        userService.register(registerRequest);
+        LoginRequest incorrectPassword = new LoginRequest("grace", "wrong");
+        try {
+            userService.login(incorrectPassword);
+            fail("This is supposed to fail (2)");
+        } catch (ServerExceptions e) {
+            assertEquals(ClassError.INVALID_PASSWORD, e.getError());
+        }
+    }
+
+    @Test
+    public void loginSuccess() throws ServerExceptions {
+        RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("grace", "password123");
+        LoginResult loginResult = userService.login(loginRequest);
+        assertNotNull(loginResult);
+        assertNotNull(loginResult.authToken());
+        assertEquals("grace", loginResult.username());
+        assertNotNull(authDao.getAuthData("grace"));
+
     }
 }

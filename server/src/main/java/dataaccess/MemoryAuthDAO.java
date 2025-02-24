@@ -26,4 +26,20 @@ public class MemoryAuthDAO implements AuthDAO {
     public AuthData getAuthData(String user) {
         return authMap.get(user);
     }
+
+    @Override
+    public void deleteAuth(String authToken) {
+        String keyRemove = null;
+        for (String username : authMap.keySet()) {
+            AuthData authData = authMap.get(username);
+            if (authData.authToken().equals(authToken)) {
+                keyRemove = username;
+                break;
+            }
+        }
+
+        if (keyRemove != null) {
+            authMap.remove(keyRemove);
+        }
+    }
 }

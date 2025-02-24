@@ -11,4 +11,5 @@ public interface AuthDAO {
     void clear();
     HashMap<String, AuthData> getAuthMap();
     AuthData getAuthData(String user);
+    void deleteAuth(String authToken);
 }

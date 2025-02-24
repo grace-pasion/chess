@@ -5,8 +5,10 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 //my record classes for request/result
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 //my record classes for data and stuff
 import model.UserData;
@@ -61,6 +63,14 @@ public class UserService {
         return new LoginResult(request.username(), authToken);
     }
 
+    public LogoutResult logout(LogoutRequest request) throws ServerExceptions {
+        AuthData authData = authDao.getAuthData(request.authToken());
+        if (authData == null) {
+            throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
+        }
+        authDao.deleteAuth(request.authToken());
+        return new LogoutResult();
+    }
     public void clear() {
         userDao.clear();
         authDao.clear();
