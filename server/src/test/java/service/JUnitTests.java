@@ -4,11 +4,14 @@ import dataaccess.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.RegisterResult;
 import result.LoginResult;
+import result.LogoutResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +30,7 @@ public class JUnitTests {
         gameDao = new MemoryGameDAO();
         userService = new UserService(userDao, authDao, gameDao);
         gameService = new GameService(userDao, authDao, gameDao);
+
     }
 
     @Test
@@ -110,5 +114,38 @@ public class JUnitTests {
         assertEquals("grace", loginResult.username());
         assertNotNull(authDao.getAuthData("grace"));
 
+    }
+
+    @Test
+    public void logoutFailure() throws ServerExceptions {
+        LogoutRequest logoutRequest = new LogoutRequest("This is not an authToken");
+        try {
+            userService.logout(logoutRequest);
+            fail("This was supposed to fail (3)");
+        } catch (ServerExceptions e) {
+            assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());
+        }
+
+    }
+
+    @Test
+    public void logoutSuccess() throws ServerExceptions {
+        RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("grace", "password123");
+        LoginResult loginResult = userService.login(loginRequest);
+        assertNotNull(loginResult);
+        assertNotNull(loginResult.authToken());
+        LogoutRequest logoutRequest = new LogoutRequest(loginResult.authToken());
+        LogoutResult logoutResult = userService.logout(logoutRequest);
+        assertNotNull(logoutResult);
+        assertNull(authDao.getAuthData("grace"));
+        //just tryna make sure it is invalid afterwards
+        try {
+            userService.logout(new LogoutRequest(loginResult.authToken()));  // Try logging out again with the same token
+            fail("Expected a ServerExceptions to be thrown");
+        } catch (ServerExceptions e) {
+            assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());  // Ensure the token is invalid
+        }
     }
 }

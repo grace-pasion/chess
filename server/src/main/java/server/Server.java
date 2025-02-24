@@ -17,8 +17,11 @@ public class Server {
 
     public int run(int desiredPort) {
         //do i need to set up service before hand?
-        this.userService = new UserService(new MemoryUserDAO(),new MemoryAuthDAO(), new MemoryGameDAO());
-        this.gameService = new GameService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
+        MemoryUserDAO userDao = new MemoryUserDAO();
+        MemoryAuthDAO authDao = new MemoryAuthDAO();
+        MemoryGameDAO gameDao = new MemoryGameDAO();
+        this.userService = new UserService(userDao, authDao,gameDao);
+        this.gameService = new GameService(userDao, authDao, gameDao);
 
         Spark.port(desiredPort);
 
@@ -27,10 +30,13 @@ public class Server {
         RegisterHandler registerHandler = new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);
         LogoutHandler logoutHandler = new LogoutHandler(userService);
+        ListGameHandler listGameHandler = new ListGameHandler(gameService);
+
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
         Spark.delete("/session", logoutHandler);
+        Spark.get("/game", listGameHandler);
         Spark.delete("/db", (req, res) -> {
                 try {
                     userService.clear();
