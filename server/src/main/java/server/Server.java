@@ -3,6 +3,7 @@ package server;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
+import server.handler.ListGameHandler;
 import server.handler.LoginHandler;
 import server.handler.LogoutHandler;
 import server.handler.RegisterHandler;
