@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import server.handler.ListGameHandler;
 import server.handler.LoginHandler;
 import server.handler.LogoutHandler;
@@ -18,9 +16,10 @@ public class Server {
 
     public int run(int desiredPort) {
         //do i need to set up service before hand?
-        MemoryUserDAO userDao = new MemoryUserDAO();
-        MemoryAuthDAO authDao = new MemoryAuthDAO();
-        MemoryGameDAO gameDao = new MemoryGameDAO();
+        //When we do SQL I can comment these out
+        UserDAO userDao = new MemoryUserDAO();
+        AuthDAO authDao = new MemoryAuthDAO();
+        GameDAO gameDao = new MemoryGameDAO();
         this.userService = new UserService(userDao, authDao,gameDao);
         this.gameService = new GameService(userDao, authDao, gameDao);
 

@@ -3,9 +3,12 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.GameData;
 import request.ListGameRequest;
 import result.ListGameResult;
+import server.Errors.ClassError;
+import server.Errors.ServerExceptions;
 
 import java.util.ArrayList;
 
@@ -20,9 +23,11 @@ public class GameService {
         this.gameDao = gameDao;
     }
 
-    public ListGameResult getAllGames(ListGameRequest listGameRequest) {
-        listGameRequest.authToken();
-        //something here about verifying the authToken with getAuth(authToken) etc
+    public ListGameResult getAllGames(ListGameRequest listGameRequest) throws ServerExceptions {
+        AuthData authData = authDao.getDataFromAuthToken(listGameRequest.authToken());
+        if (authData == null) {
+            throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
+        }
         ArrayList<GameData> allGames = gameDao.getGames();
         return new ListGameResult(allGames);
     }
