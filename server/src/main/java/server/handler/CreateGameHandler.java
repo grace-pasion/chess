@@ -29,7 +29,7 @@ public class CreateGameHandler implements Route {
             if (createGameRequest.gameName() == null) {
                 throw new ServerExceptions(ClassError.BAD_REQUEST);
             }
-            CreateGameResult createGameResult = gameService.createGrame(createGameRequest);
+            CreateGameResult createGameResult = gameService.createGame(createGameRequest, authToken);
             res.type("application/json");
             res.status(200);
             return new Gson().toJson(createGameResult);

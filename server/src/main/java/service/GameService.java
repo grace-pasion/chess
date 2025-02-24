@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -34,7 +35,21 @@ public class GameService {
         return new ListGameResult(allGames);
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws ServerExceptions {
+        //am i allowed to also pass in the authToken?
+        AuthData authData = authDao.getDataFromAuthToken(authToken);
+        if (authData == null) {
+            throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
+        }
+        ChessGame newGame = new ChessGame();
+        GameData gameData = new GameData(gameDao.generateGameID(),
+                authData.username(),
+                null,
+                createGameRequest.gameName(),
+                newGame);
+
+        gameDao.createGame(gameData);
+        return new CreateGameResult(gameData.gameID());
 
     }
     public void clear() {
