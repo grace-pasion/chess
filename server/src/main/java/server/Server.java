@@ -30,7 +30,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
-        Spark.post("/session", logoutHandler);
+        Spark.delete("/session", logoutHandler);
         Spark.delete("/db", (req, res) -> {
                 try {
                     userService.clear();

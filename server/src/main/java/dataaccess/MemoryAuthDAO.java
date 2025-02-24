@@ -42,4 +42,21 @@ public class MemoryAuthDAO implements AuthDAO {
             authMap.remove(keyRemove);
         }
     }
+
+    @Override
+    public AuthData getDataFromAuthToken(String authToken) {
+        String usernameCorrect = null;
+        for (String username : authMap.keySet()) {
+            AuthData authData = authMap.get(username);
+            if (authData.authToken().equals(authToken)) {
+                usernameCorrect = username;
+                break;
+            }
+        }
+
+        if (usernameCorrect == null) {
+            return null;
+        }
+        return authMap.get(usernameCorrect);
+    }
 }

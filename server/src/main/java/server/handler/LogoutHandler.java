@@ -11,6 +11,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.io.Reader;
+
 public class LogoutHandler implements Route {
     private final UserService userService;
 
@@ -20,7 +22,9 @@ public class LogoutHandler implements Route {
 
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            LogoutRequest logoutRequest = new Gson().fromJson(req.body(), LogoutRequest.class);
+            String authToken = req.headers("Authorization");
+            String json = String.format("{\"authToken\": \"%s\"}", authToken);
+            LogoutRequest logoutRequest = new Gson().fromJson(json, LogoutRequest.class);
 
             LogoutResult result = userService.logout(logoutRequest);
             //could have handler implement route

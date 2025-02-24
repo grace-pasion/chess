@@ -64,7 +64,7 @@ public class UserService {
     }
 
     public LogoutResult logout(LogoutRequest request) throws ServerExceptions {
-        AuthData authData = authDao.getAuthData(request.authToken());
+        AuthData authData = authDao.getDataFromAuthToken(request.authToken());
         if (authData == null) {
             throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
         }
