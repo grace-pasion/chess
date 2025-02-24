@@ -1,10 +1,7 @@
 package server;
 
 import dataaccess.*;
-import server.handler.ListGameHandler;
-import server.handler.LoginHandler;
-import server.handler.LogoutHandler;
-import server.handler.RegisterHandler;
+import server.handler.*;
 import service.UserService;
 import service.GameService;
 import spark.*;
@@ -31,11 +28,13 @@ public class Server {
         LoginHandler loginHandler = new LoginHandler(userService);
         LogoutHandler logoutHandler = new LogoutHandler(userService);
         ListGameHandler listGameHandler = new ListGameHandler(gameService);
+        CreateGameHandler createGameHandler = new CreateGameHandler(gameService);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
         Spark.delete("/session", logoutHandler);
+        Spark.post("/game", createGameHandler);
         Spark.get("/game", listGameHandler);
         Spark.delete("/db", (req, res) -> {
                 try {

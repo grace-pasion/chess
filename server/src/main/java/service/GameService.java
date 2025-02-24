@@ -5,7 +5,9 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
+import request.CreateGameRequest;
 import request.ListGameRequest;
+import result.CreateGameResult;
 import result.ListGameResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
@@ -32,6 +34,9 @@ public class GameService {
         return new ListGameResult(allGames);
     }
 
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) {
+
+    }
     public void clear() {
         userDao.clear();
         authDao.clear();
