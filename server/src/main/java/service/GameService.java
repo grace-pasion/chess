@@ -45,7 +45,7 @@ public class GameService {
         }
         ChessGame newGame = new ChessGame();
         GameData gameData = new GameData(gameDao.generateGameID(),
-                authData.username(),
+                null,
                 null,
                 createGameRequest.gameName(),
                 newGame);
