@@ -25,7 +25,6 @@ public class LoginHandler implements Route {
             LoginResult result = userService.login(loginRequest);
             //could have handler implement route
             res.status(200);
-            res.type("application/json");
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {
             res.status(e.getError().getStatusCode());

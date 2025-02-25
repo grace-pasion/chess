@@ -22,7 +22,7 @@ public class ListGameHandler implements Route {
 
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            String authToken = req.headers("Authorization");
+            String authToken = req.headers("authorization");
             String json = String.format("{\"authToken\": \"%s\"}", authToken);
             if (authToken == null || authToken.isEmpty()) {
                 throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);  // Explicitly throw an exception
@@ -30,7 +30,6 @@ public class ListGameHandler implements Route {
             ListGameRequest listGamesRequest = new Gson().fromJson(json, ListGameRequest.class);
             ListGameResult result = gameService.getAllGames(listGamesRequest);
             res.status(200);
-            res.type("application/json");
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {
             res.status(e.getError().getStatusCode());

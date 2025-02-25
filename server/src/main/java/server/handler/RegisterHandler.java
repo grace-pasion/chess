@@ -25,7 +25,6 @@ public class RegisterHandler implements Route {
             }
             RegisterResult result = userService.register(registerRequest);
             //could have handler implement route
-            res.type("application/json");
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {

@@ -29,6 +29,7 @@ public class Server {
         LogoutHandler logoutHandler = new LogoutHandler(userService);
         ListGameHandler listGameHandler = new ListGameHandler(gameService);
         CreateGameHandler createGameHandler = new CreateGameHandler(gameService);
+        JoinGameHandler joinGameHandler = new JoinGameHandler(gameService);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
@@ -36,6 +37,7 @@ public class Server {
         Spark.delete("/session", logoutHandler);
         Spark.post("/game", createGameHandler);
         Spark.get("/game", listGameHandler);
+        Spark.put("/game", joinGameHandler);
         Spark.delete("/db", (req, res) -> {
                 try {
                     userService.clear();

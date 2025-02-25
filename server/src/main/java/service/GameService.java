@@ -7,8 +7,10 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGameRequest;
 import result.CreateGameResult;
+import result.JoinGameResult;
 import result.ListGameResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;
@@ -50,6 +52,35 @@ public class GameService {
 
         gameDao.createGame(gameData);
         return new CreateGameResult(gameData.gameID());
+
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest, String authToken) throws ServerExceptions {
+        AuthData authData = authDao.getDataFromAuthToken(authToken);
+        if (authData == null) {
+            throw new ServerExceptions(ClassError.BAD_REQUEST);
+        }
+        GameData gameData = gameDao.getGame(joinGameRequest.gameID());
+        if (gameData == null) {
+            throw new ServerExceptions(ClassError.BAD_REQUEST);
+        }
+        if (joinGameRequest.playerColor().equalsIgnoreCase("white")) {
+            if (gameData.whiteUsername() != null) {
+                throw new ServerExceptions(ClassError.ALREADY_TAKEN);
+            }
+            gameData = new GameData(gameData.gameID(),
+                    authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+        } else if (joinGameRequest.playerColor().equalsIgnoreCase("black")) {
+            if (gameData.blackUsername() != null) {
+                throw new ServerExceptions(ClassError.ALREADY_TAKEN);
+            }
+            gameData = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                    authData.username(), gameData.gameName(), gameData.game());
+        } else {
+            throw new ServerExceptions(ClassError.BAD_REQUEST);
+        }
+        gameDao.updateGame(gameData.gameID(), gameData);
+        return new JoinGameResult();
 
     }
     public void clear() {
