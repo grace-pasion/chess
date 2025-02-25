@@ -58,10 +58,10 @@ public class GameService {
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest, String authToken) throws ServerExceptions {
         AuthData authData = authDao.getDataFromAuthToken(authToken);
         if (authData == null) {
-            throw new ServerExceptions(ClassError.BAD_REQUEST);
+            throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
         }
         GameData gameData = gameDao.getGame(joinGameRequest.gameID());
-        if (gameData == null) {
+        if (gameData == null || joinGameRequest.playerColor() == null) {
             throw new ServerExceptions(ClassError.BAD_REQUEST);
         }
         if (joinGameRequest.playerColor().equalsIgnoreCase("white")) {
