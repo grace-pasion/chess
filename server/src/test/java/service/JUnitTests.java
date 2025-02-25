@@ -131,18 +131,14 @@ public class JUnitTests {
     @Test
     public void logoutSuccess() throws ServerExceptions {
         RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
-        userService.register(registerRequest);
-        LoginRequest loginRequest = new LoginRequest("grace", "password123");
-        LoginResult loginResult = userService.login(loginRequest);
-        assertNotNull(loginResult);
-        assertNotNull(loginResult.authToken());
-        LogoutRequest logoutRequest = new LogoutRequest(loginResult.authToken());
+        RegisterResult registerResult = userService.register(registerRequest);
+        LogoutRequest logoutRequest = new LogoutRequest(registerResult.authToken());
         LogoutResult logoutResult = userService.logout(logoutRequest);
         assertNotNull(logoutResult);
         assertNull(authDao.getAuthData("grace"));
         //just tryna make sure it is invalid afterwards
         try {
-            userService.logout(new LogoutRequest(loginResult.authToken()));  // Try logging out again with the same token
+            userService.logout(new LogoutRequest(registerResult.authToken()));  // Try logging out again with the same token
             fail("Expected a ServerExceptions to be thrown");
         } catch (ServerExceptions e) {
             assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());  // Ensure the token is invalid

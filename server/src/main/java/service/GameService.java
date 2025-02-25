@@ -40,6 +40,8 @@ public class GameService {
     public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws ServerExceptions {
         //am i allowed to also pass in the authToken?
         AuthData authData = authDao.getDataFromAuthToken(authToken);
+
+        //if don't have this though, the other one fails
         if (authData == null) {
             throw new ServerExceptions(ClassError.AUTHTOKEN_INVALID);
         }
