@@ -3,9 +3,11 @@ package service;
 import dataaccess.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.RegisterResult;
 import result.LoginResult;
 import result.LogoutResult;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserTests {
     private UserDAO userDao;
     private AuthDAO authDao;
+    private GameDAO gameDao;
     private UserService userService;
     private GameService gameService;
 
@@ -25,7 +28,7 @@ public class UserTests {
     public void setUp() {
         userDao = new MemoryUserDAO();
         authDao = new MemoryAuthDAO();
-        GameDAO gameDao = new MemoryGameDAO();
+        gameDao = new MemoryGameDAO();
         userService = new UserService(userDao, authDao, gameDao);
         gameService = new GameService(userDao, authDao, gameDao);
 
@@ -33,6 +36,8 @@ public class UserTests {
 
     @Test
     public void registerSuccess() throws ServerExceptions {
+        //sending in good register request then making sure it actually
+        //registered
         RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
         RegisterResult registerResult = userService.register(registerRequest);
 
@@ -43,12 +48,16 @@ public class UserTests {
 
     @Test
     public void registerFail() throws ServerExceptions {
+        //registering two users (with the same username)
         RegisterRequest register1 = new RegisterRequest("grace", "password123", "email.com");
         RegisterRequest register2 = new RegisterRequest("grace", "password246", "grace.com");
 
         userService.register(register1);
 
-        ServerExceptions  e = null;
+        ServerExceptions e = null;
+
+        //hypothetically won't let the second user register
+        //since the username is taken
         try {
             userService.register(register2);
         } catch (ServerExceptions ex) {
@@ -62,21 +71,33 @@ public class UserTests {
 
     @Test
     public void clearSuccess() throws ServerExceptions {
-        RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
+        //Registering the user and creating the game
+        //to get game and user data (to later clear)
+        RegisterRequest registerRequest = new RegisterRequest
+                ("grace", "password123", "email.com");
         userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("grace", "password123");
+        LoginResult loginResult = userService.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("Grace's Game");
+        CreateGameResult createGameResult = gameService.createGame(createGameRequest, loginResult.authToken());
 
+        //checking that nothing is current empty
+        assertNotNull(createGameResult);
         assertNotNull(userDao.getUserByUsername("grace"));
         assertNotNull(authDao.getAuthData("grace"));
         assertFalse(authDao.getAuthMap().isEmpty());
         assertFalse(userDao.getUserMap().isEmpty());
 
+        //emptying out the data
         userService.clear();
         gameService.clear();
 
+        //checking to make sure everything is empty now
         assertNull(userDao.getUserByUsername("grace"));
         assertNull(authDao.getAuthData("grace"));
         assertTrue(authDao.getAuthMap().isEmpty());
         assertTrue(userDao.getUserMap().isEmpty());
+        assertTrue(gameDao.getGames().isEmpty());
     }
 
     @Test
@@ -89,6 +110,7 @@ public class UserTests {
         } catch (ServerExceptions e) {
             assertEquals(ClassError.USER_NOT_FOUND, e.getError());
         }
+
         //test when user does exist, but password wrong
         RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
         userService.register(registerRequest);
@@ -107,6 +129,9 @@ public class UserTests {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("grace", "password123");
         LoginResult loginResult = userService.login(loginRequest);
+
+        //I am checking if login result is not empty and the
+        //correct things are stored
         assertNotNull(loginResult);
         assertNotNull(loginResult.authToken());
         assertEquals("grace", loginResult.username());
@@ -116,6 +141,8 @@ public class UserTests {
 
     @Test
     public void logoutFailure() throws ServerExceptions {
+        //Here I am logging out with an authToken that that does
+        //not exist, so it will fail
         LogoutRequest logoutRequest = new LogoutRequest("This is not an authToken");
         try {
             userService.logout(logoutRequest);
@@ -134,12 +161,14 @@ public class UserTests {
         LogoutResult logoutResult = userService.logout(logoutRequest);
         assertNotNull(logoutResult);
         assertNull(authDao.getAuthData("grace"));
-        //just tryna make sure it is invalid afterwards
+
+        //this try and catch block is a way for me to check if the token
+        //is invalid after the logging out (which is a good thing)
         try {
-            userService.logout(new LogoutRequest(registerResult.authToken()));  // Try logging out again with the same token
+            userService.logout(new LogoutRequest(registerResult.authToken()));
             fail("Expected a ServerExceptions to be thrown");
         } catch (ServerExceptions e) {
-            assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());  // Ensure the token is invalid
+            assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());
         }
     }
 }

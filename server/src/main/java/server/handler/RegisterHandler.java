@@ -16,6 +16,16 @@ public class RegisterHandler implements Route {
         this.userService = userService;
     }
 
+    /**
+     * I turn the request from json to a record class. Then I feed it into my service
+     * classes, which returns a result object. This result object will be turned
+     * back into JSON.
+     *
+     * @param req
+     * @param res
+     * @return a JSON object
+     * @throws ServerExceptions if one of the request fields is null
+     */
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
             RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);

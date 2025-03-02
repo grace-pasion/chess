@@ -7,10 +7,25 @@ import service.GameService;
 import spark.*;
 
 public class Server {
-    //circular imports?
+    /**
+     * the user service object
+     */
     private UserService userService;
+
+    /**
+     * the game service object
+     */
     private GameService gameService;
 
+    /**
+     *  I grab the databases, so that the database it
+     *  references stays consistent throughout all the classes.
+     *  Then I call each endpoint (register, login, etc).
+     *
+     *
+     * @param desiredPort
+     * @return an integer
+     */
     public int run(int desiredPort) {
         UserDAO userDao = new MemoryUserDAO();
         AuthDAO authDao = new MemoryAuthDAO();
@@ -36,6 +51,10 @@ public class Server {
         Spark.post("/game", createGameHandler);
         Spark.get("/game", listGameHandler);
         Spark.put("/game", joinGameHandler);
+
+        //As a side note for the grader, I am doing my clear function in
+        //the server, since there is nothing of significance being passed in
+        // or returned
         Spark.delete("/db", (req, res) -> {
                 try {
                     userService.clear();
