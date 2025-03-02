@@ -1,17 +1,14 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import model.GameData;
 import result.ListGameResult;
 import request.ListGameRequest;
-import server.Errors.ClassError;
-import server.Errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 import service.GameService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.util.ArrayList;
 
 public class ListGameHandler implements Route {
     private final GameService gameService;

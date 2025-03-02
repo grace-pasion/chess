@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
-import server.Errors.ServerExceptions;
+import server.errors.ServerExceptions;
 
-import server.Errors.ClassError;
+import server.errors.ClassError;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {

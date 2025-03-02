@@ -1,17 +1,13 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import request.LoginRequest;
 import request.LogoutRequest;
-import result.LoginResult;
 import result.LogoutResult;
-import server.Errors.ServerExceptions;
+import server.errors.ServerExceptions;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.io.Reader;
 
 public class LogoutHandler implements Route {
     private final UserService userService;

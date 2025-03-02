@@ -14,8 +14,8 @@ import result.RegisterResult;
 import model.UserData;
 import model.AuthData;
 //my exception classes
-import server.Errors.ClassError;
-import server.Errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 
 import java.util.UUID;
 

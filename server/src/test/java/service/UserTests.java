@@ -9,8 +9,8 @@ import request.RegisterRequest;
 import result.RegisterResult;
 import result.LoginResult;
 import result.LogoutResult;
-import server.Errors.ClassError;
-import server.Errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 
 
 import static org.junit.jupiter.api.Assertions.*;
