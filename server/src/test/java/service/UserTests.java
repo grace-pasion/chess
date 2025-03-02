@@ -15,11 +15,9 @@ import server.Errors.ServerExceptions;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JUnitTests {
-    //NEED 13 in total
+public class UserTests {
     private UserDAO userDao;
     private AuthDAO authDao;
-    private GameDAO gameDao;
     private UserService userService;
     private GameService gameService;
 
@@ -27,7 +25,7 @@ public class JUnitTests {
     public void setUp() {
         userDao = new MemoryUserDAO();
         authDao = new MemoryAuthDAO();
-        gameDao = new MemoryGameDAO();
+        GameDAO gameDao = new MemoryGameDAO();
         userService = new UserService(userDao, authDao, gameDao);
         gameService = new GameService(userDao, authDao, gameDao);
 

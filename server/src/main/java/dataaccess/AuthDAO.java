@@ -5,7 +5,6 @@ import model.AuthData;
 import java.util.HashMap;
 
 public interface AuthDAO {
-    //Do stuff with AUTH
 
     void createAuth(String authToken, AuthData authData);
     void clear();

@@ -27,7 +27,6 @@ public class LogoutHandler implements Route {
             LogoutRequest logoutRequest = new Gson().fromJson(json, LogoutRequest.class);
 
             LogoutResult result = userService.logout(logoutRequest);
-            //could have handler implement route
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {

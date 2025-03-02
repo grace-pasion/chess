@@ -2,7 +2,6 @@ package server.handler;
 
 import com.google.gson.Gson;
 import request.CreateGameRequest;
-import request.LoginRequest;
 import result.CreateGameResult;
 import server.Errors.ClassError;
 import server.Errors.ServerExceptions;

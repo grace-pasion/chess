@@ -5,9 +5,7 @@ public enum ClassError {
     ALREADY_TAKEN(403, "Error: already taken"),
     USER_NOT_FOUND(401, "Error: unauthorized"),
     INVALID_PASSWORD(401, "Error: unauthorized"),
-    AUTHTOKEN_INVALID(401, "Error: unauthorized"),
-    INTERNAL_ERROR(500, "Error: internal server error");
-
+    AUTHTOKEN_INVALID(401, "Error: unauthorized");
 
     private final int statusCode;
     private final String message;

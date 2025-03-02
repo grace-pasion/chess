@@ -12,8 +12,6 @@ public class Server {
     private GameService gameService;
 
     public int run(int desiredPort) {
-        //do i need to set up service before hand?
-        //When we do SQL I can comment these out
         UserDAO userDao = new MemoryUserDAO();
         AuthDAO authDao = new MemoryAuthDAO();
         GameDAO gameDao = new MemoryGameDAO();

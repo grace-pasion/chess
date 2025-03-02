@@ -25,7 +25,6 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public void createGame(GameData gameData) {
-
         GameData newGame = new GameData(currentGameID,
                 gameData.whiteUsername(),
                 gameData.blackUsername(),

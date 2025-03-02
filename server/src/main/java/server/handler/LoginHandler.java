@@ -23,7 +23,6 @@ public class LoginHandler implements Route {
             LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
 
             LoginResult result = userService.login(loginRequest);
-            //could have handler implement route
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {

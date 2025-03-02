@@ -12,7 +12,4 @@ public class ServerExceptions extends Exception {
         return error;
     }
 
-    public int getStatusCode() {
-        return error.getStatusCode();
-    }
 }
