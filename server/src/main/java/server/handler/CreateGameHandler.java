@@ -17,7 +17,15 @@ public class CreateGameHandler implements Route {
         this.gameService = gameService;
     }
 
-    @Override
+    /**
+     * I turn the request from json to a record class. Then I feed it into my service
+     * classes, which returns a result object. This result object will be turned
+     * back into JSON.
+     * @param req
+     * @param res
+     * @return
+     * @throws ServerExceptions if the authToken is null or the game name is null
+     */
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
             String authToken = req.headers("Authorization");
