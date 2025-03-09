@@ -23,15 +23,12 @@ public class Server {
      *  Then I call each endpoint (register, login, etc).
      *
      *
-     * @param desiredPort
      * @return an integer
      */
     public int run(int desiredPort) {
-        UserDAO userDao = new MemoryUserDAO();
-        AuthDAO authDao = new MemoryAuthDAO();
-        GameDAO gameDao = new MemoryGameDAO();
-        this.userService = new UserService(userDao, authDao,gameDao);
-        this.gameService = new GameService(userDao, authDao, gameDao);
+        //change this line to toggle between memory/SQL type
+        boolean isSQL = false;
+        correctDAO(isSQL);
 
         Spark.port(desiredPort);
 
@@ -79,4 +76,11 @@ public class Server {
         Spark.awaitStop();
     }
 
+    private void correctDAO(boolean isSQL) {
+        UserDAO userDao = isSQL ? new MySQLUserDAO() : new MemoryUserDAO();
+        AuthDAO authDao = isSQL ? new MySQLAuthDAO() : new MemoryAuthDAO();
+        GameDAO gameDao = isSQL ? new MySQLGameDAO() : new MemoryGameDAO();
+        this.userService = new UserService(userDao, authDao,gameDao);
+        this.gameService = new GameService(userDao, authDao, gameDao);
+    }
 }
