@@ -1,6 +1,8 @@
 package server;
 
 import dataaccess.*;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 import server.handler.*;
 import service.UserService;
 import service.GameService;
@@ -28,7 +30,12 @@ public class Server {
     public int run(int desiredPort) {
         //change this line to toggle between memory/SQL type
         boolean isSQL = false;
-        correctDAO(isSQL);
+
+        try {
+            correctDAO(isSQL);
+        } catch (ServerExceptions e) {
+            return 500;
+        }
 
         Spark.port(desiredPort);
 
@@ -76,11 +83,15 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private void correctDAO(boolean isSQL) {
-        UserDAO userDao = isSQL ? new MySQLUserDAO() : new MemoryUserDAO();
-        AuthDAO authDao = isSQL ? new MySQLAuthDAO() : new MemoryAuthDAO();
-        GameDAO gameDao = isSQL ? new MySQLGameDAO() : new MemoryGameDAO();
-        this.userService = new UserService(userDao, authDao,gameDao);
-        this.gameService = new GameService(userDao, authDao, gameDao);
+    private void correctDAO(boolean isSQL) throws ServerExceptions {
+        try {
+            UserDAO userDao = isSQL ? new MySQLUserDAO() : new MemoryUserDAO();
+            AuthDAO authDao = isSQL ? new MySQLAuthDAO() : new MemoryAuthDAO();
+            GameDAO gameDao = isSQL ? new MySQLGameDAO() : new MemoryGameDAO();
+            this.userService = new UserService(userDao, authDao, gameDao);
+            this.gameService = new GameService(userDao, authDao, gameDao);
+        } catch (ServerExceptions e) {
+            throw new ServerExceptions(ClassError.DATABASE_ERROR);
+        }
     }
 }
