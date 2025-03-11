@@ -13,7 +13,12 @@ import static java.sql.Types.NULL;
 public class MySQLAuthDAO implements AuthDAO {
 
     public MySQLAuthDAO() throws ServerExceptions {
-        configureDatabase();
+        try {
+            DatabaseManager.createDatabase();  // Ensure database exists
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new ServerExceptions(ClassError.DATABASE_ERROR);
+        }
     }
 
     @Override
@@ -123,7 +128,7 @@ public class MySQLAuthDAO implements AuthDAO {
             """
             CREATE TABLE IF NOT EXISTS authData (
                 authToken VARCHAR(256) PRIMARY KEY,
-                username VARCHAR(256) NOT NULL,
+                username VARCHAR(256) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

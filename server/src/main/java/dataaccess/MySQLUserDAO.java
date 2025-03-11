@@ -1,7 +1,7 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.errors.ClassError;
 import server.errors.ServerExceptions;
 
@@ -13,8 +13,15 @@ import static java.sql.Types.NULL;
 
 public class MySQLUserDAO implements UserDAO {
 
+    //DON'T FORGET TO DO PASSWORD HASHING!!!!
+
     public MySQLUserDAO() throws ServerExceptions {
-        configureDatabase();
+        try {
+            DatabaseManager.createDatabase();  // Ensure database exists
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new ServerExceptions(ClassError.DATABASE_ERROR);
+        }
     }
 
     @Override
@@ -40,7 +47,19 @@ public class MySQLUserDAO implements UserDAO {
     @Override
     public void createUser(UserData userData) {
         //username password email
+        var statement = "INSERT INTO userData (username, password, email) VALUES(?, ?, ?)";
+        var username = userData.username();
+        var clearTextPassword = userData.password();
+        //SOMETHING WITH PASSWORD HASHING HERE
+        var email = userData.email();
+        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+        try {
+            executeUpdate(statement, username, hashedPassword, email);
+        } catch (DataAccessException | SQLException | ServerExceptions e) {
+            throw new RuntimeException("Error occurred when trying to create authentication");
+        }
     }
+
 
     @Override
     public void clear() {
@@ -54,7 +73,23 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public HashMap<String, UserData> getUserMap() {
-        return null;
+        HashMap<String, UserData> userMap = new HashMap<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM userData";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String username = rs.getString("username");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        userMap.put(username, new UserData(username, password, email));
+                    }
+                }
+            }
+            return userMap;
+        } catch (DataAccessException | SQLException e) {
+            throw new RuntimeException("Error occurred when trying to grab the map");
+        }
     }
 
 
@@ -75,8 +110,8 @@ public class MySQLUserDAO implements UserDAO {
             CREATE TABLE IF NOT EXISTS userData (
                 username VARCHAR(256) PRIMARY KEY,
                 password VARCHAR(256) NOT NULL,
-                email VARCHAR(256) NOT NULL,
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                email VARCHAR(256) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
             """
     };
 
