@@ -73,7 +73,12 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public boolean verifyUser(String username, String clearPassword) {
-        return false;
+        UserData userData = getUserByUsername(username);
+        if (userData == null) {
+            return false;
+        }
+        String storedHashedPassword = userData.password();
+        return BCrypt.checkpw(clearPassword, storedHashedPassword);
     }
 
     @Override
