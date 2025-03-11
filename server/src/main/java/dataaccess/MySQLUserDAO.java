@@ -13,7 +13,6 @@ import static java.sql.Types.NULL;
 
 public class MySQLUserDAO implements UserDAO {
 
-    //DON'T FORGET TO DO PASSWORD HASHING!!!!
 
     public MySQLUserDAO() throws ServerExceptions {
         try {
