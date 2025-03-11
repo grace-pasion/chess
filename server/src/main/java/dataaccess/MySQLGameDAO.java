@@ -37,7 +37,7 @@ public class MySQLGameDAO implements GameDAO {
     public ArrayList<GameData> getGames() {
        ArrayList<GameData> listOfGames = new ArrayList<>();
        try (var conn = DatabaseManager.getConnection()) {
-           var statement = "SELECT id, json FROM gameData";
+           var statement = "SELECT gameID, json FROM gameData";
            try (var ps = conn.prepareStatement(statement)) {
                try (var rs = ps.executeQuery()) {
                    while (rs.next()) {
@@ -62,7 +62,7 @@ public class MySQLGameDAO implements GameDAO {
         try {
             executeUpdate(statement, gameData.gameName(), whiteUsername, blackUsername, json);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
-            throw new RuntimeException("Error occurred when trying to create the game: " + e.getMessage(), e);
+            throw new RuntimeException("Error occurred when trying to create the game");
         }
     }
 
@@ -86,7 +86,7 @@ public class MySQLGameDAO implements GameDAO {
     @Override
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM gameData WHERE id = ?";
+            var statement = "SELECT gameID, json FROM gameData WHERE gameID = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -105,10 +105,12 @@ public class MySQLGameDAO implements GameDAO {
     @Override
     public void updateGame(int gameID, GameData gameData) {
         var statement = "UPDATE gameData SET gameName = ?, whiteUsername = ?," +
-                " blackUsername = ?, json = ? WHERE id = ?";
+                " blackUsername = ?, json = ? WHERE gameID = ?";
         var json = new Gson().toJson(gameData);
+        String whiteUsername = gameData.whiteUsername() != null ? gameData.whiteUsername() : "";
+        String blackUsername = gameData.blackUsername() != null ? gameData.blackUsername() : "";
         try {
-            executeUpdate(statement, gameData.gameName(), gameData.whiteUsername(), gameData.blackUsername(), json, gameID);
+            executeUpdate(statement, gameData.gameName(), whiteUsername, blackUsername, json, gameID);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
             throw new RuntimeException("Error occurred when updating the game: " + e.getMessage(), e);
         }
