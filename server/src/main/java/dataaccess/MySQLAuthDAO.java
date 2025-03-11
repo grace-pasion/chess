@@ -88,7 +88,7 @@ public class MySQLAuthDAO implements AuthDAO {
     public void deleteAuth(String authToken) {
         var statement = "DELETE FROM authData WHERE authToken=?";
         try {
-            executeUpdate(statement);
+            executeUpdate(statement, authToken);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
             throw new RuntimeException("Error occurred when trying to delete authentication");
         }

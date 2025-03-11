@@ -35,12 +35,35 @@ public class MySQLGameDAO implements GameDAO {
 
     @Override
     public ArrayList<GameData> getGames() {
-        return null;
+       ArrayList<GameData> listOfGames = new ArrayList<>();
+       try (var conn = DatabaseManager.getConnection()) {
+           var statement = "SELECT id, json FROM gameData";
+           try (var ps = conn.prepareStatement(statement)) {
+               try (var rs = ps.executeQuery()) {
+                   while (rs.next()) {
+                       var json = rs.getString("json");
+                       var gameData = new Gson().fromJson(json, GameData.class);
+                       listOfGames.add(gameData);
+                   }
+               }
+           }
+           return listOfGames;
+       } catch (DataAccessException | SQLException e) {
+           throw new RuntimeException("Error occurred when trying to get list of games");
+       }
     }
 
     @Override
     public void createGame(GameData gameData) {
-
+        var statement = "INSERT INTO gameData (gameName, whiteUsername, blackUsername, json) VALUES (?, ?, ?, ?)";
+        var json = new Gson().toJson(gameData);
+        String whiteUsername = gameData.whiteUsername() != null ? gameData.whiteUsername() : "";
+        String blackUsername = gameData.blackUsername() != null ? gameData.blackUsername() : "";
+        try {
+            executeUpdate(statement, gameData.gameName(), whiteUsername, blackUsername, json);
+        } catch (DataAccessException | SQLException | ServerExceptions e) {
+            throw new RuntimeException("Error occurred when trying to create the game: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -57,18 +80,40 @@ public class MySQLGameDAO implements GameDAO {
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error occurred when trying to create authentication");
         }
-        return 1234;
+        return 1233;
     }
 
     @Override
     public GameData getGame(int gameID) {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, json FROM gameData WHERE id = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        var json = rs.getString("json");
+                        return new Gson().fromJson(json, GameData.class);
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException("Error occurred when trying to get the game");
+        }
         return null;
     }
 
     @Override
     public void updateGame(int gameID, GameData gameData) {
-
+        var statement = "UPDATE gameData SET gameName = ?, whiteUsername = ?," +
+                " blackUsername = ?, json = ? WHERE id = ?";
+        var json = new Gson().toJson(gameData);
+        try {
+            executeUpdate(statement, gameData.gameName(), gameData.whiteUsername(), gameData.blackUsername(), json, gameID);
+        } catch (DataAccessException | SQLException | ServerExceptions e) {
+            throw new RuntimeException("Error occurred when updating the game: " + e.getMessage(), e);
+        }
     }
+
 
     private void configureDatabase() throws ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
@@ -86,8 +131,8 @@ public class MySQLGameDAO implements GameDAO {
             """
             CREATE TABLE IF NOT EXISTS gameData (
                 gameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                whiteUsername VARCHAR(256) NOT NULL,
-                blackUsername VARCHAR(256) NOT NULL,
+                whiteUsername VARCHAR(256),
+                blackUsername VARCHAR(256),
                 gameName VARCHAR(256) NOT NULL,
                 json TEXT DEFAULT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -100,10 +145,14 @@ public class MySQLGameDAO implements GameDAO {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i =0;  i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i+1, p);
-                    else if (param instanceof Integer p) ps.setInt(i+1, p);
-                    else if (param instanceof ChessGame p) ps.setString(i+1, new Gson().toJson(p));
-                    else if (param == null) ps.setNull(i+1, NULL);
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case ChessGame p -> ps.setString(i + 1, new Gson().toJson(p));
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
                 }
                 ps.executeUpdate();
 
