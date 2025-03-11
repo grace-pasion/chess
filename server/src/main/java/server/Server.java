@@ -29,7 +29,7 @@ public class Server {
      */
     public int run(int desiredPort) {
         //change this line to toggle between memory/SQL type
-        boolean isSQL = false;
+        boolean isSQL = true;
 
         try {
             correctDAO(isSQL);
