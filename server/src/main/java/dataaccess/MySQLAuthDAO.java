@@ -18,11 +18,13 @@ public class MySQLAuthDAO implements AuthDAO {
 
     @Override
     public void createAuth(String authToken, AuthData authData) {
-        var statement = "INSERT INTO authData (token, userId, json) VALUES(?, ?, ?)";
+        //var statement = "INSERT INTO authData (authToken, username, json) VALUES(?, ?, ?)";
+        var statement = "INSERT INTO authData (authToken, username) VALUES(?, ?)";
         var username = authData.username();
-        var json = new Gson().toJson(authData);
+        //var json = new Gson().toJson(authData);
         try {
-            executeUpdate(statement, authToken, username, json);
+            executeUpdate(statement, authToken, username);
+            //executeUpdate(statement, authToken, username, json);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
            throw new RuntimeException("Error occurred when trying to create authentication");
         }
@@ -39,19 +41,47 @@ public class MySQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public HashMap<String, AuthData> getAuthMap() {
-        return null;
-        //just get the whole table somehow
+    public HashMap<String, AuthData> getAuthMap()  {
+        HashMap<String, AuthData> authMap = new HashMap<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM authData";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String token = rs.getString("authToken");
+                        String username = rs.getString("username");
+                        authMap.put(token, new AuthData(token, username));
+                    }
+                }
+            }
+            return authMap;
+        } catch (DataAccessException | SQLException e) {
+            throw new RuntimeException("Error occurred when trying to grab the map");
+        }
     }
 
     @Override
     public AuthData getAuthData(String user) {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM authData WHERE username = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, user);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new AuthData(rs.getString("authToken"),
+                                rs.getString("username"));
+                    }
+                }
+            }
+        } catch (DataAccessException | SQLException e) {
+            throw new RuntimeException("Error occurred when getting the authData from username");
+        }
         return null;
     }
 
     @Override
     public void deleteAuth(String authToken) {
-        var statement = "DELETE FROM authData WHERE token=?";
+        var statement = "DELETE FROM authData WHERE authToken=?";
         try {
             executeUpdate(statement);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
@@ -61,6 +91,19 @@ public class MySQLAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getDataFromAuthToken(String authToken) {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM authData WHERE authToken = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new AuthData(authToken, rs.getString("username"));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred when trying to get authData");
+        }
         return null;
     }
 
@@ -85,11 +128,7 @@ public class MySQLAuthDAO implements AuthDAO {
             """
     };
 
-    //only needs to handle strings since authData has
-    //authToken and username? or need to do the pet thing they did
-    //in petshop?
 
-    //Also made it void, since it doesn't utilize the int it returns
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException, ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
