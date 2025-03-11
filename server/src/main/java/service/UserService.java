@@ -93,7 +93,7 @@ public class UserService {
         if (user == null) {
             throw new ServerExceptions(ClassError.USER_NOT_FOUND);
         }
-        if (!user.password().equals(request.password())) {
+        if (!userDao.verifyUser(request.username(), request.password())) {
             throw new ServerExceptions(ClassError.INVALID_PASSWORD);
         }
         String authToken = UUID.randomUUID().toString();

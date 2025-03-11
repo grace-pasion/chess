@@ -9,4 +9,5 @@ public interface UserDAO {
     void createUser(UserData userData);
     void clear();
     HashMap<String, UserData> getUserMap();
+    boolean verifyUser(String username, String clearPassword);
 }
