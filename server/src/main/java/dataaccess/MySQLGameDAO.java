@@ -80,7 +80,7 @@ public class MySQLGameDAO implements GameDAO {
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error occurred when trying to create authentication");
         }
-        return 1233;
+        return 1;
     }
 
     @Override
