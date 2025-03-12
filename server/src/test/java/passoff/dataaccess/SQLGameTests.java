@@ -1,9 +1,7 @@
-package service;
+package passoff.dataaccess;
 
 import chess.ChessGame;
 import dataaccess.MySQLGameDAO;
-import dataaccess.MySQLUserDAO;
-import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

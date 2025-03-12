@@ -1,4 +1,4 @@
-package service;
+package passoff.dataaccess;
 
 import dataaccess.MySQLAuthDAO;
 import model.AuthData;
