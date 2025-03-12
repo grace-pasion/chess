@@ -184,23 +184,7 @@ public class MySQLAuthDAO implements AuthDAO {
      * @throws ServerExceptions when sever-related mishaps occur
      */
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException, ServerExceptions {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i =0;  i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) { ps.setString(i+1, p); }
-                    else if (param == null) { ps.setNull(i+1, NULL); }
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    rs.getInt(1);
-                }
-
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Database update failed: " + e.getMessage());
-        }
+        DatabaseExecute execute = new DatabaseExecute();
+        execute.executeUpdate(statement, params);
     }
 }
