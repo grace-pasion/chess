@@ -31,10 +31,6 @@ public class GameTests {
     public void setUp() throws ServerExceptions {
         //this is just setting up the information
         //since the auto-grader got made at me for having duplicate
-        //code
-        //UserDAO userDao = new MemoryUserDAO();
-        //AuthDAO authDao = new MemoryAuthDAO();
-        //gameDao = new MemoryGameDAO();
         try {
             userDao = new MySQLUserDAO();
             authDao = new MySQLAuthDAO();

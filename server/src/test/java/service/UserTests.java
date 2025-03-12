@@ -26,9 +26,6 @@ public class UserTests {
 
     @BeforeEach
     public void setUp() {
-        //userDao = new MemoryUserDAO();
-        //authDao = new MemoryAuthDAO();
-        //gameDao = new MemoryGameDAO();
         try {
             userDao = new MySQLUserDAO();
             authDao = new MySQLAuthDAO();

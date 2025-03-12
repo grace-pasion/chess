@@ -161,15 +161,8 @@ public class MySQLGameDAO implements GameDAO {
      * @throws ServerExceptions when something with the server goes wrong
      */
     private void configureDatabase() throws ServerExceptions {
-        try (var conn = DatabaseManager.getConnection()) {
-            for (String statement: createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException | DataAccessException ex) {
-            throw new ServerExceptions(ClassError.DATABASE_ERROR);
-        }
+        DatabaseConfigurator config = new DatabaseConfigurator(createStatements);
+        config.configureDatabase();
     }
 
     private final String[] createStatements = {
@@ -200,14 +193,10 @@ public class MySQLGameDAO implements GameDAO {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i =0;  i < params.length; i++) {
                     var param = params[i];
-                    switch (param) {
-                        case String p -> ps.setString(i + 1, p);
-                        case Integer p -> ps.setInt(i + 1, p);
-                        case ChessGame p -> ps.setString(i + 1, new Gson().toJson(p));
-                        case null -> ps.setNull(i + 1, NULL);
-                        default -> {
-                        }
-                    }
+                    if (param instanceof String p) { ps.setString(i+1, p); }
+                    else if (param instanceof Integer p) { ps.setInt(i + 1, p); }
+                    else if (param instanceof ChessGame p) { ps.setString(i + 1, new Gson().toJson(p)); }
+                    else if (param == null) { ps.setNull(i + 1, NULL); }
                 }
                 ps.executeUpdate();
 
