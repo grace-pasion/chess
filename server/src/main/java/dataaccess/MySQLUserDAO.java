@@ -13,7 +13,10 @@ import static java.sql.Types.NULL;
 
 public class MySQLUserDAO implements UserDAO {
 
-
+    /**
+     * This is my constructor, which creates and configures the database
+     * @throws ServerExceptions if something goes wrong with the server
+     */
     public MySQLUserDAO() throws ServerExceptions {
         try {
             DatabaseManager.createDatabase();  // Ensure database exists
@@ -23,6 +26,14 @@ public class MySQLUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * It selects all the userData that matches that username.
+     * It then grabs the username, password, and email and writes it to
+     * a UserData object. It then returns the userData object.
+     *
+     * @param username a string
+     * @return the userData associated with that user
+     */
     @Override
     public UserData getUserByUsername(String username) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -43,13 +54,17 @@ public class MySQLUserDAO implements UserDAO {
         return null;
     }
 
+    /**
+     *  This inserts userData (including a username, encrypted password, and an email)
+     *  into a row in the table, which are represented all as strings in the table
+     *
+     * @param userData this is the data associated with the user
+     */
     @Override
     public void createUser(UserData userData) {
-        //username password email
         var statement = "INSERT INTO userData (username, password, email) VALUES(?, ?, ?)";
         var username = userData.username();
         var clearTextPassword = userData.password();
-        //SOMETHING WITH PASSWORD HASHING HERE
         var email = userData.email();
         String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
         try {
@@ -60,6 +75,9 @@ public class MySQLUserDAO implements UserDAO {
     }
 
 
+    /**
+     * This clears all the data within the table
+     */
     @Override
     public void clear() {
         var statement = "TRUNCATE userData";
@@ -70,6 +88,16 @@ public class MySQLUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Since the password is encrypted, we can't compare directly,
+     * which is why this method is required. We return whether the username
+     * exists, and whether the clear password matches the encrypted password
+     * in our database
+     *
+     * @param username a string representing the username
+     * @param clearPassword the password not encrypted
+     * @return true if the password is correct
+     */
     @Override
     public boolean verifyUser(String username, String clearPassword) {
         UserData userData = getUserByUsername(username);
@@ -80,6 +108,14 @@ public class MySQLUserDAO implements UserDAO {
         return BCrypt.checkpw(clearPassword, storedHashedPassword);
     }
 
+    /**
+     * This selects everything from the user data. It then grabs the
+     * username, password, and email (Side note: the password will be encrypted).
+     * It then turns these into a userData object and puts that in a map with it's
+     * associated username
+     *
+     * @return a map containing the username and the associated user data
+     */
     @Override
     public HashMap<String, UserData> getUserMap() {
         HashMap<String, UserData> userMap = new HashMap<>();
@@ -101,7 +137,11 @@ public class MySQLUserDAO implements UserDAO {
         }
     }
 
-
+    /**
+     * Executes SQL statements to initialize the database.
+     *
+     * @throws ServerExceptions when something with the server goes wrong
+     */
     private void configureDatabase() throws ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
             for (String statement: createStatements) {
@@ -124,6 +164,16 @@ public class MySQLUserDAO implements UserDAO {
             """
     };
 
+    /**
+     *This executes a SQL update statement on the database using the provided
+     * parameters. This can take parameters as strings or null values.
+     *
+     * @param statement the SQL update statement that is to be executed
+     * @param params the parameters in that SQL statement.
+     * @throws DataAccessException when there is an issue accessing the database
+     * @throws SQLException when SQL error occurs during execution of update
+     * @throws ServerExceptions when sever-related mishaps occur
+     */
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException, ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {

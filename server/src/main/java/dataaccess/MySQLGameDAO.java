@@ -14,6 +14,10 @@ import static java.sql.Types.NULL;
 
 public class MySQLGameDAO implements GameDAO {
 
+    /**
+     * This is my constructor, which creates and configures the database
+     * @throws ServerExceptions if something goes wrong with the server
+     */
     public MySQLGameDAO() throws ServerExceptions {
         try {
             DatabaseManager.createDatabase();  // Ensure database exists
@@ -23,6 +27,9 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * This clears the data from my gameData table in my database
+     */
     @Override
     public void clear() {
         var statement = "TRUNCATE gameData";
@@ -33,6 +40,13 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * This selects the gameID and the json of gameData from the table.
+     * It then turns that json to a gameData and adds it to the list, which
+     * it returns
+     *
+     * @return an arrayList of all the different games and their data
+     */
     @Override
     public ArrayList<GameData> getGames() {
        ArrayList<GameData> listOfGames = new ArrayList<>();
@@ -53,6 +67,12 @@ public class MySQLGameDAO implements GameDAO {
        }
     }
 
+    /**
+     * This takes in gameData and adds it to a row in the table.
+     * This row will represent one game.
+     *
+     * @param gameData the gameData to be added to the database
+     */
     @Override
     public void createGame(GameData gameData) {
         var statement = "INSERT INTO gameData (gameName, whiteUsername, blackUsername, json) VALUES (?, ?, ?, ?)";
@@ -66,6 +86,11 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * This gives a gameID to each game. It grabs the highest current gameID
+     * from the database, and it increases it by 1. This way, there are no
+     * @return an integer representing the gameID
+     */
     @Override
     public int generateGameID() {
         try (var conn = DatabaseManager.getConnection()) {
@@ -83,6 +108,13 @@ public class MySQLGameDAO implements GameDAO {
         return 1;
     }
 
+    /**
+     * This selects the gameID and the gameData (in json form) that matches the
+     * passed in gameID. It then converts the json to GameData and returns it.
+     *
+     * @param gameID the gameID of the current game
+     * @return the gameData associated with that gameID
+     */
     @Override
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
@@ -102,6 +134,13 @@ public class MySQLGameDAO implements GameDAO {
         return null;
     }
 
+    /**
+     * This grabs the column we are updating based on the gameID. It
+     * then updates the data in that row.
+     *
+     * @param gameID the gameID associated with the current game
+     * @param gameData the game data associated with the current game
+     */
     @Override
     public void updateGame(int gameID, GameData gameData) {
         var statement = "UPDATE gameData SET gameName = ?, whiteUsername = ?," +
@@ -116,7 +155,11 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
-
+    /**
+     * Executes SQL statements to initialize the database.
+     *
+     * @throws ServerExceptions when something with the server goes wrong
+     */
     private void configureDatabase() throws ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
             for (String statement: createStatements) {
@@ -141,7 +184,17 @@ public class MySQLGameDAO implements GameDAO {
             """
     };
 
-    //int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game
+    /**
+     *This executes a SQL update statement on the database using the provided
+     * parameters. This can take parameters as string, integers, and the ChessGame (which
+     * is then converted into a json string), and a null value.
+     *
+     * @param statement the SQL update statement that is to be executed
+     * @param params the parameters in that SQL statement.
+     * @throws DataAccessException when there is an issue accessing the database
+     * @throws SQLException when SQL error occurs during execution of update
+     * @throws ServerExceptions when sever-related mishaps occur
+     */
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException, ServerExceptions {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
