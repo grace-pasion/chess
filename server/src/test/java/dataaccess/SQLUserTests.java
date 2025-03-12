@@ -1,7 +1,5 @@
-package passoff.dataaccess;
+package dataaccess;
 
-import dataaccess.MySQLUserDAO;
-import dataaccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
