@@ -26,12 +26,21 @@ public class UserTests {
 
     @BeforeEach
     public void setUp() {
-        userDao = new MemoryUserDAO();
-        authDao = new MemoryAuthDAO();
-        gameDao = new MemoryGameDAO();
+        //userDao = new MemoryUserDAO();
+        //authDao = new MemoryAuthDAO();
+        //gameDao = new MemoryGameDAO();
+        try {
+            userDao = new MySQLUserDAO();
+            authDao = new MySQLAuthDAO();
+            gameDao = new MySQLGameDAO();
+        } catch (ServerExceptions e) {
+            throw new RuntimeException("error with tests");
+        }
         userService = new UserService(userDao, authDao, gameDao);
         gameService = new GameService(userDao, authDao, gameDao);
-
+        authDao.clear();
+        userDao.clear();
+        gameDao.clear();
     }
 
     @Test

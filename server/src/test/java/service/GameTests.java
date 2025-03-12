@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.GameData;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
@@ -13,21 +14,36 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {
     private GameDAO gameDao;
+    private AuthDAO authDao;
+    private UserDAO userDao;
     private GameService gameService;
     private RegisterResult registeredUser;
     private String authToken;
+
+    @AfterEach
+    public void clear() {
+        authDao.clear();
+        userDao.clear();
+        gameDao.clear();
+    }
 
     @BeforeEach
     public void setUp() throws ServerExceptions {
         //this is just setting up the information
         //since the auto-grader got made at me for having duplicate
         //code
-        UserDAO userDao = new MemoryUserDAO();
-        AuthDAO authDao = new MemoryAuthDAO();
-        gameDao = new MemoryGameDAO();
-        UserService userService = new UserService(userDao, authDao, gameDao);
+        //UserDAO userDao = new MemoryUserDAO();
+        //AuthDAO authDao = new MemoryAuthDAO();
+        //gameDao = new MemoryGameDAO();
+        try {
+            userDao = new MySQLUserDAO();
+            authDao = new MySQLAuthDAO();
+            gameDao = new MySQLGameDAO();
+        } catch (ServerExceptions e) {
+            throw new RuntimeException("error with tests");
+        }
         gameService = new GameService(userDao, authDao, gameDao);
-
+        UserService userService = new UserService(userDao, authDao, gameDao);
         RegisterRequest registerRequest = new RegisterRequest("grace", "password123", "email.com");
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("grace", "password123");
@@ -48,6 +64,9 @@ public class GameTests {
         //making sure there is actually game data with the name of my game
         assertNotNull(gameData);
         assertEquals("Grace's Game", gameData.gameName());
+        authDao.clear();
+        userDao.clear();
+        gameDao.clear();
     }
 
     //create game failure
@@ -58,6 +77,7 @@ public class GameTests {
             CreateGameRequest createGameRequest = new CreateGameRequest("A failure of a test :(");
             gameService.createGame(createGameRequest, "invalidAuthToken");
             fail("This should have failed (4)");
+
         } catch (ServerExceptions e) {
             assertEquals(ClassError.AUTHTOKEN_INVALID, e.getError());
         }

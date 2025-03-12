@@ -14,7 +14,7 @@ public class MySQLAuthDAO implements AuthDAO {
 
     public MySQLAuthDAO() throws ServerExceptions {
         try {
-            DatabaseManager.createDatabase();  // Ensure database exists
+            DatabaseManager.createDatabase();
             configureDatabase();
         } catch (DataAccessException e) {
             throw new ServerExceptions(ClassError.DATABASE_ERROR);

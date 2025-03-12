@@ -112,7 +112,7 @@ public class MySQLGameDAO implements GameDAO {
         try {
             executeUpdate(statement, gameData.gameName(), whiteUsername, blackUsername, json, gameID);
         } catch (DataAccessException | SQLException | ServerExceptions e) {
-            throw new RuntimeException("Error occurred when updating the game: " + e.getMessage(), e);
+            throw new RuntimeException("Error occurred when updating the game");
         }
     }
 
@@ -165,7 +165,7 @@ public class MySQLGameDAO implements GameDAO {
 
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Database update failed: " + e.getMessage());
+            throw new DataAccessException("Database update failed" + e.getMessage());
         }
     }
 }
