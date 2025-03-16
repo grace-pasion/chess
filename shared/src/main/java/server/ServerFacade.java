@@ -38,17 +38,17 @@ public class ServerFacade {
     public ListGameResult listGame(ListGameRequest request) throws ResponseException {
         var path = "/game";
         //just like logout, in header and not body?
-        return makeRequest("GET", path, null, ListGameResult.class, null);
+        return makeRequest("GET", path, null, ListGameResult.class, request.authToken());
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
         var path = "/game";
-        return makeRequest("POST", path, request, CreateGameResult.class, null);
+        return makeRequest("POST", path, request, CreateGameResult.class, authToken);
     }
 
-    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+    public JoinGameResult joinGame(JoinGameRequest request, String authToken) throws ResponseException {
         var path = "/game";
-        return makeRequest("PUT", path, request, JoinGameResult.class, null);
+        return makeRequest("PUT", path, request, JoinGameResult.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

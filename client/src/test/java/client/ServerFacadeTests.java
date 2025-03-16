@@ -1,12 +1,8 @@
 package client;
 
 import org.junit.jupiter.api.*;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.LoginResult;
-import result.LogoutResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import server.Server;
 import server.ServerFacade;
 import server.exception.ResponseException;
@@ -102,7 +98,89 @@ public class ServerFacadeTests {
             facade.logout(logoutRequest);
             fail("Excepted to fail, since the authToken is invalid");
         } catch (ResponseException e) {
-            assertEquals(e.getMessage(), "Error: unauthorized");
+            assertEquals("Error: unauthorized", e.getMessage());
+        }
+    }
+
+    //clear (only one clear since really no way to fail)
+    @Test
+    public void clearSuccess() throws ResponseException {
+        try {
+            facade.clear();
+            assertTrue(true);
+        } catch (ResponseException e) {
+            fail("Excepted no errors, since this is a successful test");
+        }
+    }
+
+    //create games tests
+    @Test
+    public void createGamesSuccess() throws ResponseException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("game name");
+        CreateGameResult result = facade.createGame(createGameRequest, authToken);
+        assertNotNull(result);
+        assertInstanceOf(Integer.class, result.gameID());
+    }
+
+    @Test
+    public void createGamesFailure() throws ResponseException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("game name");
+        try {
+            facade.createGame(createGameRequest, "not valid authToken");
+            fail("This is supposed to fail since the authToken is not valid");
+        } catch (ResponseException e) {
+            assertEquals("Error: unauthorized", e.getMessage());
+        }
+    }
+
+    //list games tests
+    @Test
+    public void listGamesSuccess() throws ResponseException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("list game");
+        facade.createGame(createGameRequest, authToken);
+
+        ListGameRequest listGameRequest = new ListGameRequest(authToken);
+        ListGameResult result = facade.listGame(listGameRequest);
+        assertNotNull(result);
+        assertEquals(1, result.games().size());
+    }
+
+    @Test
+    public void listGamesFailure() throws ResponseException {
+        try {
+            ListGameRequest listGameRequest = new ListGameRequest("not valid");
+            facade.listGame(listGameRequest);
+            fail("This is supposed to fail because the authToken is invalid");
+        } catch (ResponseException e) {
+            assertEquals("Error: unauthorized", e.getMessage());
+        }
+    }
+
+    //join games tests
+    @Test
+    public void joinGameSuccess() throws ResponseException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("join game");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest, authToken);
+        int gameID = createGameResult.gameID();
+
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", gameID);
+        JoinGameResult joinGameResult = facade.joinGame(joinGameRequest, authToken);
+
+        assertNotNull(joinGameResult);
+    }
+
+    @Test
+    public void joinGameFailure() throws ResponseException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("join failure game");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest, authToken);
+        int gameFailureID = createGameResult.gameID();
+
+        JoinGameRequest joinGameRequest = new JoinGameRequest("BLACK", gameFailureID);
+        try {
+            facade.joinGame(joinGameRequest, "not valid");
+            fail("This is supposed to fail because the authToken is invalid");
+        } catch (ResponseException e) {
+            assertEquals("Error: unauthorized", e.getMessage());
         }
     }
 
