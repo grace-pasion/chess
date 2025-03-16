@@ -6,13 +6,17 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoardRender {
 
-    private static final String[][] chessBoard = new String[8][8];
+    private String[][] chessBoard = new String[8][8];
     /*
     Note for later: will need a main that does var out =
     new PrintStream(System.out,..)
      */
+
+    public ChessBoardRender(String[][] chessBoard) {
+        this.chessBoard = chessBoard;
+    }
+
     public void drawChessBoard(PrintStream out, boolean isWhite) {
-        initializeBoard();
         out.print(ERASE_SCREEN);
 
         drawBorder(out, isWhite);
@@ -107,11 +111,13 @@ public class ChessBoardRender {
     }
 
     /*
-    JUST USED FOR TESTING! GET RID OF THIS LATER!!!
-     */
+    //JUST USED FOR TESTING! GET RID OF THIS LATER!!!
+
     public static void main(String[] args) {
-        ChessBoardRender render = new ChessBoardRender();
+        String[][] chessBoard = new String[8][8];
+        ChessBoardRender render = new ChessBoardRender(chessBoard);
+        render.initializeBoard();
         var out = new PrintStream(System.out, true);
         render.drawChessBoard(out,true);
-    }
+    } */
 }
