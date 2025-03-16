@@ -14,6 +14,7 @@ public class Repl {
     private final InGame inGame;
     private String currentState;
     private String printStatement;
+    private String authToken;
 
     public Repl(String serverUrl) {
         preLogin = new PreLogin(serverUrl);
@@ -34,9 +35,11 @@ public class Repl {
                     result = preLogin.eval(line);
                     if (result.contains("Successfully logged in.")
                             || result.contains("Successfully registered.")) {
+                        authToken = preLogin.getAuthToken();
                         currentState = "postLogin";
+                        postLogin.setAuthToken(authToken);
                     }
-                    System.out.print(SET_TEXT_COLOR_GREEN+result);
+                    System.out.print("\t"+SET_TEXT_COLOR_GREEN+result);
                 } catch (Throwable e) {
                     var msg = e.toString();
                     System.out.print(msg);

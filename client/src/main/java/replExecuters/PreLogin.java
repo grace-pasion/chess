@@ -3,6 +3,8 @@ import java.util.Arrays;
 
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
+import result.RegisterResult;
 import server.ServerFacade;
 import server.exception.ResponseException;
 
@@ -11,11 +13,11 @@ import static ui.EscapeSequences.*;
 public class PreLogin {
     private final String serverUrl;
     private final ServerFacade server;
+    private String authToken;
 
     public PreLogin(String serverUrl) {
         this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
-
     }
 
     public String eval(String input) {
@@ -43,7 +45,8 @@ public class PreLogin {
 
         RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
         try {
-            server.register(request);
+            RegisterResult result = server.register(request);
+            authToken = result.authToken();
             return SET_TEXT_COLOR_BLUE+"Successfully registered.";
         } catch (ResponseException e) {
             return SET_TEXT_COLOR_RED + "Registration failed: " + e.getMessage();
@@ -59,7 +62,8 @@ public class PreLogin {
 
         LoginRequest request = new LoginRequest(params[0], params[1]);
         try {
-            server.login(request);
+            LoginResult result = server.login(request);
+            authToken = result.authToken();
             return SET_TEXT_COLOR_BLUE+"Successfully logged in.";
         } catch (ResponseException e) {
             return SET_TEXT_COLOR_RED + "Login failed: " + e.getMessage();
@@ -69,9 +73,13 @@ public class PreLogin {
     public String help() throws ResponseException {
         return SET_TEXT_COLOR_BLUE+"register <USERNAME> <PASSWORD> <EMAIL>"+
                 SET_TEXT_COLOR_RED+" - to create an account"+SET_TEXT_COLOR_BLUE+
-                "\nlogin <USERNAME> <PASSWORD>"+ SET_TEXT_COLOR_RED+" - to play chess"+
-                SET_TEXT_COLOR_BLUE+"\nquit"+SET_TEXT_COLOR_RED+" - playing chess"+
-                SET_TEXT_COLOR_BLUE+"\nhelp"+SET_TEXT_COLOR_RED+" - with possible commands";
+                "\n\tlogin <USERNAME> <PASSWORD>"+ SET_TEXT_COLOR_RED+" - to play chess"+
+                SET_TEXT_COLOR_BLUE+"\n\tquit"+SET_TEXT_COLOR_RED+" - playing chess"+
+                SET_TEXT_COLOR_BLUE+"\n\thelp"+SET_TEXT_COLOR_RED+" - with possible commands";
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 
     /* //DELETE LATER, JUST FOR DEBUGGING PURPOSES

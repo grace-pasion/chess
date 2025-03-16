@@ -8,4 +8,7 @@ import java.util.ArrayList;
  * @param games the list of games that the game database stores
  */
 public record ListGameResult(ArrayList<GameData> games) {
+    public ArrayList<GameData> getGames() {
+        return games;
+    }
 }
