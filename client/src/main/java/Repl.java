@@ -48,11 +48,11 @@ public class Repl {
                 printStatement = "[LOGGED_IN] >>> ";
                 String line = initialize();
                 result = postLogin.eval(line);
-                if (result.equalsIgnoreCase("Successfully logged in.")
-                        || result.equalsIgnoreCase("Successfully registered.")) {
+                if (postLogin.isTransferInGame()) {
                     currentState = "inGame";
                 }
-                if (result.equalsIgnoreCase("quit")) {
+                if (result.equalsIgnoreCase("quit")
+                        || result.contains("Successfully logged out")) {
                     currentState = "preLogin";
                 }
                 System.out.print(SET_TEXT_COLOR_GREEN+result);

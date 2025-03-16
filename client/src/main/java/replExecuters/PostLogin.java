@@ -1,12 +1,12 @@
 package replExecuters;
 
 import model.GameData;
-import request.ListGameRequest;
-import request.RegisterRequest;
+import request.*;
 import result.ListGameResult;
 import server.ServerFacade;
 import server.exception.ResponseException;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -73,13 +73,44 @@ public class PostLogin {
     }
 
     private String create(String... params) throws ResponseException {
-
-        return "Hello World";
+        try {
+            if (params.length != 1) {
+                return SET_TEXT_COLOR_RED+
+                        "Invalid Parameters. For create games: create <GAME_NAME>";
+            }
+            CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
+            server.createGame(createGameRequest, authToken);
+            return SET_TEXT_COLOR_BLUE+"Successfully created game "+params[0];
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED+"Create Games Failed: "+e.getMessage();
+        }
     }
 
     private String join(String... params) throws ResponseException{
         transferInGame = true;
-        return "Hello World";
+        try {
+            if (params.length != 2) {
+                return SET_TEXT_COLOR_RED+
+                        "Invalid parameters. For join games: join <GAME_ID> [WHITE|BLACK]";
+            }
+            int gameId;
+            try {
+                gameId = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                return SET_TEXT_COLOR_RED+"The Game ID is supposed to be a number";
+            }
+
+            String playerColor = params[1].toUpperCase();
+            if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+                return SET_TEXT_COLOR_RED+"Invalid. Must choose WHITE or BLACK";
+            }
+            JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
+            server.joinGame(joinGameRequest, authToken);
+            return SET_TEXT_COLOR_BLUE+
+                    "Successfully joined game "+gameId+" as "+playerColor+".";
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED+"Join Games Failed: "+e.getMessage();
+        }
     }
 
     private String watch(String... params) throws ResponseException{
@@ -88,7 +119,14 @@ public class PostLogin {
     }
 
     private String logout(String... params) throws ResponseException {
-        return "log out";
+        try {
+            LogoutRequest logoutRequest = new LogoutRequest(authToken);
+            server.logout(logoutRequest);
+            authToken = null;
+            return SET_TEXT_COLOR_BLUE+"Successfully logged out.";
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED+"Logout Failed: "+e.getMessage();
+        }
     }
 
     private String help() {
