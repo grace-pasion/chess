@@ -4,6 +4,8 @@ import replExecuters.PreLogin;
 
 import java.util.Scanner;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+
 public class Repl {
     private final PreLogin preLogin;
     private final PostLogin postLogin;
@@ -16,7 +18,7 @@ public class Repl {
         postLogin = new PostLogin(serverUrl);
         inGame = new InGame(serverUrl);
         this.currentState = "preLogin";
-        this.printStatement = "[LOGGED_OUT]";
+        this.printStatement = "[LOGGED_OUT] >>>";
     }
 
     public void run() {
@@ -24,11 +26,18 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit") && !currentState.equalsIgnoreCase("preLogin") ) {
-            String line = scanner.nextLine();
             if (currentState.equals("preLogin")) {
-
+                System.out.println(printStatement);
+                String line = scanner.nextLine();
+                try {
+                    result = preLogin.eval(line);
+                    System.out.print(SET_TEXT_COLOR_GREEN+result);
+                } catch (Throwable e) {
+                    var msg = e.toString();
+                    System.out.print(msg);
+                }
             } else if (currentState.equals("postLogin")) {
-
+                //something like if result is quit then currentState = preLogin
             } else {
 
             }
