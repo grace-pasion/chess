@@ -25,17 +25,15 @@ public class Repl {
 
     public void run() {
         printIntro();
-        Scanner scanner = new Scanner(System.in);
+
         var result = "";
         while (!result.equals("quit") || !currentState.equalsIgnoreCase("preLogin") ) {
             if (currentState.equals("preLogin")) {
-                System.out.println();
-                System.out.print(RESET_TEXT_COLOR+printStatement);
-                String line = scanner.nextLine();
                 try {
+                    String line = initialize();
                     result = preLogin.eval(line);
-                    if (result.equalsIgnoreCase("Successfully logged in.")
-                            || result.equalsIgnoreCase("Successfully registered.")) {
+                    if (result.contains("Successfully logged in.")
+                            || result.contains("Successfully registered.")) {
                         currentState = "postLogin";
                     }
                     System.out.print(SET_TEXT_COLOR_GREEN+result);
@@ -44,6 +42,17 @@ public class Repl {
                     System.out.print(msg);
                 }
             } else if (currentState.equals("postLogin")) {
+                printStatement = "[LOGGED_IN] >>> ";
+                String line = initialize();
+                result = postLogin.eval(line);
+                if (result.equalsIgnoreCase("Successfully logged in.")
+                        || result.equalsIgnoreCase("Successfully registered.")) {
+                    currentState = "inGame";
+                }
+                if (result.equalsIgnoreCase("quit")) {
+                    currentState = "preLogin";
+                }
+                System.out.print(SET_TEXT_COLOR_GREEN+result);
                 //something like if result is quit then currentState = preLogin
             } else {
 
@@ -60,6 +69,12 @@ public class Repl {
         System.out.println("Print this message: \"h\", \"help\"");
     }
 
+    public String initialize() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.print(RESET_TEXT_COLOR+printStatement);
+        return scanner.nextLine();
+    }
     //fOR TESTING PURPOSES ONLY!!!
     public static void main(String[] args) {
         Server server = new Server();

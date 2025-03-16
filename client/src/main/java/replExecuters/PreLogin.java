@@ -15,10 +15,12 @@ public class PreLogin {
     public PreLogin(String serverUrl) {
         this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
+
     }
 
     public String eval(String input) {
         try {
+            //server.clear(); //GET RID OF - JUST FOR TESTING
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length >0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
