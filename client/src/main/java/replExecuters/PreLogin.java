@@ -1,8 +1,8 @@
 package replExecuters;
 import java.util.Arrays;
 
+import request.LoginRequest;
 import request.RegisterRequest;
-import result.RegisterResult;
 import server.ServerFacade;
 import server.exception.ResponseException;
 
@@ -23,9 +23,9 @@ public class PreLogin {
             var cmd = (tokens.length >0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch(cmd) {
-                case "register" -> register(params);
-                case "login" -> login(params);
-                case "quit" -> "quit";
+                case "register", "r" -> register(params);
+                case "login", "l" -> login(params);
+                case "quit", "q" -> "quit";
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -41,15 +41,27 @@ public class PreLogin {
 
         RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
         try {
-            RegisterResult result = server.register(request);
+            server.register(request);
+            return SET_TEXT_COLOR_BLUE+"Successfully registered.";
         } catch (ResponseException e) {
             return SET_TEXT_COLOR_RED + "Registration failed: " + e.getMessage();
         }
-        return "Hello world";
+
     }
 
     public String login(String... params) throws ResponseException {
-        return "Hello world";
+        if (params.length != 2) {
+            return SET_TEXT_COLOR_RED + "Invalid parameters. " +
+                    "For login: login <USERNAME> <PASSWORD> ";
+        }
+
+        LoginRequest request = new LoginRequest(params[0], params[1]);
+        try {
+            server.login(request);
+            return SET_TEXT_COLOR_BLUE+"Successfully logged in.";
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED + "Login failed: " + e.getMessage();
+        }
     }
 
     public String help() throws ResponseException {

@@ -2,9 +2,11 @@ import replExecuters.InGame;
 import replExecuters.PostLogin;
 import replExecuters.PreLogin;
 
+
 import java.util.Scanner;
 
-import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+import server.Server;
+import static ui.EscapeSequences.*;
 
 public class Repl {
     private final PreLogin preLogin;
@@ -18,19 +20,24 @@ public class Repl {
         postLogin = new PostLogin(serverUrl);
         inGame = new InGame(serverUrl);
         this.currentState = "preLogin";
-        this.printStatement = "[LOGGED_OUT] >>>";
+        this.printStatement = "[LOGGED_OUT] >>> ";
     }
 
     public void run() {
         printIntro();
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit") && !currentState.equalsIgnoreCase("preLogin") ) {
+        while (!result.equals("quit") || !currentState.equalsIgnoreCase("preLogin") ) {
             if (currentState.equals("preLogin")) {
-                System.out.println(printStatement);
+                System.out.println();
+                System.out.print(RESET_TEXT_COLOR+printStatement);
                 String line = scanner.nextLine();
                 try {
                     result = preLogin.eval(line);
+                    if (result.equalsIgnoreCase("Successfully logged in.")
+                            || result.equalsIgnoreCase("Successfully registered.")) {
+                        currentState = "postLogin";
+                    }
                     System.out.print(SET_TEXT_COLOR_GREEN+result);
                 } catch (Throwable e) {
                     var msg = e.toString();
@@ -53,9 +60,14 @@ public class Repl {
         System.out.println("Print this message: \"h\", \"help\"");
     }
 
-    /* //fOR TESTING PURPOSES ONLY!!!
+    //fOR TESTING PURPOSES ONLY!!!
     public static void main(String[] args) {
-        Repl repl = new Repl("this is not needed rn");
+        Server server = new Server();
+        var port = server.run(0);
+        System.out.println("Started test HTTP server on " + port);
+
+        // Pass the correct URL to Repl
+        Repl repl = new Repl("http://localhost:" + port);
         repl.run();
-    } */
+    }
 }
