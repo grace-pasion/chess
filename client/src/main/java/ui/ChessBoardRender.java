@@ -7,7 +7,7 @@ import static ui.EscapeSequences.*;
 public class ChessBoardRender {
     private static final int BOARD_SIZE = 8;
     private static final int BORDER_SIZE = 10;
-    private static String[][] chessBoard = new String[8][8];
+    private static final String[][] chessBoard = new String[8][8];
     /*
     Note for later: will need a main that does var out =
     new PrintStream(System.out,..)
@@ -108,6 +108,9 @@ public class ChessBoardRender {
         out.println();
     }
 
+    /*
+    JUST USED FOR TESTING! GET RID OF THIS LATER!!!
+     */
     public static void main(String[] args) {
         ChessBoardRender render = new ChessBoardRender();
         var out = new PrintStream(System.out, true);
