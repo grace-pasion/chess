@@ -16,47 +16,51 @@ public class ServerFacade {
 
     public void clear() throws ResponseException {
         var path = "/db";
-        makeRequest("DELETE", path, null, null);
+        makeRequest("DELETE", path, null, null, null);
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         var path = "/user";
-        return makeRequest("POST", path, request, RegisterResult.class);
+        return makeRequest("POST", path, request, RegisterResult.class, null);
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
         var path = "/session";
-        return makeRequest("POST", path, request, LoginResult.class);
+        return makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public LogoutResult logout(LogoutRequest request) throws ResponseException {
         var path = "/session";
         //should i put something because the authToken is in the header and not body??
-        return makeRequest("DELETE", path, null, LogoutResult.class);
+        return makeRequest("DELETE", path, null, LogoutResult.class, request.authToken());
     }
 
     public ListGameResult listGame(ListGameRequest request) throws ResponseException {
         var path = "/game";
         //just like logout, in header and not body?
-        return makeRequest("GET", path, null, ListGameResult.class);
+        return makeRequest("GET", path, null, ListGameResult.class, null);
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
         var path = "/game";
-        return makeRequest("POST", path, request, CreateGameResult.class);
+        return makeRequest("POST", path, request, CreateGameResult.class, null);
     }
 
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
         var path = "/game";
-        return makeRequest("PUT", path, request, JoinGameResult.class);
+        return makeRequest("PUT", path, request, JoinGameResult.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if (authToken != null && !authToken.isEmpty()) {
+                http.setRequestProperty("Authorization", authToken);
+            }
 
             writeBody(request, http);
             http.connect();
@@ -68,7 +72,6 @@ public class ServerFacade {
             throw new ResponseException(500, ex.getMessage());
         }
     }
-
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
