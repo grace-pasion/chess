@@ -1,5 +1,7 @@
 package server;
 import com.google.gson.Gson;
+import request.*;
+import result.*;
 import server.exception.ResponseException;
 
 import java.io.*;
@@ -10,6 +12,43 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public void clear() throws ResponseException {
+        var path = "/db";
+        makeRequest("DELETE", path, null, null);
+    }
+
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        var path = "/user";
+        return makeRequest("POST", path, request, RegisterResult.class);
+    }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return makeRequest("POST", path, request, LoginResult.class);
+    }
+
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        var path = "/session";
+        //should i put something because the authToken is in the header and not body??
+        return makeRequest("DELETE", path, null, LogoutResult.class);
+    }
+
+    public ListGameResult listGame(ListGameRequest request) throws ResponseException {
+        var path = "/game";
+        //just like logout, in header and not body?
+        return makeRequest("GET", path, null, ListGameResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+        var path = "/game";
+        return makeRequest("POST", path, request, CreateGameResult.class);
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+        var path = "/game";
+        return makeRequest("PUT", path, request, JoinGameResult.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
