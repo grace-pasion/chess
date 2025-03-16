@@ -22,7 +22,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type Help tp get started. \uD83D\uDC51");
+        printIntro();
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit") && !currentState.equalsIgnoreCase("preLogin") ) {
@@ -42,6 +42,15 @@ public class Repl {
 
             }
         }
+    }
+
+    public void printIntro() {
+        System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type Help tp get started. \uD83D\uDC51");
+        System.out.println("Options:");
+        System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
+        System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
+        System.out.println("Exit the program: \"q\", \"quit\"");
+        System.out.println("Print this message: \"h\", \"help\"");
     }
 
     /* //fOR TESTING PURPOSES ONLY!!!

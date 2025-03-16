@@ -1,13 +1,20 @@
 package replExecuters;
 import java.util.Arrays;
+
+import request.RegisterRequest;
+import result.RegisterResult;
+import server.ServerFacade;
 import server.exception.ResponseException;
 
 import static ui.EscapeSequences.*;
 
 public class PreLogin {
     private final String serverUrl;
+    private final ServerFacade server;
+
     public PreLogin(String serverUrl) {
         this.serverUrl = serverUrl;
+        server = new ServerFacade(serverUrl);
     }
 
     public String eval(String input) {
@@ -27,7 +34,18 @@ public class PreLogin {
     }
 
     public String register(String... params) throws ResponseException {
-        return "Hellow world";
+        if (params.length != 3) {
+            return SET_TEXT_COLOR_RED + "Invalid parameters. " +
+                    "For register: register <USERNAME> <PASSWORD> <EMAIL>";
+        }
+
+        RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+        try {
+            RegisterResult result = server.register(request);
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED + "Registration failed: " + e.getMessage();
+        }
+        return "Hello world";
     }
 
     public String login(String... params) throws ResponseException {
