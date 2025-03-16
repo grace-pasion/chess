@@ -2,6 +2,8 @@ package replExecuters;
 import java.util.Arrays;
 import server.exception.ResponseException;
 
+import static ui.EscapeSequences.*;
+
 public class PreLogin {
     private final String serverUrl;
     public PreLogin(String serverUrl) {
@@ -33,6 +35,16 @@ public class PreLogin {
     }
 
     public String help() throws ResponseException {
-        return "Hello world";
+        return SET_TEXT_COLOR_BLUE+"register <USERNAME> <PASSWORD> <EMAIL>"+
+                SET_TEXT_COLOR_RED+" - to create an account"+SET_TEXT_COLOR_BLUE+
+                "\nlogin <USERNAME> <PASSWORD>"+ SET_TEXT_COLOR_RED+" - to play chess"+
+                SET_TEXT_COLOR_BLUE+"\nquit"+SET_TEXT_COLOR_RED+" - playing chess"+
+                SET_TEXT_COLOR_BLUE+"\nhelp"+SET_TEXT_COLOR_RED+" - with possible commands";
     }
+
+    /* //DELETE LATER, JUST FOR DEBUGGING PURPOSES
+    public static void main(String[] args) throws ResponseException {
+        PreLogin preLogin = new PreLogin("Doesn't matter");
+        System.out.println(preLogin.help());
+    } */
 }
