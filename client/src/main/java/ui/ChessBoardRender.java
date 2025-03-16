@@ -5,8 +5,7 @@ import java.io.PrintStream;
 import static ui.EscapeSequences.*;
 
 public class ChessBoardRender {
-    private static final int BOARD_SIZE = 8;
-    private static final int BORDER_SIZE = 10;
+
     private static final String[][] chessBoard = new String[8][8];
     /*
     Note for later: will need a main that does var out =
@@ -15,6 +14,7 @@ public class ChessBoardRender {
     public void drawChessBoard(PrintStream out, boolean isWhite) {
         initializeBoard();
         out.print(ERASE_SCREEN);
+
         drawBorder(out, isWhite);
         drawBoard(out, isWhite);
         drawBorder(out, isWhite);
@@ -69,11 +69,9 @@ public class ChessBoardRender {
             boolean isBlackSquare = (row + col) % 2 == 1;
             if (isBlackSquare) {
                 out.print(SET_BG_COLOR_RED);
-                //out.print(EMPTY);
                 out.print(chessBoard[row][col]);
             } else {
                 out.print(SET_BG_COLOR_MAGENTA);
-                //out.print(EMPTY);
                 out.print(chessBoard[row][col]);
             }
         }
@@ -114,6 +112,6 @@ public class ChessBoardRender {
     public static void main(String[] args) {
         ChessBoardRender render = new ChessBoardRender();
         var out = new PrintStream(System.out, true);
-        render.drawChessBoard(out,false);
+        render.drawChessBoard(out,true);
     }
 }
