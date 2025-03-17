@@ -82,6 +82,7 @@ public class PreLogin {
         return authToken;
     }
 
+
     /* //DELETE LATER, JUST FOR DEBUGGING PURPOSES
     public static void main(String[] args) throws ResponseException {
         PreLogin preLogin = new PreLogin("Doesn't matter");

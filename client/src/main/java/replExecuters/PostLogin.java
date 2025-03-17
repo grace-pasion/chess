@@ -17,6 +17,7 @@ public class PostLogin {
     private final ServerFacade server;
     private String authToken;
     private boolean transferInGame;
+    private boolean isWhite;
 
     public PostLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -57,10 +58,10 @@ public class PostLogin {
                 return SET_TEXT_COLOR_BLUE+"\tNo games currently in play";
             }
             StringBuilder result = new StringBuilder
-                    (SET_TEXT_COLOR_BLUE + "\tAvailable Games:\n");
+                    (SET_TEXT_COLOR_BLUE + "Available Games:");
             int i = 1;
             for (GameData game : games) {
-                result.append("\n");
+                result.append("\n\t");
                 result.append(i).append(". ID: ").append(game.gameID());
                 result.append("  Game Name:").append(game.gameName());
                 result.append("  White: ").append(game.whiteUsername());
@@ -104,6 +105,8 @@ public class PostLogin {
             if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
                 return SET_TEXT_COLOR_RED+"Invalid. Must choose WHITE or BLACK";
             }
+            isWhite = playerColor.equals("WHITE");
+
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
             server.joinGame(joinGameRequest, authToken);
             return SET_TEXT_COLOR_BLUE+
@@ -115,7 +118,32 @@ public class PostLogin {
 
     private String watch(String... params) throws ResponseException{
         transferInGame = true;
-        return "hellow world";
+        isWhite = true;
+        if (params.length != 1) {
+            return SET_TEXT_COLOR_RED+"Invalid parameters. For watch games: watch <GAME_ID>";
+        }
+        int gameId;
+        try {
+            gameId = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return SET_TEXT_COLOR_RED+"The Game ID must be a number";
+        }
+
+        try {
+            ListGameRequest listGameRequest = new ListGameRequest(authToken);
+            ListGameResult listGameResult = server.listGame(listGameRequest);
+            var games = listGameResult.getGames();
+            //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
+            for (GameData game : games) {
+                if (game.gameID() == gameId) {
+                    return SET_TEXT_COLOR_BLUE+
+                            "Successfully joined "+game.gameName()+" as a viewer.";
+                }
+            }
+            return SET_TEXT_COLOR_RED+"Game with ID "+gameId+" was not found.";
+        } catch (ResponseException e) {
+            return SET_TEXT_COLOR_RED+"Failed to retrieve game state: "+e.getMessage();
+        }
     }
 
     private String logout(String... params) throws ResponseException {
@@ -130,10 +158,12 @@ public class PostLogin {
     }
 
     private String help() {
-        return SET_TEXT_COLOR_BLUE+"\tcreate <NAME>"+
+        return SET_TEXT_COLOR_BLUE+"create <NAME>"+
                 SET_TEXT_COLOR_RED+" - a game "+SET_TEXT_COLOR_BLUE+
                 "\n\tlist"+ SET_TEXT_COLOR_RED+" - games"+
-                SET_TEXT_COLOR_BLUE+"\n\tobserve <ID> [WHITE|BLACK]"+SET_TEXT_COLOR_RED+" - a game"+
+                SET_TEXT_COLOR_BLUE+"\n\tobserve <ID> "+SET_TEXT_COLOR_RED+" - a game"+
+                SET_TEXT_COLOR_BLUE+"\n\tjoin <ID> [WHITE|BLACK] "+SET_TEXT_COLOR_RED+" - a game"+
+                SET_TEXT_COLOR_BLUE+"\n\tlogout "+SET_TEXT_COLOR_RED+"- when you are done"+
                 SET_TEXT_COLOR_BLUE+"\n\tquit"+SET_TEXT_COLOR_RED+" - playing chess"+
                 SET_TEXT_COLOR_BLUE+"\n\thelp"+SET_TEXT_COLOR_RED+" - with possible commands";
     }
@@ -144,6 +174,10 @@ public class PostLogin {
 
     public boolean isTransferInGame() {
         return transferInGame;
+    }
+
+    public boolean isWhiteOrBlack() {
+        return isWhite;
     }
 
 }

@@ -6,6 +6,8 @@ import replExecuters.PreLogin;
 import java.util.Scanner;
 
 import server.Server;
+import ui.ChessBoardRender;
+
 import static ui.EscapeSequences.*;
 
 public class Repl {
@@ -15,6 +17,8 @@ public class Repl {
     private String currentState;
     private String printStatement;
     private String authToken;
+    private boolean isWhite;
+    private String[][] chessBoard = new String[8][8];
 
     public Repl(String serverUrl) {
         preLogin = new PreLogin(serverUrl);
@@ -26,10 +30,12 @@ public class Repl {
 
     public void run() {
         printIntro();
+        ChessBoardRender render = new ChessBoardRender(chessBoard);
 
         var result = "";
         while (!result.equals("quit") || !currentState.equalsIgnoreCase("preLogin") ) {
             if (currentState.equals("preLogin")) {
+                printStatement = "[LOGGED_OUT] >>> ";
                 try {
                     String line = initialize();
                     result = preLogin.eval(line);
@@ -50,15 +56,23 @@ public class Repl {
                 result = postLogin.eval(line);
                 if (postLogin.isTransferInGame()) {
                     currentState = "inGame";
+                    isWhite = postLogin.isWhiteOrBlack();
                 }
                 if (result.equalsIgnoreCase("quit")
                         || result.contains("Successfully logged out")) {
                     currentState = "preLogin";
                 }
-                System.out.print(SET_TEXT_COLOR_GREEN+result);
+                System.out.print("\t"+SET_TEXT_COLOR_GREEN+result);
                 //something like if result is quit then currentState = preLogin
             } else {
-
+                printStatement = "[IN_GAME] >>> ";
+                //need to change logic for phase 6:
+                render.initializeBoard();
+                render.drawChessBoard(System.out, isWhite);
+                String line = initialize();
+                if (line.equalsIgnoreCase("quit")) {
+                    currentState = "PostLogin";
+                }
             }
         }
     }
@@ -78,6 +92,8 @@ public class Repl {
         System.out.print(RESET_TEXT_COLOR+printStatement);
         return scanner.nextLine();
     }
+
+    /*
     //fOR TESTING PURPOSES ONLY!!!
     public static void main(String[] args) {
         Server server = new Server();
@@ -87,5 +103,5 @@ public class Repl {
         // Pass the correct URL to Repl
         Repl repl = new Repl("http://localhost:" + port);
         repl.run();
-    }
+    } */
 }

@@ -24,7 +24,7 @@ public class ChessBoardRender {
         drawBorder(out, isWhite);
     }
 
-    private void initializeBoard() {
+    public void initializeBoard() {
         chessBoard[0][0] = SET_TEXT_COLOR_WHITE+WHITE_ROOK;
         chessBoard[0][1] = SET_TEXT_COLOR_WHITE+WHITE_KNIGHT;
         chessBoard[0][2] = SET_TEXT_COLOR_WHITE+WHITE_BISHOP;
