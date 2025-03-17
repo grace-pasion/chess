@@ -6,7 +6,6 @@ import result.ListGameResult;
 import server.ServerFacade;
 import server.exception.ResponseException;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
