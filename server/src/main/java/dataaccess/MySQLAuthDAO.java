@@ -1,8 +1,8 @@
 package dataaccess;
 
 import model.AuthData;
-import facade.errors.ServerExceptions;
-import facade.errors.ClassError;
+import server.errors.ServerExceptions;
+import server.errors.ClassError;
 import java.sql.SQLException;
 import java.util.HashMap;
 

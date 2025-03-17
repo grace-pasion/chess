@@ -1,6 +1,6 @@
 import chess.*;
 
-import facade.Server;
+import server.Server;
 import facade.ServerFacade;
 import facade.exception.ResponseException;
 

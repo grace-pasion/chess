@@ -11,8 +11,8 @@ import result.CreateGameResult;
 import result.RegisterResult;
 import result.LoginResult;
 import result.LogoutResult;
-import facade.errors.ClassError;
-import facade.errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 
 
 import static org.junit.jupiter.api.Assertions.*;

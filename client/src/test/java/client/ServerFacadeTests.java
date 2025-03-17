@@ -3,7 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import request.*;
 import result.*;
-import facade.Server;
+import server.Server;
 import facade.ServerFacade;
 import facade.exception.ResponseException;
 import static org.junit.jupiter.api.Assertions.*;

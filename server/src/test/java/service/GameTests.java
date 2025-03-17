@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
-import facade.errors.ServerExceptions;
+import server.errors.ServerExceptions;
 
-import facade.errors.ClassError;
+import server.errors.ClassError;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {

@@ -1,10 +1,10 @@
-package facade.handler;
+package server.handler;
 
 import com.google.gson.Gson;
 import request.CreateGameRequest;
 import result.CreateGameResult;
-import facade.errors.ClassError;
-import facade.errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 import service.GameService;
 import spark.Request;
 import spark.Response;

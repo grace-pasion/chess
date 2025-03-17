@@ -1,18 +1,18 @@
-package facade.handler;
+package server.handler;
 
 import com.google.gson.Gson;
-import request.LogoutRequest;
-import result.LogoutResult;
-import facade.errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
+import spark.*;
 import service.UserService;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import request.RegisterRequest;
+import result.RegisterResult;
 
-public class LogoutHandler implements Route {
+public class RegisterHandler implements Route {
+
     private final UserService userService;
 
-    public LogoutHandler(UserService userService) {
+    public RegisterHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -23,16 +23,17 @@ public class LogoutHandler implements Route {
      *
      * @param req
      * @param res
-     * @return
-     * @throws ServerExceptions
+     * @return a JSON object
+     * @throws ServerExceptions if one of the request fields is null
      */
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            String authToken = req.headers("Authorization");
-            String json = String.format("{\"authToken\": \"%s\"}", authToken);
-            LogoutRequest logoutRequest = new Gson().fromJson(json, LogoutRequest.class);
+            RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
+            if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+                throw new ServerExceptions(ClassError.BAD_REQUEST);
 
-            LogoutResult result = userService.logout(logoutRequest);
+            }
+            RegisterResult result = userService.register(registerRequest);
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {

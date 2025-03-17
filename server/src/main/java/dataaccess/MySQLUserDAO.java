@@ -2,8 +2,8 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import facade.errors.ClassError;
-import facade.errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 
 import java.sql.SQLException;
 import java.util.HashMap;

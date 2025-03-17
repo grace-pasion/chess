@@ -1,4 +1,4 @@
-package facade.errors;
+package server.errors;
 
 public class ServerExceptions extends Exception {
     private final ClassError error;

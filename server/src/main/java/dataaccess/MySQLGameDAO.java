@@ -2,8 +2,8 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.GameData;
-import facade.errors.ClassError;
-import facade.errors.ServerExceptions;
+import server.errors.ClassError;
+import server.errors.ServerExceptions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
