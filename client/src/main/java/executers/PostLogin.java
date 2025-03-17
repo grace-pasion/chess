@@ -3,8 +3,8 @@ package executers;
 import model.GameData;
 import request.*;
 import result.ListGameResult;
-import server.ServerFacade;
-import server.exception.ResponseException;
+import facade.ServerFacade;
+import facade.exception.ResponseException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

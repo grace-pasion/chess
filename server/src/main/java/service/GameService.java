@@ -12,8 +12,8 @@ import request.ListGameRequest;
 import result.CreateGameResult;
 import result.JoinGameResult;
 import result.ListGameResult;
-import server.errors.ClassError;
-import server.errors.ServerExceptions;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
 
 import java.util.ArrayList;
 

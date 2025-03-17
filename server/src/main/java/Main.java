@@ -1,5 +1,5 @@
 import chess.*;
-import server.Server;
+import facade.Server;
 
 public class Main {
     public static void main(String[] args) {

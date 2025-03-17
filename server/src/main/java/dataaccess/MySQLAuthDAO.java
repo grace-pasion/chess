@@ -1,14 +1,10 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.AuthData;
-import server.errors.ServerExceptions;
-import server.errors.ClassError;
+import facade.errors.ServerExceptions;
+import facade.errors.ClassError;
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class MySQLAuthDAO implements AuthDAO {
 

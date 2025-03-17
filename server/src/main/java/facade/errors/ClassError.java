@@ -1,4 +1,4 @@
-package server.errors;
+package facade.errors;
 
 /**
  * This is just an enum which holds all the standard

@@ -1,4 +1,4 @@
-package server.exception;
+package facade.exception;
 
 import com.google.gson.Gson;
 

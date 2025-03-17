@@ -2,14 +2,11 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import server.errors.ClassError;
-import server.errors.ServerExceptions;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class MySQLUserDAO implements UserDAO {
 

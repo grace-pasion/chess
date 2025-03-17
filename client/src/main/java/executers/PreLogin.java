@@ -5,8 +5,8 @@ import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
-import server.ServerFacade;
-import server.exception.ResponseException;
+import facade.ServerFacade;
+import facade.exception.ResponseException;
 
 import static ui.EscapeSequences.*;
 

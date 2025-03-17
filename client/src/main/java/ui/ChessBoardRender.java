@@ -1,6 +1,7 @@
 package ui;
 
 import java.io.PrintStream;
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
@@ -83,10 +84,18 @@ public class ChessBoardRender {
             boolean isBlackSquare = (row + col) % 2 == 1;
             if (isBlackSquare) {
                 out.print(SET_BG_COLOR_RED);
-                out.print(chessBoard[row][col]);
+                if (Objects.equals(chessBoard[row][col], EMPTY)) {
+                    out.print(SET_TEXT_COLOR_RED+BLACK_PAWN);
+                } else {
+                    out.print(chessBoard[row][col]);
+                }
             } else {
                 out.print(SET_BG_COLOR_MAGENTA);
-                out.print(chessBoard[row][col]);
+                if (Objects.equals(chessBoard[row][col], EMPTY)) {
+                    out.print(SET_TEXT_COLOR_MAGENTA+BLACK_PAWN);
+                } else {
+                    out.print(chessBoard[row][col]);
+                    }
             }
         }
 

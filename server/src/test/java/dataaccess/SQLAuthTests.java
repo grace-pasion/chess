@@ -3,7 +3,7 @@ package dataaccess;
 import model.AuthData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.errors.ServerExceptions;
+import facade.errors.ServerExceptions;
 
 import java.util.HashMap;
 

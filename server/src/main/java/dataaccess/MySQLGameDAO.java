@@ -1,16 +1,12 @@
 package dataaccess;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import server.errors.ClassError;
-import server.errors.ServerExceptions;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class MySQLGameDAO implements GameDAO {
 

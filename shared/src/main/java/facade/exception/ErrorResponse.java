@@ -1,4 +1,4 @@
-package server.exception;
+package facade.exception;
 
 public record ErrorResponse(String message) {
 }

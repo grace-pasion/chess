@@ -1,8 +1,8 @@
-package server;
+package facade;
 import com.google.gson.Gson;
 import request.*;
 import result.*;
-import server.exception.ResponseException;
+import facade.exception.ResponseException;
 
 import java.io.*;
 import java.net.*;

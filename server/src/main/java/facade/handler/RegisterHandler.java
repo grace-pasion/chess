@@ -1,18 +1,18 @@
-package server.handler;
+package facade.handler;
 
 import com.google.gson.Gson;
-import request.LoginRequest;
-import result.LoginResult;
-import server.errors.ServerExceptions;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
+import spark.*;
 import service.UserService;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import request.RegisterRequest;
+import result.RegisterResult;
 
-public class LoginHandler implements Route {
+public class RegisterHandler implements Route {
+
     private final UserService userService;
 
-    public LoginHandler(UserService userService) {
+    public RegisterHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -20,16 +20,20 @@ public class LoginHandler implements Route {
      * I turn the request from json to a record class. Then I feed it into my service
      * classes, which returns a result object. This result object will be turned
      * back into JSON.
+     *
      * @param req
      * @param res
-     * @return
-     * @throws ServerExceptions
+     * @return a JSON object
+     * @throws ServerExceptions if one of the request fields is null
      */
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
+            RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
+            if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+                throw new ServerExceptions(ClassError.BAD_REQUEST);
 
-            LoginResult result = userService.login(loginRequest);
+            }
+            RegisterResult result = userService.register(registerRequest);
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {

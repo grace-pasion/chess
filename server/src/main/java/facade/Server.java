@@ -1,9 +1,9 @@
-package server;
+package facade;
 
 import dataaccess.*;
-import server.errors.ClassError;
-import server.errors.ServerExceptions;
-import server.handler.*;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
+import facade.handler.*;
 import service.UserService;
 import service.GameService;
 import spark.*;

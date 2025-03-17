@@ -3,7 +3,7 @@ package passoff.server;
 import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
-import server.Server;
+import facade.Server;
 
 import java.lang.reflect.Method;
 import java.sql.*;

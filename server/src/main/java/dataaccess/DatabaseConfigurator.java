@@ -1,7 +1,7 @@
 package dataaccess;
 
-import server.errors.ClassError;
-import server.errors.ServerExceptions;
+import facade.errors.ClassError;
+import facade.errors.ServerExceptions;
 
 import java.sql.SQLException;
 

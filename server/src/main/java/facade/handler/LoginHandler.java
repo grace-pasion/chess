@@ -1,18 +1,18 @@
-package server.handler;
+package facade.handler;
 
 import com.google.gson.Gson;
-import request.LogoutRequest;
-import result.LogoutResult;
-import server.errors.ServerExceptions;
+import request.LoginRequest;
+import result.LoginResult;
+import facade.errors.ServerExceptions;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class LogoutHandler implements Route {
+public class LoginHandler implements Route {
     private final UserService userService;
 
-    public LogoutHandler(UserService userService) {
+    public LoginHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -20,7 +20,6 @@ public class LogoutHandler implements Route {
      * I turn the request from json to a record class. Then I feed it into my service
      * classes, which returns a result object. This result object will be turned
      * back into JSON.
-     *
      * @param req
      * @param res
      * @return
@@ -28,11 +27,9 @@ public class LogoutHandler implements Route {
      */
     public Object handle(Request req, Response res) throws ServerExceptions {
         try {
-            String authToken = req.headers("Authorization");
-            String json = String.format("{\"authToken\": \"%s\"}", authToken);
-            LogoutRequest logoutRequest = new Gson().fromJson(json, LogoutRequest.class);
+            LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
 
-            LogoutResult result = userService.logout(logoutRequest);
+            LoginResult result = userService.login(loginRequest);
             res.status(200);
             return new Gson().toJson(result);
         } catch (ServerExceptions e) {
