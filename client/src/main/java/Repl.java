@@ -95,15 +95,4 @@ public class Repl {
         return scanner.nextLine();
     }
 
-    /*
-    //fOR TESTING PURPOSES ONLY!!!
-    public static void main(String[] args) {
-        Server server = new Server();
-        var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
-
-        // Pass the correct URL to Repl
-        Repl repl = new Repl("http://localhost:" + port);
-        repl.run();
-    } */
 }

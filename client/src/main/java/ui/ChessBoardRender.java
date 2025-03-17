@@ -25,33 +25,11 @@ public class ChessBoardRender {
     }
 
     public void initializeBoard(boolean isWhite) {
-
-        chessBoard[7][0] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
-        chessBoard[7][1] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
-        chessBoard[7][2] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
-        chessBoard[7][3] = SET_TEXT_COLOR_WHITE + WHITE_QUEEN;
-        chessBoard[7][4] = SET_TEXT_COLOR_WHITE + WHITE_KING;
-        chessBoard[7][5] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
-        chessBoard[7][6] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
-        chessBoard[7][7] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
-
-        chessBoard[0][0] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
-        chessBoard[0][1] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
-        chessBoard[0][2] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
-        chessBoard[0][3] = SET_TEXT_COLOR_BLACK + BLACK_QUEEN;
-        chessBoard[0][4] = SET_TEXT_COLOR_BLACK + BLACK_KING;
-        chessBoard[0][5] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
-        chessBoard[0][6] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
-        chessBoard[0][7] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
-
-        for (int i = 0; i < 8; i++) {
-            chessBoard[6][i] = SET_TEXT_COLOR_WHITE + WHITE_PAWN;
+        if (isWhite) {
+            initializeWhite();
+        } else {
+            initializeBlack();
         }
-
-        for (int i = 0; i < 8; i++) {
-            chessBoard[1][i] = SET_TEXT_COLOR_BLACK + BLACK_PAWN;
-        }
-
         for (int i = 2; i < 6; i++) {
             for (int j = 0; j < 8; j++) {
                 chessBoard[i][j] = EMPTY;
@@ -112,14 +90,59 @@ public class ChessBoardRender {
         out.println();
     }
 
-    /*
-    //JUST USED FOR TESTING! GET RID OF THIS LATER!!!
+    private void initializeWhite() {
+        chessBoard[7][0] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
+        chessBoard[7][1] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
+        chessBoard[7][2] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
+        chessBoard[7][3] = SET_TEXT_COLOR_WHITE + WHITE_QUEEN;
+        chessBoard[7][4] = SET_TEXT_COLOR_WHITE + WHITE_KING;
+        chessBoard[7][5] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
+        chessBoard[7][6] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
+        chessBoard[7][7] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
 
-    public static void main(String[] args) {
-        String[][] chessBoard = new String[8][8];
-        ChessBoardRender render = new ChessBoardRender(chessBoard);
-        render.initializeBoard();
-        var out = new PrintStream(System.out, true);
-        render.drawChessBoard(out,true);
-    } */
+        chessBoard[0][0] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
+        chessBoard[0][1] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
+        chessBoard[0][2] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
+        chessBoard[0][3] = SET_TEXT_COLOR_BLACK + BLACK_QUEEN;
+        chessBoard[0][4] = SET_TEXT_COLOR_BLACK + BLACK_KING;
+        chessBoard[0][5] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
+        chessBoard[0][6] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
+        chessBoard[0][7] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
+
+        for (int i = 0; i < 8; i++) {
+            chessBoard[6][i] = SET_TEXT_COLOR_WHITE + WHITE_PAWN;
+        }
+
+        for (int i = 0; i < 8; i++) {
+            chessBoard[1][i] = SET_TEXT_COLOR_BLACK + BLACK_PAWN;
+        }
+    }
+
+    private void initializeBlack() {
+        chessBoard[7][0] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
+        chessBoard[7][1] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
+        chessBoard[7][2] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
+        chessBoard[7][3] = SET_TEXT_COLOR_BLACK + BLACK_QUEEN;
+        chessBoard[7][4] = SET_TEXT_COLOR_BLACK + BLACK_KING;
+        chessBoard[7][5] = SET_TEXT_COLOR_BLACK + BLACK_BISHOP;
+        chessBoard[7][6] = SET_TEXT_COLOR_BLACK + BLACK_KNIGHT;
+        chessBoard[7][7] = SET_TEXT_COLOR_BLACK + BLACK_ROOK;
+
+        chessBoard[0][0] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
+        chessBoard[0][1] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
+        chessBoard[0][2] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
+        chessBoard[0][3] = SET_TEXT_COLOR_WHITE + WHITE_QUEEN;
+        chessBoard[0][4] = SET_TEXT_COLOR_WHITE + WHITE_KING;
+        chessBoard[0][5] = SET_TEXT_COLOR_WHITE + WHITE_BISHOP;
+        chessBoard[0][6] = SET_TEXT_COLOR_WHITE + WHITE_KNIGHT;
+        chessBoard[0][7] = SET_TEXT_COLOR_WHITE + WHITE_ROOK;
+
+        for (int i = 0; i < 8; i++) {
+            chessBoard[6][i] = SET_TEXT_COLOR_BLACK + BLACK_PAWN;
+        }
+
+        for (int i = 0; i < 8; i++) {
+            chessBoard[1][i] = SET_TEXT_COLOR_WHITE + WHITE_PAWN;
+        }
+    }
 }
