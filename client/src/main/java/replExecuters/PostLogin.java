@@ -88,7 +88,6 @@ public class PostLogin {
     }
 
     private String join(String... params) throws ResponseException{
-        transferInGame = true;
         try {
             if (params.length != 2) {
                 return SET_TEXT_COLOR_RED+
@@ -109,6 +108,7 @@ public class PostLogin {
 
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
             server.joinGame(joinGameRequest, authToken);
+            transferInGame = true;
             return SET_TEXT_COLOR_BLUE+
                     "Successfully joined game "+gameId+" as "+playerColor+".";
         } catch (ResponseException e) {
@@ -117,7 +117,6 @@ public class PostLogin {
     }
 
     private String watch(String... params) throws ResponseException{
-        transferInGame = true;
         isWhite = true;
         if (params.length != 1) {
             return SET_TEXT_COLOR_RED+"Invalid parameters. For watch games: watch <GAME_ID>";
@@ -136,6 +135,7 @@ public class PostLogin {
             //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
             for (GameData game : games) {
                 if (game.gameID() == gameId) {
+                    transferInGame = true;
                     return SET_TEXT_COLOR_BLUE+
                             "Successfully joined "+game.gameName()+" as a viewer.";
                 }
@@ -161,7 +161,7 @@ public class PostLogin {
         return SET_TEXT_COLOR_BLUE+"create <NAME>"+
                 SET_TEXT_COLOR_RED+" - a game "+SET_TEXT_COLOR_BLUE+
                 "\n\tlist"+ SET_TEXT_COLOR_RED+" - games"+
-                SET_TEXT_COLOR_BLUE+"\n\tobserve <ID> "+SET_TEXT_COLOR_RED+" - a game"+
+                SET_TEXT_COLOR_BLUE+"\n\twatch <ID> "+SET_TEXT_COLOR_RED+" - a game"+
                 SET_TEXT_COLOR_BLUE+"\n\tjoin <ID> [WHITE|BLACK] "+SET_TEXT_COLOR_RED+" - a game"+
                 SET_TEXT_COLOR_BLUE+"\n\tlogout "+SET_TEXT_COLOR_RED+"- when you are done"+
                 SET_TEXT_COLOR_BLUE+"\n\tquit"+SET_TEXT_COLOR_RED+" - playing chess"+
@@ -178,6 +178,10 @@ public class PostLogin {
 
     public boolean isWhiteOrBlack() {
         return isWhite;
+    }
+
+    public void changeTransfer(boolean stillCanTransfer) {
+        transferInGame = stillCanTransfer;
     }
 
 }

@@ -21,5 +21,6 @@ public class Main {
         // Pass the correct URL to Repl
         Repl repl = new Repl("http://localhost:" + port);
         repl.run();
+        server.stop();
     }
 }

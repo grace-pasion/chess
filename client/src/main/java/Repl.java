@@ -31,7 +31,6 @@ public class Repl {
     public void run() {
         printIntro();
         ChessBoardRender render = new ChessBoardRender(chessBoard);
-
         var result = "";
         while (!result.equals("quit") || !currentState.equalsIgnoreCase("preLogin") ) {
             if (currentState.equals("preLogin")) {
@@ -57,6 +56,7 @@ public class Repl {
                 if (postLogin.isTransferInGame()) {
                     currentState = "inGame";
                     isWhite = postLogin.isWhiteOrBlack();
+                    render.initializeBoard(isWhite);
                 }
                 if (result.equalsIgnoreCase("quit")
                         || result.contains("Successfully logged out")) {
@@ -67,12 +67,14 @@ public class Repl {
             } else {
                 printStatement = "[IN_GAME] >>> ";
                 //need to change logic for phase 6:
-                render.initializeBoard();
                 render.drawChessBoard(System.out, isWhite);
                 String line = initialize();
-                if (line.equalsIgnoreCase("quit")) {
-                    currentState = "PostLogin";
+                result = inGame.eval(line);
+                if (result.equalsIgnoreCase("quit")) {
+                    currentState = "postLogin";
+                    postLogin.changeTransfer(false);
                 }
+                System.out.println("\t"+SET_TEXT_COLOR_GREEN+result);
             }
         }
     }
