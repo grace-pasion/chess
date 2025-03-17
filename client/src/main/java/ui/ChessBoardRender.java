@@ -7,10 +7,6 @@ import static ui.EscapeSequences.*;
 public class ChessBoardRender {
 
     private String[][] chessBoard = new String[8][8];
-    /*
-    Note for later: will need a main that does var out =
-    new PrintStream(System.out,..)
-     */
 
     public ChessBoardRender(String[][] chessBoard) {
         this.chessBoard = chessBoard;
