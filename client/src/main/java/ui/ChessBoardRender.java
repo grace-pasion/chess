@@ -95,7 +95,7 @@ public class ChessBoardRender {
                     out.print(SET_TEXT_COLOR_MAGENTA+BLACK_PAWN);
                 } else {
                     out.print(chessBoard[row][col]);
-                    }
+                }
             }
         }
 
