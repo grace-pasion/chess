@@ -18,12 +18,24 @@ public class PostLogin {
     private boolean transferInGame;
     private boolean isWhite;
 
+    /**
+     * This is just a constructor that initializes our
+     * server.
+     * @param serverUrl a string representing the server url
+     */
     public PostLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
         transferInGame = false;
     }
 
 
+    /**
+     * This takes in the user input and executes the command they
+     * typed in by calling different methods on it.
+     *
+     * @param input the user's input
+     * @return the resulting string
+     */
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
@@ -43,6 +55,17 @@ public class PostLogin {
         }
     }
 
+
+    /**
+     * This checks to make sure that nothing follows list, but if it
+     * does then it returns a failure string. It then calls list games
+     * from the server. It then takes this array and formats it nicely into
+     * a string.
+     *
+     * @param params the string following "list"
+     * @return the result as a string
+     * @throws ResponseException if list games fails
+     */
     private String list(String... params) throws ResponseException {
         if (params.length != 0) {
             return SET_TEXT_COLOR_RED + "The list function receives no parameters. " +
@@ -72,6 +95,15 @@ public class PostLogin {
         }
     }
 
+
+    /**
+     * This calls the server to create a new chess game with the specified parameter
+     * name.
+     *
+     * @param params the name of the created game
+     * @return a string result
+     * @throws ResponseException if create games fail
+     */
     private String create(String... params) throws ResponseException {
         try {
             if (params.length != 1) {
@@ -86,6 +118,16 @@ public class PostLogin {
         }
     }
 
+
+    /**
+     * This checks to make sure they have the right parameters. Then,
+     * they take the user's input and lets them join with the provided
+     * gameID and playerColor if it is valid.
+     *
+     * @param params which should include the gameID and the playerColor
+     * @return the resulting string
+     * @throws ResponseException if join game fails
+     */
     private String join(String... params) throws ResponseException{
         try {
             if (params.length != 2) {
@@ -115,6 +157,15 @@ public class PostLogin {
         }
     }
 
+
+    /**
+     * This goes through all the games to see what matches the provided gameID.
+     * Once it finds that game, it will then join as an observer.
+     *
+     * @param params the gameID
+     * @return the resulting string
+     * @throws ResponseException if the watch fails
+     */
     private String watch(String... params) throws ResponseException{
         isWhite = true;
         if (params.length != 1) {
@@ -145,6 +196,14 @@ public class PostLogin {
         }
     }
 
+
+    /**
+     * It calls the server logout method to log the player out.
+     *
+     * @param params the words following logout
+     * @return the resulting string
+     * @throws ResponseException if logout goes wrong
+     */
     private String logout(String... params) throws ResponseException {
         try {
             LogoutRequest logoutRequest = new LogoutRequest(authToken);
@@ -156,6 +215,12 @@ public class PostLogin {
         }
     }
 
+    /**
+     * This is just a helper screen to show the user
+     * all the commands they can run.
+     *
+     * @return a string that has a list of commands
+     */
     private String help() {
         return SET_TEXT_COLOR_BLUE+"create <NAME>"+
                 SET_TEXT_COLOR_RED+" - a game "+SET_TEXT_COLOR_BLUE+
@@ -167,18 +232,42 @@ public class PostLogin {
                 SET_TEXT_COLOR_BLUE+"\n\thelp"+SET_TEXT_COLOR_RED+" - with possible commands";
     }
 
+    /**
+     * This just passes in an authToken, to set or
+     * reset the current authToken
+     *
+     * @param authToken the authentication token
+     */
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 
+    /**
+     * This just returns whether a player can move to the in-game commands.
+     * This is only possible if it currently is in post-login, and
+     * the user successfully joined as a player or observer.
+     *
+     * @return true if they can move
+     */
     public boolean isTransferInGame() {
         return transferInGame;
     }
 
+    /**
+     * This keeps track of the player's color
+     * @return true if the player is white
+     */
     public boolean isWhiteOrBlack() {
         return isWhite;
     }
 
+    /**
+     * This updates whether player is still allowed to transfer to in-game
+     * (useful for when they go back from in-game, and they
+     * need to be blocked for entering in-game until they enter more
+     * commands)
+     * @param stillCanTransfer whether the player can enter in-games commands
+     */
     public void changeTransfer(boolean stillCanTransfer) {
         transferInGame = stillCanTransfer;
     }
