@@ -105,6 +105,9 @@ public class Repl {
         if (result.equalsIgnoreCase("quit")
                 || result.contains("Successfully logged out")) {
             currentState = "preLogin";
+            if (result.equalsIgnoreCase("quit")) {
+                result = "back to logged-out";
+            }
         }
         System.out.print("\t"+SET_TEXT_COLOR_GREEN+result);
         return result;
