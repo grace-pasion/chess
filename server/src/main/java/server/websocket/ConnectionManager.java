@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Integer, ArrayList<Session>> gameSessions = new ConcurrentHashMap<>();
 
     public void add(String visitorName, Session session) {
         var connection = new Connection(visitorName, session);
@@ -36,4 +37,24 @@ public class ConnectionManager {
             connections.remove(c.visitorName);
         }
     }
+
+    public ArrayList<Session> getSessions(Integer gameID) {
+        ArrayList<Session> sessions = gameSessions.get(gameID);
+        if (sessions == null) {
+            return new ArrayList<>();
+        }
+        return sessions;
+    }
+
+    public static void saveSession(Integer gameID, Session session) {
+        ArrayList<Session> sessions = gameSessions.get(gameID);
+        if (sessions == null) {
+            sessions = new ArrayList<>();
+            gameSessions.put(gameID, sessions);
+        }
+        synchronized (sessions) {
+            sessions.add(session);
+        }
+    }
+
 }
