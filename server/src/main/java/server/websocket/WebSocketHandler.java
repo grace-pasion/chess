@@ -142,7 +142,37 @@ public class WebSocketHandler {
         gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
-    private void leaveGame(Session session, String username, LeaveGameCommand command) {
+    private void leaveGame(Session session, String username, LeaveGameCommand command) throws IOException {
+        //1. If a player is leaving, update game to remove root client (game is updated
+        //in database)
+        GameData  gameData = gameDAO.getGame(command.getGameID());
+        if (gameData == null) {
+            sendMessage(session.getRemote(), new ErrorMessage("The Game is not found"));
+            return;
+        }
+
+        //checking because it might be an observer
+        boolean isPlayer= false;
+        if (username.equals(gameData.whiteUsername())) {
+            gameData = new GameData(gameData.gameID(), null,
+                    gameData.blackUsername(), gameData.gameName(), gameData.game());
+            isPlayer = true;
+        } else if (username.equals(gameData.blackUsername())) {
+            gameData = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                    null, gameData.gameName(), gameData.game());
+            isPlayer = true;
+        }
+
+        if (isPlayer) {
+            gameDAO.updateGame(gameData.gameID(), gameData);
+        }
+
+        connections.remove(username);
+        //2. Server sends a notification message to all other clients informing them
+        //that the root client left. This applies to both players and observers
+        String message = username + " has left the game.";
+        var notification = new NotificationMessage(message);
+        connections.broadcast(username, notification);
 
     }
 
