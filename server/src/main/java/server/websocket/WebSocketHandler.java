@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.GameDAO;
 import model.AuthData;
@@ -17,6 +18,7 @@ import websocket.messages.ServerMessage;
 import dataaccess.AuthDAO;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import static websocket.commands.ConnectCommand.Side.BLACK;
 import static websocket.commands.ConnectCommand.Side.WHITE;
@@ -91,8 +93,53 @@ public class WebSocketHandler {
         gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
-    private void makeMove(Session session, String username, MakeMoveCommand command) {
+    private void makeMove(Session session, String username, MakeMoveCommand command) throws IOException {
+        //steps need to do according to gameplay.md
+        //1. server verifies the validity of the move
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        if ((gameData.whiteUsername().equals(username)
+                && gameData.game().getTeamTurn() != ChessGame.TeamColor.WHITE) ||
+                (gameData.blackUsername().equals(username)
+                && gameData.game().getTeamTurn() != ChessGame.TeamColor.BLACK)) {
+            sendMessage(session.getRemote(), new ErrorMessage("It's not your turn!"));
+        }
+        boolean isValidMove = validateMove(gameData, command);
+        if (!isValidMove) {
+            sendMessage(session.getRemote(), new ErrorMessage("Invalid move!"));
+        }
 
+        //2. game is updated to represent the move. game is updated in the database
+        ChessMove move = command.getMove();
+        try {
+            gameData.game().makeMove(move);
+        } catch (InvalidMoveException e) {
+            sendMessage(session.getRemote(), new ErrorMessage(e.getMessage()));
+            return;
+        }
+        gameDAO.updateGame(gameData.gameID(), gameData);
+
+        //3. send a load game message to all the clients (including the root client)
+        // with an updated game
+        sendMessage(session.getRemote(), new LoadGameMessage(gameData.game()));
+        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
+        connections.broadcast(username, loadGameMessage);
+
+        //4. sends a notification message to all other clients in the game
+        // informing them what move was made
+        String moveDescription = username + " made a move: " +
+                move.getStartPosition() + " to " + move.getEndPosition();
+        var notification = new NotificationMessage(moveDescription);
+        connections.broadcast(username, notification);
+
+        //5. if the move results in check, checkmate, or stalement the server
+        //sends a notification message to all clients
+        resultsInBadNews(username, gameData, session);
+
+        //do i need to update the game turn?
+        ChessGame.TeamColor nextTurn = (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE)
+                ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        gameData.game().setTeamTurn(nextTurn);
+        gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
     private void leaveGame(Session session, String username, LeaveGameCommand command) {
@@ -122,5 +169,48 @@ public class WebSocketHandler {
             throw new Exception("Invalid auth token");
         }
         return authData.username();
+    }
+
+    private boolean validateMove(GameData gameData, MakeMoveCommand command) {
+        ChessGame chessGame = gameData.game();
+
+        ChessPosition startPosition = command.getMove().getStartPosition();
+        ChessPosition endPosition = command.getMove().getEndPosition();
+
+        //checking if the piece exists and right color
+        ChessPiece piece = chessGame.getBoard().getPiece(startPosition);
+        if ((chessGame.getBoard().getPiece(startPosition) == null) ||
+                (piece.getTeamColor() != chessGame.getTeamTurn())) {
+            return false;
+        }
+
+        Collection<ChessMove> validMoves = chessGame.validMoves(startPosition);
+        boolean isValidMove = false;
+        for (ChessMove move : validMoves) {
+            if (move.getEndPosition().equals(endPosition)) {
+                isValidMove = true;
+                break;
+            }
+        }
+        return isValidMove;
+        //maybe need to deal with stalement, checkmate, and check after?
+
+
+    }
+
+    private void resultsInBadNews(String username, GameData gameData, Session session) throws IOException {
+        if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
+            var checkNotification = new NotificationMessage("Check: " + gameData.game().getTeamTurn() + " is in check.");
+            connections.broadcast(username, checkNotification);
+            sendMessage(session.getRemote(), checkNotification);
+        } else if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
+            var checkmateNotification = new NotificationMessage("Checkmate: " + gameData.game().getTeamTurn() + " is in checkmate.");
+            connections.broadcast(username, checkmateNotification);
+            sendMessage(session.getRemote(), checkmateNotification);
+        } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+            var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
+            connections.broadcast(username, stalemateNotification);
+            sendMessage(session.getRemote(), stalemateNotification);
+        }
     }
 }
