@@ -6,14 +6,20 @@ import executers.PreLogin;
 import java.util.Scanner;
 
 import ui.ChessBoardRender;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+import websocketFacade.NotificationHandler;
 
 import static ui.EscapeSequences.*;
+import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
+import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
 
 /**
  * This is my read eval print loop class. It handles three phases, which
  * includes prelogin, postlogin, and ingame functionality.
  */
-public class Repl {
+public class Repl implements NotificationHandler {
     private final PreLogin preLogin;
     private final PostLogin postLogin;
     private final InGame inGame;
@@ -157,6 +163,18 @@ public class Repl {
         System.out.println();
         System.out.print(RESET_TEXT_COLOR+printStatement);
         return scanner.nextLine();
+    }
+
+    public void notify(ServerMessage message) {
+        if (message.getServerMessageType() == NOTIFICATION) {
+            ErrorMessage errorMessage = (ErrorMessage) message;
+            System.out.println(SET_TEXT_COLOR_RED+errorMessage);
+        } else if (message.getServerMessageType() == ERROR) {
+            NotificationMessage notificationMessage = (NotificationMessage) message;
+            System.out.println(SET_TEXT_COLOR_RED+notificationMessage);
+        } else {
+            //load game stuff (UI)
+        }
     }
 
 }

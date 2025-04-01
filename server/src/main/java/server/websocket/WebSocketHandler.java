@@ -176,7 +176,30 @@ public class WebSocketHandler {
 
     }
 
-    private void resign(Session session, String username, ResignCommand command) {
+    private void resign(Session session, String username, ResignCommand command) throws IOException {
+        //1. server marks the game as over (no more moves can be made). Game is updated in the database
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        if (gameData == null) {
+            sendMessage(session.getRemote(), new ErrorMessage("Game not found"));
+            return;
+        }
+
+        //just so observers can't resign
+        if (!username.equals(gameData.whiteUsername())
+                && !username.equals(gameData.blackUsername())) {
+            sendMessage(session.getRemote(), new ErrorMessage("Only players can resign"));
+            return;
+        }
+
+        gameData.game().setGameOver(true);
+        gameDAO.updateGame(gameData.gameID(), gameData);
+
+        //2. Server sends a notification message to all clients in that game informing
+        //them that the root client resigned. This applies to both player and observers
+        String message = username + " has resigned. The game is over.";
+        var notification = new NotificationMessage(message);
+        connections.broadcast(username, notification);
+        sendMessage(session.getRemote(), notification);
 
     }
 

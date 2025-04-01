@@ -21,6 +21,8 @@ public class ChessGame {
      */
     private TeamColor teamTurn;
 
+    private boolean gameOver;
+
     /**
      * This is just the constructor that gets a new clean reset board
      * ,and makes the initial starting color white.
@@ -29,6 +31,7 @@ public class ChessGame {
         this.board = new ChessBoard();
         board.resetBoard();
         this.teamTurn = TeamColor.WHITE;
+        gameOver = false;
     }
 
     /**
@@ -105,6 +108,9 @@ public class ChessGame {
         ChessPosition endPos = move.getEndPosition();
         ChessPiece piece = board.getPiece(startPos);
         //just handling my exceptions
+        if (gameOver) {
+            throw new InvalidMoveException("Game is over. No more moves can be made");
+        }
         if (piece == null) {
             throw new InvalidMoveException("No piece is found");
         }
@@ -323,6 +329,14 @@ public class ChessGame {
                 board.addPiece(end, newPiece);
             }
         }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
 }
