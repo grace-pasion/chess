@@ -23,6 +23,10 @@ public class Server {
      */
     private GameService gameService;
 
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
+
     private final WebSocketHandler webSocketHandler;
     public Server() {
         webSocketHandler = new WebSocketHandler();
@@ -49,7 +53,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
+        webSocketHandler.setAuthDAO(authDAO);
+        webSocketHandler.setGameDAO(gameDAO);
         Spark.webSocket("/ws", webSocketHandler);
 
         RegisterHandler registerHandler = new RegisterHandler(userService);
@@ -96,11 +101,11 @@ public class Server {
 
     private void correctDAO(boolean isSQL) throws ServerExceptions {
         try {
-            UserDAO userDao = isSQL ? new MySQLUserDAO() : new MemoryUserDAO();
-            AuthDAO authDao = isSQL ? new MySQLAuthDAO() : new MemoryAuthDAO();
-            GameDAO gameDao = isSQL ? new MySQLGameDAO() : new MemoryGameDAO();
-            this.userService = new UserService(userDao, authDao, gameDao);
-            this.gameService = new GameService(userDao, authDao, gameDao);
+            userDAO = isSQL ? new MySQLUserDAO() : new MemoryUserDAO();
+            authDAO = isSQL ? new MySQLAuthDAO() : new MemoryAuthDAO();
+            gameDAO = isSQL ? new MySQLGameDAO() : new MemoryGameDAO();
+            this.userService = new UserService(userDAO, authDAO, gameDAO);
+            this.gameService = new GameService(userDAO, authDAO, gameDAO);
         } catch (ServerExceptions e) {
             throw new ServerExceptions(ClassError.DATABASE_ERROR);
         }

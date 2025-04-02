@@ -1,5 +1,6 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
@@ -20,12 +21,15 @@ public class ConnectionManager {
         connections.remove(visitorName);
     }
 
+    //change broadcast since this broadcasts to everyone
+    //need to broadcast just to people in the game
+    //also need to change it so the notification is a gson object
     public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send(notification.toString());
+                    c.send( new Gson().toJson(notification)); //json object
                 }
             } else {
                 removeList.add(c);
@@ -54,7 +58,12 @@ public class ConnectionManager {
         }
         synchronized (sessions) {
             sessions.add(session);
+            gameSessions.put(gameID, sessions);
         }
+    }
+
+    public Connection getConnection(String visitorName) {
+        return connections.get(visitorName);
     }
 
 }
