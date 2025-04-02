@@ -63,8 +63,10 @@ public class WebSocketHandler {
             }
         } catch (Exception ex) {
             //serialize and send the error message
-            ex.printStackTrace();
-            //sendMessage(session.getRemote(), new ErrorMessage("Error: "+ex.getMessage()));
+            //ex.printStackTrace();
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Error: " + ex.getMessage()));
+            session.getRemote().sendString(errorMessageJson);
+
         }
     }
 
