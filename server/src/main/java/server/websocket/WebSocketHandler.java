@@ -73,22 +73,22 @@ public class WebSocketHandler {
         connections.add(username, session);
 
         if (gameData == null) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("Game is not found"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Game is not found"));
+            connections.connections.get(username).send(errorMessageJson);
             return;
         }
 
         if (!Objects.equals(authDAO.getAuthData(username).authToken(), command.getAuthToken())) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("Invalid AuthToken"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Invalid AuthToken"));
+            connections.connections.get(username).send(errorMessageJson);
             return;
         }
         //find authToken correctly
 
         if ((gameData.whiteUsername() != null && command.getSide() == WHITE) ||
                 (gameData.blackUsername() != null && command.getSide() == BLACK)) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("Already Taken"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Already Taken"));
+            connections.connections.get(username).send(errorMessageJson);
             return;
         }
 
@@ -123,13 +123,13 @@ public class WebSocketHandler {
                 && gameData.game().getTeamTurn() != ChessGame.TeamColor.WHITE) ||
                 (gameData.blackUsername().equals(username)
                 && gameData.game().getTeamTurn() != ChessGame.TeamColor.BLACK)) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("It's not your turn"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("It's not your turn"));
+            connections.connections.get(username).send(errorMessageJson);
         }
         boolean isValidMove = validateMove(gameData, command);
         if (!isValidMove) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("Invalid Move!"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Invalid Move!"));
+            connections.connections.get(username).send(errorMessageJson);
         }
 
         //2. game is updated to represent the move. game is updated in the database
@@ -137,8 +137,8 @@ public class WebSocketHandler {
         try {
             gameData.game().makeMove(move);
         } catch (InvalidMoveException e) {
-            String ErrorMessageJson = new Gson().toJson(new ErrorMessage("Made move failed"));
-            connections.connections.get(username).send(ErrorMessageJson);
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Made move failed"));
+            connections.connections.get(username).send(errorMessageJson);
             return;
         }
         gameDAO.updateGame(gameData.gameID(), gameData);
@@ -174,6 +174,8 @@ public class WebSocketHandler {
         //in database)
         GameData  gameData = gameDAO.getGame(command.getGameID());
         if (gameData == null) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is not found"));
+            connections.connections.get(username).send(errorMessageJson);
             //sendMessage(session.getRemote(), new ErrorMessage("The Game is not found"));
             return;
         }
@@ -207,6 +209,8 @@ public class WebSocketHandler {
         //1. server marks the game as over (no more moves can be made). Game is updated in the database
         GameData gameData = gameDAO.getGame(command.getGameID());
         if (gameData == null) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is not found"));
+            connections.connections.get(username).send(errorMessageJson);
             //sendMessage(session.getRemote(), new ErrorMessage("Game not found"));
             return;
         }
@@ -214,6 +218,8 @@ public class WebSocketHandler {
         //just so observers can't resign
         if (!username.equals(gameData.whiteUsername())
                 && !username.equals(gameData.blackUsername())) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("Only players can resign"));
+            connections.connections.get(username).send(errorMessageJson);
             //sendMessage(session.getRemote(), new ErrorMessage("Only players can resign"));
             return;
         }
@@ -227,6 +233,8 @@ public class WebSocketHandler {
         var notification = new NotificationMessage(message);
         connections.broadcast(username, notification);
         //sendMessage(session.getRemote(), notification);
+        String notificationJson = new Gson().toJson(new NotificationMessage("You resigned. THe gane is over"));
+        connections.connections.get(username).send(notificationJson);
 
     }
 
