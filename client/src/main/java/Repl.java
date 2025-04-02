@@ -174,6 +174,8 @@ public class Repl implements NotificationHandler {
             System.out.println(SET_TEXT_COLOR_RED+notificationMessage);
         } else {
             //load game stuff (UI)
+            //get the game from the message
+            //then get the board and feed that board into the UI
         }
     }
 

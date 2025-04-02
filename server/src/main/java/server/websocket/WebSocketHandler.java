@@ -28,10 +28,7 @@ public class WebSocketHandler {
     private AuthDAO authDAO;
     private GameDAO gameDAO;
     private final ConnectionManager connections = new ConnectionManager();
-
-    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
+    public WebSocketHandler() {
     }
 
     @OnWebSocketMessage
@@ -266,4 +263,13 @@ public class WebSocketHandler {
             sendMessage(session.getRemote(), stalemateNotification);
         }
     }
+
+    public void setAuthDAO(AuthDAO authDao) {
+        this.authDAO = authDao;
+    }
+
+    public void setGameDAO(GameDAO gameDAO) {
+        this.gameDAO = gameDAO;
+    }
+
 }

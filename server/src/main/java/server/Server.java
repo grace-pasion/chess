@@ -4,9 +4,13 @@ import dataaccess.*;
 import server.errors.ClassError;
 import server.errors.ServerExceptions;
 import server.handler.*;
+import server.websocket.WebSocketHandler;
 import service.UserService;
 import service.GameService;
 import spark.*;
+
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 
 public class Server {
     /**
@@ -18,6 +22,11 @@ public class Server {
      * the game service object
      */
     private GameService gameService;
+
+    private final WebSocketHandler webSocketHandler;
+    public Server() {
+        webSocketHandler = new WebSocketHandler();
+    }
 
     /**
      *  I grab the databases, so that the database it
@@ -40,6 +49,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
 
         RegisterHandler registerHandler = new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);
