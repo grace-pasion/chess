@@ -121,17 +121,31 @@ public class WebSocketHandler {
         //steps need to do according to gameplay.md
         //1. server verifies the validity of the move
         GameData gameData = gameDAO.getGame(command.getGameID());
+        if (gameData.game().isInCheckmate(gameData.game().getTeamTurn()) ||
+                gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+            gameData.game().setGameOver(true);
+        }
+        if ((gameData.game().isGameOver())) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("The game is over"));
+            connections.connections.get(username).send(errorMessageJson);
+
+//            String loadGameMessageJson = new Gson().toJson(new LoadGameMessage(gameData.game()));
+//            connections.connections.get(username).send(loadGameMessageJson);
+            return;
+        }
         if ((gameData.whiteUsername().equals(username)
                 && gameData.game().getTeamTurn() != ChessGame.TeamColor.WHITE) ||
                 (gameData.blackUsername().equals(username)
                 && gameData.game().getTeamTurn() != ChessGame.TeamColor.BLACK)) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("It's not your turn"));
             connections.connections.get(username).send(errorMessageJson);
+            return;
         }
         boolean isValidMove = validateMove(gameData, command);
         if (!isValidMove) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("Invalid Move!"));
             connections.connections.get(username).send(errorMessageJson);
+            return;
         }
 
         //2. game is updated to represent the move. game is updated in the database
@@ -164,11 +178,7 @@ public class WebSocketHandler {
         //sends a notification message to all clients
         resultsInBadNews(username, gameData, session);
 
-        //do i need to update the game turn?
-        ChessGame.TeamColor nextTurn = (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE)
-                ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-        gameData.game().setTeamTurn(nextTurn);
-        gameDAO.updateGame(gameData.gameID(), gameData);
+        //gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
     private void leaveGame(Session session, String username, LeaveGameCommand command) throws IOException {
