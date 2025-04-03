@@ -111,7 +111,7 @@ public class WebSocketHandler {
         connections.connections.get(username).send(loadGameMessageJson);
         String message = username + " has connected as " + side;
         var notification = new NotificationMessage(message);
-        connections.broadcast(username, notification);
+        connections.broadcast(username,gameData.gameID(), notification);
 
         gameDAO.updateGame(gameData.gameID(), gameData);
     }
@@ -165,14 +165,14 @@ public class WebSocketHandler {
         String loadGameMessageJson = new Gson().toJson(new LoadGameMessage(gameData.game()));
         connections.connections.get(username).send(loadGameMessageJson);
         LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
-        connections.broadcast(username, loadGameMessage);
+        connections.broadcast(username,gameData.gameID(), loadGameMessage);
 
         //4. sends a notification message to all other clients in the game
         // informing them what move was made
         String moveDescription = username + " made a move: " +
                 move.getStartPosition() + " to " + move.getEndPosition();
         var notification = new NotificationMessage(moveDescription);
-        connections.broadcast(username, notification);
+        connections.broadcast(username, gameData.gameID(), notification);
 
         //5. if the move results in check, checkmate, or stalement the server
         //sends a notification message to all clients
@@ -213,7 +213,7 @@ public class WebSocketHandler {
         //that the root client left. This applies to both players and observers
         String message = username + " has left the game.";
         var notification = new NotificationMessage(message);
-        connections.broadcast(username, notification);
+        connections.broadcast(username, gameData.gameID(),notification);
 
     }
 
@@ -243,7 +243,7 @@ public class WebSocketHandler {
         //them that the root client resigned. This applies to both player and observers
         String message = username + " has resigned. The game is over.";
         var notification = new NotificationMessage(message);
-        connections.broadcast(username, notification);
+        connections.broadcast(username, gameData.gameID(),notification);
         //sendMessage(session.getRemote(), notification);
         String notificationJson = new Gson().toJson(new NotificationMessage("You resigned. THe gane is over"));
         connections.connections.get(username).send(notificationJson);
@@ -293,15 +293,15 @@ public class WebSocketHandler {
     private void resultsInBadNews(String username, GameData gameData, Session session) throws IOException {
         if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
             var checkNotification = new NotificationMessage("Check: " + gameData.game().getTeamTurn() + " is in check.");
-            connections.broadcast(username, checkNotification);
+            connections.broadcast(username, gameData.gameID(),checkNotification);
             //sendMessage(session.getRemote(), checkNotification);
         } else if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
             var checkmateNotification = new NotificationMessage("Checkmate: " + gameData.game().getTeamTurn() + " is in checkmate.");
-            connections.broadcast(username, checkmateNotification);
+            connections.broadcast(username,gameData.gameID(), checkmateNotification);
             //sendMessage(session.getRemote(), checkmateNotification);
         } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
-            connections.broadcast(username, stalemateNotification);
+            connections.broadcast(username, gameData.gameID(),stalemateNotification);
             //sendMessage(session.getRemote(), stalemateNotification);
         }
     }

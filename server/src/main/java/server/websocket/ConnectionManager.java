@@ -24,22 +24,30 @@ public class ConnectionManager {
     //change broadcast since this broadcasts to everyone
     //need to broadcast just to people in the game
     //also need to change it so the notification is a gson object
-    public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send( new Gson().toJson(notification)); //json object
+    public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
+        var removeList = new ArrayList<Session>();
+
+        ArrayList<Session> sessions = gameSessions.get(gameID);
+        if (sessions == null) return;
+
+        for (Session session : sessions) {
+            if (session.isOpen()) {
+                Connection connection = null;
+                for (Connection conn : connections.values()) {
+                    if (conn.session.equals(session)) {
+                        connection = conn;
+                        break;
+                    }
+                }
+                if (connection != null && !connection.visitorName.equals(excludeVisitorName)) {
+                    connection.send(new Gson().toJson(notification));
                 }
             } else {
-                removeList.add(c);
+                removeList.add(session);
             }
         }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.visitorName);
-        }
+        sessions.removeAll(removeList);
     }
 
     public ArrayList<Session> getSessions(Integer gameID) {
