@@ -121,6 +121,12 @@ public class WebSocketHandler {
         //steps need to do according to gameplay.md
         //1. server verifies the validity of the move
         GameData gameData = gameDAO.getGame(command.getGameID());
+        if (!gameData.whiteUsername().equals(username)
+                && !gameData.blackUsername().equals(username)) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("You are an observer stay in your lane dawg"));
+            connections.connections.get(username).send(errorMessageJson);
+            return;
+        }
         if (gameData.game().isInCheckmate(gameData.game().getTeamTurn()) ||
                 gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             gameData.game().setGameOver(true);
@@ -128,9 +134,6 @@ public class WebSocketHandler {
         if ((gameData.game().isGameOver())) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("The game is over"));
             connections.connections.get(username).send(errorMessageJson);
-
-//            String loadGameMessageJson = new Gson().toJson(new LoadGameMessage(gameData.game()));
-//            connections.connections.get(username).send(loadGameMessageJson);
             return;
         }
         if ((gameData.whiteUsername().equals(username)
@@ -151,13 +154,17 @@ public class WebSocketHandler {
         //2. game is updated to represent the move. game is updated in the database
         ChessMove move = command.getMove();
         try {
-            gameData.game().makeMove(move);
+            ChessGame newGame = gameData.game();
+            newGame.makeMove(move);
+            GameData newData = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                    gameData.blackUsername(), gameData.gameName(), newGame);
+            gameDAO.updateGame(gameData.gameID(), newData);
         } catch (InvalidMoveException e) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("Made move failed"));
             connections.connections.get(username).send(errorMessageJson);
             return;
         }
-        gameDAO.updateGame(gameData.gameID(), gameData);
+
 
         //3. send a load game message to all the clients (including the root client)
         // with an updated game
@@ -226,6 +233,12 @@ public class WebSocketHandler {
             //sendMessage(session.getRemote(), new ErrorMessage("Game not found"));
             return;
         }
+        if (gameData.game().isGameOver()) {
+            String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is already over dawg"));
+            connections.connections.get(username).send(errorMessageJson);
+            //sendMessage(session.getRemote(), new ErrorMessage("Game not found"));
+            return;
+        }
 
         //just so observers can't resign
         if (!username.equals(gameData.whiteUsername())
@@ -245,7 +258,7 @@ public class WebSocketHandler {
         var notification = new NotificationMessage(message);
         connections.broadcast(username, gameData.gameID(),notification);
         //sendMessage(session.getRemote(), notification);
-        String notificationJson = new Gson().toJson(new NotificationMessage("You resigned. THe gane is over"));
+        String notificationJson = new Gson().toJson(new NotificationMessage("You resigned. The game is over"));
         connections.connections.get(username).send(notificationJson);
 
     }
@@ -298,11 +311,11 @@ public class WebSocketHandler {
         } else if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
             var checkmateNotification = new NotificationMessage("Checkmate: " + gameData.game().getTeamTurn() + " is in checkmate.");
             connections.broadcast(username,gameData.gameID(), checkmateNotification);
-            //sendMessage(session.getRemote(), checkmateNotification);
+            gameData.game().setGameOver(true);
         } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
             connections.broadcast(username, gameData.gameID(),stalemateNotification);
-            //sendMessage(session.getRemote(), stalemateNotification);
+            gameData.game().setGameOver(true);
         }
     }
 
