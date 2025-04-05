@@ -118,7 +118,10 @@ public class WebSocketHandler {
     private void makeMove(Session session, String username, MakeMoveCommand command) throws IOException {
         //steps need to do according to gameplay.md
         //1. server verifies the validity of the move
+
         GameData gameData = gameDAO.getGame(command.getGameID());
+
+
         if (!gameData.whiteUsername().equals(username)
                 && !gameData.blackUsername().equals(username)) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("You are an observer stay in your lane dawg"));
@@ -301,14 +304,22 @@ public class WebSocketHandler {
         if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
             var checkNotification = new NotificationMessage("Check: " + gameData.game().getTeamTurn() + " is in check.");
             connections.broadcast(username, gameData.gameID(),checkNotification);
-            //sendMessage(session.getRemote(), checkNotification);
+            String notificationJson = new Gson().toJson(new NotificationMessage("Check: "
+                    + gameData.game().getTeamTurn() + " is in check."));
+            connections.getConnection(gameData.gameID(), username).send(notificationJson);
         } else if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
             var checkmateNotification = new NotificationMessage("Checkmate: " + gameData.game().getTeamTurn() + " is in checkmate.");
             connections.broadcast(username,gameData.gameID(), checkmateNotification);
+            String notificationJson = new Gson().toJson(new NotificationMessage("Checkmate: "
+                    + gameData.game().getTeamTurn() + " is in checkmate."));
+            connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
         } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
             connections.broadcast(username, gameData.gameID(),stalemateNotification);
+            String notificationJson = new Gson().toJson(new NotificationMessage("Stalemate: "
+                    + gameData.game().getTeamTurn() + " is in stalemate."));
+            connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
         }
     }
