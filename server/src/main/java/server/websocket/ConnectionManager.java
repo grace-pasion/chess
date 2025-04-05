@@ -9,69 +9,63 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<Integer, ArrayList<Session>> gameSessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer,
+            ConcurrentHashMap<String, Connection>> gameConnections;
 
-    public void add(String visitorName, Session session) {
-        var connection = new Connection(visitorName, session);
+    public ConnectionManager() {
+        gameConnections = new ConcurrentHashMap<>();
+    }
+
+    public void add(int gameID, String visitorName, Session session) {
+        ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
+        if (connections == null) {
+            connections = new ConcurrentHashMap<>();
+            gameConnections.put(gameID, connections);
+        }
+        Connection connection = new Connection(visitorName, session);
         connections.put(visitorName, connection);
+        gameConnections.put(gameID, connections);
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
+    public void remove(int gameID, String visitorName) {
+        ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
+        if (connections != null) {
+            connections.remove(visitorName);
+            if (connections.isEmpty()) {
+                gameConnections.remove(gameID);
+            }
+        }
     }
 
-    //change broadcast since this broadcasts to everyone
-    //need to broadcast just to people in the game
-    //also need to change it so the notification is a gson object
     public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
-        var removeList = new ArrayList<Session>();
+        ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
+        if (connections == null) return;
 
-        ArrayList<Session> sessions = gameSessions.get(gameID);
-        if (sessions == null) return;
+        ArrayList<String> toRemove = new ArrayList<>();
 
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                Connection connection = null;
-                for (Connection conn : connections.values()) {
-                    if (conn.session.equals(session)) {
-                        connection = conn;
-                        break;
-                    }
-                }
-                if (connection != null && !connection.visitorName.equals(excludeVisitorName)) {
-                    connection.send(new Gson().toJson(notification));
-                }
-            } else {
-                removeList.add(session);
+        for (var entry : connections.entrySet()) {
+            String visitorName = entry.getKey();
+            Connection connection = entry.getValue();
+            Session session = connection.session;
+
+            if (!session.isOpen()) {
+                toRemove.add(visitorName);
+            } else if (!visitorName.equals(excludeVisitorName)) {
+                connection.send(new Gson().toJson(notification));
             }
         }
 
-        sessions.removeAll(removeList);
-    }
-
-    public ArrayList<Session> getSessions(Integer gameID) {
-        ArrayList<Session> sessions = gameSessions.get(gameID);
-        if (sessions == null) {
-            return new ArrayList<>();
+        for (String visitor : toRemove) {
+            connections.remove(visitor);
         }
-        return sessions;
-    }
 
-    public static void saveSession(Integer gameID, Session session) {
-        ArrayList<Session> sessions = gameSessions.get(gameID);
-        if (sessions == null) {
-            sessions = new ArrayList<>();
-            gameSessions.put(gameID, sessions);
-        }
-        synchronized (sessions) {
-            sessions.add(session);
-            gameSessions.put(gameID, sessions);
+        if (connections.isEmpty()) {
+            gameConnections.remove(gameID);
         }
     }
 
-    public Connection getConnection(String visitorName) {
-        return connections.get(visitorName);
+        public Connection getConnection(int gameID, String visitorName) {
+            ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
+            return connections != null ? connections.get(visitorName) : null;
+        }
     }
-
-}
