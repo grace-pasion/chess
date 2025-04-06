@@ -198,4 +198,5 @@ public class ChessBoardRender {
             chessBoard[1][i] = SET_TEXT_COLOR_WHITE + WHITE_PAWN;
         }
     }
+
 }
