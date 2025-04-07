@@ -223,25 +223,24 @@ public class ChessBoardRender {
 
             String currentSquare = chessBoard[row][col];
             if (isLegalMove) {
-                if (!isBlackSquare) {
-                    out.print(SET_BG_COLOR_GREEN);
+                out.print(isBlackSquare ? SET_BG_COLOR_DARK_GREEN : SET_BG_COLOR_GREEN);
+            } else {
+                out.print(isBlackSquare ? SET_BG_COLOR_RED : SET_BG_COLOR_MAGENTA);
+            }
+
+            if (currentSquare == null || currentSquare.isEmpty()) {
+                if (isLegalMove && isBlackSquare) {
+                    out.print(SET_TEXT_COLOR_DARK_GREEN+BLACK_PAWN);
+                } else if (isLegalMove) {
+                    out.print(SET_TEXT_COLOR_GREEN+BLACK_PAWN);
+                } else if (isBlackSquare) {
+                    out.print(SET_TEXT_COLOR_RED + BLACK_PAWN);
                 } else {
-                    out.print(SET_BG_COLOR_DARK_GREEN);
-                }
-            } else if (isBlackSquare) {
-                out.print(SET_BG_COLOR_RED);
-                if (Objects.equals(currentSquare, EMPTY)) {
-                    out.print(SET_TEXT_COLOR_RED+BLACK_PAWN);
-                } else {
-                    out.print(currentSquare);
+                    out.print(SET_TEXT_COLOR_MAGENTA + BLACK_PAWN);
                 }
             } else {
-                out.print(SET_BG_COLOR_MAGENTA);
-                if (Objects.equals(currentSquare, EMPTY)) {
-                    out.print(SET_TEXT_COLOR_MAGENTA+BLACK_PAWN);
-                } else {
-                    out.print(currentSquare);
-                }
+                out.print(isBlackSquare ? SET_TEXT_COLOR_MAGENTA +
+                        currentSquare : SET_TEXT_COLOR_RED + currentSquare);  // Print the piece with the right color
             }
 
         }
@@ -274,7 +273,7 @@ public class ChessBoardRender {
 
         ChessPosition position = new ChessPosition(4, 4);
 
-        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
 
         board.addPiece( position, whiteKnight);
 
