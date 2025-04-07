@@ -3,6 +3,7 @@ package executers;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 
 /**
  * This handles in game user commands while they are in an
@@ -51,11 +52,14 @@ public class InGame {
      * for the in-game functionaltiy
      */
     public String help(String... params) {
-        return SET_TEXT_COLOR_BLUE+"Currently, our software " +
-                "\nengineers are working on implementing in-game " +
-                "\nfunctionality. Please be patient. " +
-                "\nThe only thing you can do is \"quit\" " +
-                "\nto exit back to postLogin functionality";
+        return SET_TEXT_COLOR_BLUE+"redraw"+
+                SET_TEXT_COLOR_RED+" - to redraw the chessboard"+SET_TEXT_COLOR_BLUE+
+                "\n\tleave"+ SET_TEXT_COLOR_RED+" - this will remove you from the game"+
+                SET_TEXT_COLOR_BLUE+"\n\tmove <start> <end>"+SET_TEXT_COLOR_RED+" - " +
+                "will move that piece at that location"+ SET_TEXT_COLOR_BLUE+"\n\tresign"+
+                SET_TEXT_COLOR_RED+" - to forfeit and end the game"+
+                SET_TEXT_COLOR_BLUE+"\n\thelp"+
+                SET_TEXT_COLOR_RED+" - with possible commands";
     }
 
     //PHASE 6:

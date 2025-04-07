@@ -268,19 +268,19 @@ public class ChessBoardRender {
 
     }
 
-    public static void main(String[] args) {
-        ChessBoard board = new ChessBoard();
-
-        ChessPosition position = new ChessPosition(4, 4);
-
-        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-
-        board.addPiece( position, whiteKnight);
-
-        ChessBoardRender render = new ChessBoardRender(new String[8][8]);
-        render.initializeWhite();
-
-        render.drawBoardWithMoves(System.out, board, position, whiteKnight);
-    }
+//    public static void main(String[] args) {
+//        ChessBoard board = new ChessBoard();
+//
+//        ChessPosition position = new ChessPosition(4, 4);
+//
+//        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+//
+//        board.addPiece( position, whiteKnight);
+//
+//        ChessBoardRender render = new ChessBoardRender(new String[8][8]);
+//        render.initializeWhite();
+//
+//        render.drawBoardWithMoves(System.out, board, position, whiteKnight);
+//    }
 }
 
