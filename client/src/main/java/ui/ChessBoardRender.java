@@ -1,8 +1,12 @@
 package ui;
 
+import chess.*;
+
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Objects;
 
+import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
 public class ChessBoardRender {
@@ -74,11 +78,7 @@ public class ChessBoardRender {
      * @param isWhite true if the player is white
      */
     private void drawChessboardRow(PrintStream out, int row, boolean isWhite) {
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_WHITE);
-        out.print(" ");
-        out.print(isWhite ? (8 - row) : (row + 1));
-        out.print(" ");
+        drawRowNumbers(row, isWhite);
 
         for (int col = 0; col < 8; col++) {
             boolean isBlackSquare = (row + col) % 2 == 1;
@@ -99,14 +99,18 @@ public class ChessBoardRender {
             }
         }
 
+        drawRowNumbers(row, isWhite);
+        out.print(RESET_BG_COLOR);
+        out.println();
+
+    }
+
+    public void drawRowNumbers(int row, boolean isWhite) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print(" ");
         out.print(isWhite ? (8 - row) : (row + 1));
         out.print(" ");
-        out.print(RESET_BG_COLOR);
-
-        out.println();
     }
 
     /**
@@ -199,4 +203,85 @@ public class ChessBoardRender {
         }
     }
 
+    public void drawLegalMoves(PrintStream out, int row, boolean isWhite,
+                               ChessBoard board, ChessPosition position,
+                               ChessPiece piece) {
+        Collection<ChessMove> legalMoves = piece.pieceMoves(board, position);
+        drawRowNumbers(row, isWhite);
+        for (int col = 0; col < 8; col++) {
+            boolean isBlackSquare = (row + col) % 2 == 1;
+            boolean isLegalMove = false;
+
+            // Check if the current square is a legal move
+            ChessPosition targetPosition = new ChessPosition(row, col);
+            for (ChessMove move : legalMoves) {
+                if (move.getEndPosition().equals(targetPosition)) {
+                    isLegalMove = true;
+                    break;
+                }
+            }
+
+            String currentSquare = chessBoard[row][col];
+            if (isLegalMove) {
+                if (!isBlackSquare) {
+                    out.print(SET_BG_COLOR_GREEN);
+                } else {
+                    out.print(SET_BG_COLOR_DARK_GREEN);
+                }
+            } else if (isBlackSquare) {
+                out.print(SET_BG_COLOR_RED);
+                if (Objects.equals(currentSquare, EMPTY)) {
+                    out.print(SET_TEXT_COLOR_RED+BLACK_PAWN);
+                } else {
+                    out.print(currentSquare);
+                }
+            } else {
+                out.print(SET_BG_COLOR_MAGENTA);
+                if (Objects.equals(currentSquare, EMPTY)) {
+                    out.print(SET_TEXT_COLOR_MAGENTA+BLACK_PAWN);
+                } else {
+                    out.print(currentSquare);
+                }
+            }
+
+        }
+        drawRowNumbers(row, isWhite);
+        out.print(RESET_BG_COLOR);
+        out.println();
+
+    }
+
+    public void drawBoardWithMoves(PrintStream out, ChessBoard board,
+                                   ChessPosition position, ChessPiece piece) {
+        out.print(ERASE_SCREEN);
+        out.println();
+
+        ChessGame.TeamColor color = piece.getTeamColor();
+        boolean isWhite = color.equals(ChessGame.TeamColor.WHITE);
+
+        drawBorder(out, isWhite);
+        for (int row = 0; row < 8; row++) {
+            drawLegalMoves(out, row, isWhite, board, position, piece);
+        }
+        drawBorder(out, isWhite);
+        out.print(RESET_BG_COLOR);
+        out.println();
+
+    }
+
+    public static void main(String[] args) {
+        ChessBoard board = new ChessBoard();
+
+        ChessPosition position = new ChessPosition(4, 4);
+
+        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+
+        board.addPiece( position, whiteKnight);
+
+        ChessBoardRender render = new ChessBoardRender(new String[8][8]);
+        render.initializeWhite();
+
+        render.drawBoardWithMoves(System.out, board, position, whiteKnight);
+    }
 }
+

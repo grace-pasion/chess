@@ -19,7 +19,7 @@ import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
  * This is my read eval print loop class. It handles three phases, which
  * includes prelogin, postlogin, and ingame functionality.
  */
-public class Repl implements NotificationHandler {
+public class Repl {
     private final PreLogin preLogin;
     private final PostLogin postLogin;
     private final InGame inGame;

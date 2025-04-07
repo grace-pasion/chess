@@ -53,8 +53,6 @@ public class WebSocketFacade extends Endpoint { //extend endPoint
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
