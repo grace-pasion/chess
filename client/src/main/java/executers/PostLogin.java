@@ -162,7 +162,7 @@ public class PostLogin {
                 side = ConnectCommand.Side.BLACK;
             }
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
-            server.joinGame(joinGameRequest, authToken);
+            //server.joinGame(joinGameRequest, authToken);
             ws.connect(authToken, gameId, side);
 
             ListGameRequest listGameRequest = new ListGameRequest(authToken);

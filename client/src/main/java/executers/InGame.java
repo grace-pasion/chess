@@ -87,9 +87,10 @@ public class InGame {
         return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
     }
 
-    private void redraw() {
+    private String redraw() {
         render.setBoard(gameData.game().getBoard());
         render.drawChessBoard(System.out, isWhite);
+        return SET_TEXT_COLOR_BLUE + "ChessBoard has been printed.";
     }
 
     private String move(String... params) {
@@ -124,11 +125,6 @@ public class InGame {
         ChessMove move = new ChessMove(start, end, null);
         webSocketFacade.makeMove(authToken, gameID,  move);
         return SET_TEXT_COLOR_BLUE + "Made move.";
-        //get position
-        //get the move
-        //and then turn it into a chess position
-        //then pass it into make move
-        //
     }
 
 
