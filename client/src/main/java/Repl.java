@@ -7,6 +7,7 @@ import executers.PreLogin;
 
 import java.util.Scanner;
 
+import facade.exception.ResponseException;
 import ui.ChessBoardRender;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -33,16 +34,17 @@ public class Repl implements NotificationHandler {
     private String[][] chessBoard = new String[8][8];
     private ChessBoardRender render;
 
+
     /**
      * Thid id just my constructor which initializes my REPL with
      * the given server URL, and it sets up prelogin, postlogin,
      * and ingame.
      * @param serverUrl the server url to connect to
      */
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl) throws ResponseException {
         preLogin = new PreLogin(serverUrl);
         postLogin = new PostLogin(serverUrl);
-        inGame = new InGame(serverUrl);
+        inGame = new InGame(serverUrl, this);
         render = new ChessBoardRender(chessBoard);
         this.currentState = "preLogin";
         this.printStatement = "[LOGGED_OUT] >>> ";
@@ -131,10 +133,10 @@ public class Repl implements NotificationHandler {
     private String handleInGame() {
         printStatement = "[IN_GAME] >>> ";
         //need to change logic for phase 6:
-        render.drawChessBoard(System.out, isWhite);
+        //render.drawChessBoard(System.out, isWhite);
         String line = initialize();
         String result = inGame.eval(line);
-        if (result.equalsIgnoreCase("quit")) {
+        if (result.contains("quit") || result.contains("leave") || result.contains("resign")) {
             currentState = "postLogin";
             postLogin.changeTransfer(false);
         }
@@ -179,9 +181,8 @@ public class Repl implements NotificationHandler {
 
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
-        // Replace with your actual logic for rendering the board
         ChessBoard newBoard = loadGameMessage.getGame().getBoard();
-        render.setBoard(newBoard); // Assuming you have a setter or update method
+        render.setBoard(newBoard);
         render.drawChessBoard(System.out, isWhite);
     }
 

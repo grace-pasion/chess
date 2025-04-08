@@ -2,6 +2,7 @@ package executers;
 
 import facade.exception.ResponseException;
 import websocket.messages.NotificationMessage;
+import websocketFacade.NotificationHandler;
 import websocketFacade.WebSocketFacade;
 
 import java.util.Arrays;
@@ -19,24 +20,31 @@ public class InGame {
      * The string representing the server URL
      */
     private final String serverUrl;
-
-    private final String authToken;
     private final WebSocketFacade webSocketFacade;
-    private final NotificationMessage notificationMessage;
+    private final NotificationHandler notificationHandler;
+    private int gameID;
+    private String authToken;
+    private boolean outOfGame;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
      * @param serverUrl a string represent the server URL
      */
-    public InGame(String authToken, String serverUrl, int gameID) throws ResponseException {
+    public InGame(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
         this.serverUrl = serverUrl;
-        this.authToken = authToken;
-        this.gameID = gameID;
-        notificationMessage = new NotificationMessage()
-        this.webSocketFacade = new WebSocketFacade(serverUrl, notificationMessage);
+        //this.gameID = gameID;
+        this.notificationHandler = notificationHandler;
+        this.webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
 
     }
 
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
     /**
      * This goes through the user input
      * and evalautes the command to see how to process it.
@@ -50,8 +58,46 @@ public class InGame {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch(cmd) {
             case "quit" -> "quit";
+            case "leave" -> leave();
+            case "resign" -> resign();
+            case "move" -> move(params);
+            case "redraw" -> redraw();
+            case "highlight moves" -> highlightMoves();
             default -> help();
         };
+    }
+
+    private String leave() {
+        webSocketFacade.leave(authToken, gameID);
+        outOfGame = true;
+        return SET_TEXT_COLOR_BLUE + "You have left the game.";
+    }
+
+    private String resign() {
+        webSocketFacade.resign(authToken, gameID);
+        outOfGame = true;
+        return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
+    }
+
+    private String redraw() {
+        return SET_TEXT_COLOR_BLUE + "Redrawing the chess board...\n\n";
+        //CALL DRAWCHESSBOARD
+
+    }
+
+    private String move(String... params) {
+        if (params.length != 2) {
+            return SET_TEXT_COLOR_RED + "You need to input it as: move <start> <end>";
+        }
+        //get the move
+        //and then turn it into a chess position
+        //then pass it into make move
+        return " ";
+        //
+    }
+
+    private String highlightMoves() {
+        return " ";
     }
 
     /**
@@ -74,6 +120,9 @@ public class InGame {
                 SET_TEXT_COLOR_RED+" - with possible commands";
     }
 
+    public boolean isOutOfGame() {
+        return outOfGame;
+    }
     //PHASE 6:
     //move
 
