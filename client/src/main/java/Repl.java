@@ -34,6 +34,7 @@ public class Repl implements NotificationHandler {
     private String[][] chessBoard = new String[8][8];
     private ChessBoardRender render;
 
+    //DEAL WITH PAWN PROMOTION
 
     /**
      * Thid id just my constructor which initializes my REPL with

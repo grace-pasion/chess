@@ -1,5 +1,8 @@
 package executers;
 
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import facade.exception.ResponseException;
 import websocket.messages.NotificationMessage;
 import websocketFacade.NotificationHandler;
@@ -89,12 +92,41 @@ public class InGame {
         if (params.length != 2) {
             return SET_TEXT_COLOR_RED + "You need to input it as: move <start> <end>";
         }
+
+        if (params[0].length() != 2 || params[1].length() != 2) {
+            return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
+        }
+        String startPosition = params[0].toLowerCase();
+        String endPosition = params[1].toLowerCase();
+        int startRow;
+        int startCol;
+        int endRow;
+        int endCol;
+        try {
+            startRow = Integer.parseInt(String.valueOf(startPosition.charAt(0)));
+            endRow = Integer.parseInt(String.valueOf(endPosition.charAt(0)));
+            endCol = endPosition.charAt(1) - 'a' + 1;
+            startCol = startPosition.charAt(1) - 'a' + 1;
+        } catch (NumberFormatException e) {
+            return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
+        }
+        if (startRow < 1 || startRow > 8 || startCol < 1 || startCol > 8
+                || endRow < 1 || endRow > 8 || endCol < 1 || endCol > 8) {
+            return SET_TEXT_COLOR_RED + "Rows must be 1-8 and columns a-h.";
+        }
+        //SOMEHOW DEAL WITH PAWN PROMOTION
+        ChessPosition start = new ChessPosition(startRow, startCol);
+        ChessPosition end = new ChessPosition(endRow, endCol);
+        ChessMove move = new ChessMove(start, end, null);
+        webSocketFacade.makeMove(authToken, gameID,  move);
+        return SET_TEXT_COLOR_BLUE + "Made move.";
+        //get position
         //get the move
         //and then turn it into a chess position
         //then pass it into make move
-        return " ";
         //
     }
+
 
     private String highlightMoves() {
         return " ";
