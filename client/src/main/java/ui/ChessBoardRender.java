@@ -268,6 +268,50 @@ public class ChessBoardRender {
 
     }
 
+    public void setBoard(ChessBoard board) {
+        ChessPiece[][] squares = board.getBoard();
+        for (int row= 0; row < 8; row++) {
+            for (int col = 0; col <8 ; col++) {
+                ChessPiece piece = squares[row][col];
+                boolean isBlackSquare = (row + col) % 2 == 1;
+                if (piece == null) {
+                    if (isBlackSquare) {
+                        chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+                    } else {
+                        chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
+                    }
+                } else {
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        chessBoard[row][col] = SET_TEXT_COLOR_BLACK;
+                        String symbol = switch (piece.getPieceType()) {
+                            case BISHOP -> BLACK_BISHOP;
+                            case ROOK -> BLACK_ROOK;
+                            case KNIGHT -> BLACK_KNIGHT;
+                            case QUEEN -> BLACK_QUEEN;
+                            case KING -> BLACK_KING;
+                            case PAWN -> BLACK_PAWN;
+                        };
+                        chessBoard[row][col] = chessBoard[row][col] +symbol;
+                    } else {
+                        chessBoard[row][col] = SET_TEXT_COLOR_WHITE;
+                        String symbol = switch (piece.getPieceType()) {
+                            case BISHOP -> WHITE_BISHOP;
+                            case ROOK -> WHITE_ROOK;
+                            case KNIGHT -> WHITE_KNIGHT;
+                            case QUEEN -> WHITE_QUEEN;
+                            case KING -> WHITE_KING;
+                            case PAWN -> WHITE_PAWN;
+                        };
+                        chessBoard[row][col] = chessBoard[row][col] +symbol;
+                    }
+
+                }
+
+
+            }
+        }
+    }
+
 //    public static void main(String[] args) {
 //        ChessBoard board = new ChessBoard();
 //

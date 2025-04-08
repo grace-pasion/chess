@@ -23,6 +23,10 @@ public class ChessBoard implements Cloneable {
     public ChessBoard() {
     }
 
+    public ChessPiece[][] getBoard() {
+        return squares;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *

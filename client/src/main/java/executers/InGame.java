@@ -1,5 +1,9 @@
 package executers;
 
+import facade.exception.ResponseException;
+import websocket.messages.NotificationMessage;
+import websocketFacade.WebSocketFacade;
+
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
@@ -16,13 +20,21 @@ public class InGame {
      */
     private final String serverUrl;
 
+    private final String authToken;
+    private final WebSocketFacade webSocketFacade;
+    private final NotificationMessage notificationMessage;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
      * @param serverUrl a string represent the server URL
      */
-    public InGame(String serverUrl) {
+    public InGame(String authToken, String serverUrl, int gameID) throws ResponseException {
         this.serverUrl = serverUrl;
+        this.authToken = authToken;
+        this.gameID = gameID;
+        notificationMessage = new NotificationMessage()
+        this.webSocketFacade = new WebSocketFacade(serverUrl, notificationMessage);
+
     }
 
     /**

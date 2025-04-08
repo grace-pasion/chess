@@ -1,3 +1,5 @@
+import chess.ChessBoard;
+import chess.ChessPiece;
 import executers.InGame;
 import executers.PostLogin;
 import executers.PreLogin;
@@ -7,6 +9,7 @@ import java.util.Scanner;
 
 import ui.ChessBoardRender;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import websocketFacade.NotificationHandler;
@@ -19,7 +22,7 @@ import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
  * This is my read eval print loop class. It handles three phases, which
  * includes prelogin, postlogin, and ingame functionality.
  */
-public class Repl {
+public class Repl implements NotificationHandler {
     private final PreLogin preLogin;
     private final PostLogin postLogin;
     private final InGame inGame;
@@ -165,18 +168,32 @@ public class Repl {
         return scanner.nextLine();
     }
 
+    @Override
     public void notify(ServerMessage message) {
-        if (message.getServerMessageType() == NOTIFICATION) {
-            ErrorMessage errorMessage = (ErrorMessage) message;
-            System.out.println(SET_TEXT_COLOR_RED+errorMessage);
-        } else if (message.getServerMessageType() == ERROR) {
-            NotificationMessage notificationMessage = (NotificationMessage) message;
-            System.out.println(SET_TEXT_COLOR_RED+notificationMessage);
-        } else {
-            //load game stuff (UI)
-            //get the game from the message
-            //then get the board and feed that board into the UI
+        switch (message.getServerMessageType()) {
+            case ERROR -> errorMessage((ErrorMessage) message);
+            case NOTIFICATION -> notification((NotificationMessage) message);
+            case LOAD_GAME -> loadGame((LoadGameMessage) message);
         }
     }
+
+    @Override
+    public void loadGame(LoadGameMessage loadGameMessage) {
+        // Replace with your actual logic for rendering the board
+        ChessBoard newBoard = loadGameMessage.getGame().getBoard();
+        render.setBoard(newBoard); // Assuming you have a setter or update method
+        render.drawChessBoard(System.out, isWhite);
+    }
+
+    @Override
+    public void notification(NotificationMessage notificationMessage) {
+        System.out.println(SET_TEXT_COLOR_BLUE + notificationMessage.getMessage());
+    }
+
+    @Override
+    public void errorMessage(ErrorMessage errorMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + errorMessage.getErrorMessage());
+    }
+
 
 }
