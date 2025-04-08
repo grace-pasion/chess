@@ -4,7 +4,7 @@ import facade.ServerFacade;
 import facade.exception.ResponseException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ResponseException {
         ServerFacade serverFacade = new ServerFacade("http://localhost:8080");
         try {
             serverFacade.clear();

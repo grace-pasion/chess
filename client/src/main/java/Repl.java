@@ -8,6 +8,7 @@ import executers.PreLogin;
 import java.util.Scanner;
 
 import facade.exception.ResponseException;
+import model.GameData;
 import ui.ChessBoardRender;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -33,6 +34,7 @@ public class Repl implements NotificationHandler {
     private boolean isWhite;
     private String[][] chessBoard = new String[8][8];
     private ChessBoardRender render;
+    private GameData gameData;
 
     //DEAL WITH PAWN PROMOTION
 
@@ -44,7 +46,7 @@ public class Repl implements NotificationHandler {
      */
     public Repl(String serverUrl) throws ResponseException {
         preLogin = new PreLogin(serverUrl);
-        postLogin = new PostLogin(serverUrl);
+        postLogin = new PostLogin(serverUrl, this);
         inGame = new InGame(serverUrl, this);
         render = new ChessBoardRender(chessBoard);
         this.currentState = "preLogin";
@@ -135,6 +137,8 @@ public class Repl implements NotificationHandler {
         printStatement = "[IN_GAME] >>> ";
         //need to change logic for phase 6:
         //render.drawChessBoard(System.out, isWhite);
+        inGame.setGameData(gameData);
+        inGame.setIsWhite(isWhite);
         String line = initialize();
         String result = inGame.eval(line);
         if (result.contains("quit") || result.contains("leave") || result.contains("resign")) {
@@ -196,6 +200,7 @@ public class Repl implements NotificationHandler {
     public void errorMessage(ErrorMessage errorMessage) {
         System.out.println(SET_TEXT_COLOR_RED + errorMessage.getErrorMessage());
     }
+
 
 
 }

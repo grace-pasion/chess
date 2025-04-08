@@ -4,10 +4,11 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
 import facade.exception.ResponseException;
+import model.GameData;
 import websocket.messages.NotificationMessage;
 import websocketFacade.NotificationHandler;
 import websocketFacade.WebSocketFacade;
-
+import ui.ChessBoardRender;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
@@ -28,6 +29,9 @@ public class InGame {
     private int gameID;
     private String authToken;
     private boolean outOfGame;
+    private GameData gameData;
+    private ChessBoardRender render;
+    private boolean isWhite;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
@@ -38,6 +42,7 @@ public class InGame {
         //this.gameID = gameID;
         this.notificationHandler = notificationHandler;
         this.webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
+        render = new ChessBoardRender(new String[8][8]);
 
     }
 
@@ -82,10 +87,9 @@ public class InGame {
         return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
     }
 
-    private String redraw() {
-        return SET_TEXT_COLOR_BLUE + "Redrawing the chess board...\n\n";
-        //CALL DRAWCHESSBOARD
-
+    private void redraw() {
+        render.setBoard(gameData.game().getBoard());
+        render.drawChessBoard(System.out, isWhite);
     }
 
     private String move(String... params) {
@@ -155,16 +159,12 @@ public class InGame {
     public boolean isOutOfGame() {
         return outOfGame;
     }
-    //PHASE 6:
-    //move
 
-    //resign
+    public void setGameData(GameData gameData) {
+        this.gameData = gameData;
+    }
 
-    //highlight legal moves
-
-    //leave
-
-    //redraw chess board
-
-    //help
+    public void setIsWhite(boolean isWhite) {
+        this.isWhite = isWhite;
+    }
 }

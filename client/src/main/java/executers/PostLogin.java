@@ -5,7 +5,11 @@ import request.*;
 import result.ListGameResult;
 import facade.ServerFacade;
 import facade.exception.ResponseException;
+import websocket.commands.ConnectCommand;
+import websocketFacade.NotificationHandler;
+import websocketFacade.WebSocketFacade;
 
+import javax.management.Notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,14 +21,18 @@ public class PostLogin {
     private String authToken;
     private boolean transferInGame;
     private boolean isWhite;
+    private NotificationHandler notificationHandler;
+    private final WebSocketFacade ws;
+    private GameData gameData;
 
     /**
      * This is just a constructor that initializes our
      * server.
      * @param serverUrl a string representing the server url
      */
-    public PostLogin(String serverUrl) {
+    public PostLogin(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
         server = new ServerFacade(serverUrl);
+        this.ws = new WebSocketFacade(serverUrl, notificationHandler);
         transferInGame = false;
     }
 
@@ -147,8 +155,27 @@ public class PostLogin {
             }
             isWhite = playerColor.equals("WHITE");
 
+            ConnectCommand.Side side;
+            if (isWhite) {
+                side = ConnectCommand.Side.WHITE;
+            } else {
+                side = ConnectCommand.Side.BLACK;
+            }
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
             server.joinGame(joinGameRequest, authToken);
+            ws.connect(authToken, gameId, side);
+
+            ListGameRequest listGameRequest = new ListGameRequest(authToken);
+            ListGameResult listGameResult = server.listGame(listGameRequest);
+            var games = listGameResult.getGames();
+            //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
+            for (GameData game : games) {
+                if (game.gameID() == gameId) {
+                    gameData = game;
+                    break;
+                }
+            }
+
             transferInGame = true;
             return SET_TEXT_COLOR_BLUE+
                     "Successfully joined game "+gameId+" as "+playerColor+".";
@@ -185,6 +212,10 @@ public class PostLogin {
             //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
             for (GameData game : games) {
                 if (game.gameID() == gameId) {
+
+                    ConnectCommand.Side side = ConnectCommand.Side.OBSERVER;
+                    ws.connect(authToken, gameId, side);
+
                     transferInGame = true;
                     return SET_TEXT_COLOR_BLUE+
                             "Successfully joined "+game.gameName()+" as a viewer.";
@@ -272,4 +303,7 @@ public class PostLogin {
         transferInGame = stillCanTransfer;
     }
 
+    public GameData getGameData() {
+        return gameData;
+    }
 }
