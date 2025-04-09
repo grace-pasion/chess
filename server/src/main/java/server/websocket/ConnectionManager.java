@@ -28,15 +28,11 @@ public class ConnectionManager {
     }
 
     public void remove(int gameID, String visitorName) {
-        System.out.println("Attempting to remove player "
-                + visitorName + " from game " + gameID);
         ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
         if (connections != null) {
-            System.out.println("Connections found, removing player " + visitorName);
             connections.remove(visitorName);
             if (connections.isEmpty()) {
                 gameConnections.remove(gameID);
-                System.out.println("Game " + gameID + " removed from gameConnections.");
             }
         }
     }

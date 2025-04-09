@@ -23,7 +23,6 @@ public class PostLogin {
     private boolean isWhite;
     private NotificationHandler notificationHandler;
     private final WebSocketFacade ws;
-    private GameData gameData;
 
     /**
      * This is just a constructor that initializes our
@@ -166,16 +165,16 @@ public class PostLogin {
             server.joinGame(joinGameRequest, authToken);
 
 
-            ListGameRequest listGameRequest = new ListGameRequest(authToken);
-            ListGameResult listGameResult = server.listGame(listGameRequest);
-            var games = listGameResult.getGames();
-            //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
-            for (GameData game : games) {
-                if (game.gameID() == gameId) {
-                    gameData = game;
-                    break;
-                }
-            }
+//            ListGameRequest listGameRequest = new ListGameRequest(authToken);
+//            ListGameResult listGameResult = server.listGame(listGameRequest);
+//            var games = listGameResult.getGames();
+//            //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
+//            for (GameData game : games) {
+//                if (game.gameID() == gameId) {
+//                    gameData = game;
+//                    break;
+//                }
+//            }
 
             transferInGame = true;
             return SET_TEXT_COLOR_BLUE+
@@ -302,9 +301,5 @@ public class PostLogin {
      */
     public void changeTransfer(boolean stillCanTransfer) {
         transferInGame = stillCanTransfer;
-    }
-
-    public GameData getGameData() {
-        return gameData;
     }
 }

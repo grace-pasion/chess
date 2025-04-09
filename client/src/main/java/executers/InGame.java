@@ -1,9 +1,6 @@
 package executers;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import facade.exception.ResponseException;
 import model.GameData;
 import websocket.messages.NotificationMessage;
@@ -27,11 +24,10 @@ public class InGame {
      * The string representing the server URL
      */
     private final String serverUrl;
-    private final WebSocketFacade webSocketFacade;
+    private WebSocketFacade webSocketFacade;
     private final NotificationHandler notificationHandler;
     private int gameID;
     private String authToken;
-    private boolean outOfGame;
     private ChessGame game;
     private ChessBoardRender render;
     private boolean isWhite;
@@ -74,7 +70,7 @@ public class InGame {
             case "resign" -> resign();
             case "move" -> move(params);
             case "redraw" -> redraw();
-            case "highlight moves" -> highlightMoves();
+            case "highlight" -> highlightMoves(params);
             default -> help();
         };
     }
@@ -82,6 +78,7 @@ public class InGame {
     private String leave() {
         webSocketFacade.leave(authToken, gameID);
         adios = true;
+        webSocketFacade = null;
         return SET_TEXT_COLOR_BLUE + "You have left the game.";
     }
 
@@ -150,8 +147,36 @@ public class InGame {
     }
 
 
-    private String highlightMoves() {
-        return " ";
+    private String highlightMoves(String... params) {
+        if (params.length != 1) {
+            return SET_TEXT_COLOR_RED + "You need to input it as: highlight <chessPosition>";
+        }
+        if (params[0].length() != 2) {
+            return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
+        }
+        String startPosition = params[0].toLowerCase();
+        int startRow;
+        int startCol;
+        try {
+            startRow = Integer.parseInt(String.valueOf(startPosition.charAt(0)));
+            startCol = startPosition.charAt(1) - 'a' + 1;
+        } catch (NumberFormatException e) {
+            return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
+        }
+        if (startRow < 1 || startRow > 8 || startCol < 1 || startCol > 8) {
+            return SET_TEXT_COLOR_RED + "Rows must be 1-8 and columns a-h.";
+        }
+        ChessPosition start = new ChessPosition(startRow, startCol);
+        ChessPiece piece;
+        if (game.getBoard().getPiece(start) == null) {
+            return SET_TEXT_COLOR_RED + "This space is empty";
+        } else {
+            piece = game.getBoard().getPiece(start);
+        }
+        render.drawBoardWithMoves(System.out, game.getBoard(),
+                start, piece);
+
+        return SET_TEXT_COLOR_BLUE + "All the valid moves";
     }
 
     /**
@@ -170,6 +195,8 @@ public class InGame {
                 SET_TEXT_COLOR_BLUE+"\n\tmove <start> <end>"+SET_TEXT_COLOR_RED+" - " +
                 "will move that piece at that location"+ SET_TEXT_COLOR_BLUE+"\n\tresign"+
                 SET_TEXT_COLOR_RED+" - to forfeit and end the game"+
+                SET_TEXT_COLOR_BLUE+"\n\thighlight <chessPosition>"+
+                SET_TEXT_COLOR_RED+" - to get all possible moves"+
                 SET_TEXT_COLOR_BLUE+"\n\thelp"+
                 SET_TEXT_COLOR_RED+" - with possible commands";
     }

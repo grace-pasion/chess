@@ -8,7 +8,6 @@ import executers.PreLogin;
 import java.util.Scanner;
 
 import facade.exception.ResponseException;
-import model.GameData;
 import ui.ChessBoardRender;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -138,7 +137,7 @@ public class Repl implements NotificationHandler {
         printStatement = "[IN_GAME] >>> ";
         //need to change logic for phase 6:
         //render.drawChessBoard(System.out, isWhite);
-        inGame.setGame(game);
+        //inGame.setGame(game);
         inGame.setIsWhite(isWhite);
         String line = initialize();
         String result = inGame.eval(line);
@@ -190,6 +189,7 @@ public class Repl implements NotificationHandler {
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
         this.game = loadGameMessage.getGame();
+        inGame.setGame(game);
         //issue is that newBoard sends with white always ontop. Need
         // to flip it if it is white
         ChessBoard newBoard = loadGameMessage.getGame().getBoard();

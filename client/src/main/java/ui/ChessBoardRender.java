@@ -208,7 +208,9 @@ public class ChessBoardRender {
                                ChessBoard board, ChessPosition position,
                                ChessPiece piece) {
         Collection<ChessMove> legalMoves = piece.pieceMoves(board, position);
+
         drawRowNumbers(row, isWhite);
+
         for (int col = 0; col < 8; col++) {
             boolean isBlackSquare = (row + col) % 2 == 1;
             boolean isLegalMove = false;
@@ -216,7 +218,9 @@ public class ChessBoardRender {
             // Check if the current square is a legal move
             ChessPosition targetPosition = new ChessPosition(row, col);
             for (ChessMove move : legalMoves) {
-                if (move.getEndPosition().equals(targetPosition)) {
+                ChessPosition legalMoveEndPosition = move.getEndPosition();
+                if (legalMoveEndPosition.getRow() - 1 == targetPosition.getRow() &&
+                        legalMoveEndPosition.getColumn() - 1 == targetPosition.getColumn()) {
                     isLegalMove = true;
                     break;
                 }
@@ -240,8 +244,8 @@ public class ChessBoardRender {
                     out.print(SET_TEXT_COLOR_MAGENTA + BLACK_PAWN);
                 }
             } else {
-                out.print(isBlackSquare ? SET_TEXT_COLOR_MAGENTA +
-                        currentSquare : SET_TEXT_COLOR_RED + currentSquare);  // Print the piece with the right color
+                out.print(isBlackSquare ? SET_TEXT_COLOR_RED +
+                        currentSquare : SET_TEXT_COLOR_MAGENTA + currentSquare);  // Print the piece with the right color
             }
 
         }
@@ -255,13 +259,15 @@ public class ChessBoardRender {
                                    ChessPosition position, ChessPiece piece) {
         out.print(ERASE_SCREEN);
         out.println();
-
+        setBoard(board);
         ChessGame.TeamColor color = piece.getTeamColor();
         boolean isWhite = color.equals(ChessGame.TeamColor.WHITE);
 
         drawBorder(out, isWhite);
+
         for (int row = 0; row < 8; row++) {
-            drawLegalMoves(out, row, isWhite, board, position, piece);
+            int displayRow = isWhite ? (7-row) : row;
+            drawLegalMoves(out, displayRow, isWhite, board, position, piece);
         }
         drawBorder(out, isWhite);
         out.print(RESET_BG_COLOR);
