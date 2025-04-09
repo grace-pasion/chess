@@ -15,6 +15,8 @@ import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import websocketFacade.NotificationHandler;
 import chess.ChessGame;
+import websocketFacade.WebSocketFacade;
+
 import static ui.EscapeSequences.*;
 import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
 import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
@@ -34,6 +36,7 @@ public class Repl implements NotificationHandler {
     private String[][] chessBoard = new String[8][8];
     private ChessBoardRender render;
     private ChessGame game;
+    private WebSocketFacade ws;
 
     //DEAL WITH PAWN PROMOTION
 
@@ -45,9 +48,11 @@ public class Repl implements NotificationHandler {
      */
     public Repl(String serverUrl) throws ResponseException {
         preLogin = new PreLogin(serverUrl);
-        postLogin = new PostLogin(serverUrl, this);
-        inGame = new InGame(serverUrl, this);
+        ws = new WebSocketFacade(serverUrl, this);
+        postLogin = new PostLogin(serverUrl, this, ws);
+        inGame = new InGame(serverUrl, this, ws);
         render = new ChessBoardRender(chessBoard);
+
         this.currentState = "preLogin";
         this.printStatement = "[LOGGED_OUT] >>> ";
     }
@@ -114,6 +119,8 @@ public class Repl implements NotificationHandler {
             currentState = "inGame";
             isWhite = postLogin.isWhiteOrBlack();
             inGame.setAuthToken(authToken);
+            int gameID = postLogin.getGameID();
+            inGame.setGameID(gameID);
             //render.initializeBoard(isWhite);
         }
         if (result.equalsIgnoreCase("quit")

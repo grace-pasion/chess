@@ -37,11 +37,11 @@ public class InGame {
      * right server URL
      * @param serverUrl a string represent the server URL
      */
-    public InGame(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
+    public InGame(String serverUrl, NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
         this.serverUrl = serverUrl;
         //this.gameID = gameID;
         this.notificationHandler = notificationHandler;
-        this.webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
+        this.webSocketFacade = ws;
         adios = false;
         render = new ChessBoardRender(new String[8][8]);
 

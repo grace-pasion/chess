@@ -35,7 +35,7 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-
+            GameData gameData =  gameDAO.getGame(command.getGameID());
             //validate authTokens by checking it and throwing errors if it is not got
             String username = getUsername(command.getAuthToken());
 
@@ -44,6 +44,7 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case CONNECT -> {
                     ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+                    //connections.add(connectCommand.getGameID(), username, session);
                     connect(session, username, connectCommand);
                 }
                 case MAKE_MOVE -> {
@@ -83,23 +84,12 @@ public class WebSocketHandler {
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
             return;
         }
-        //find authToken correctly
 
-        if ((gameData.whiteUsername() != null && command.getSide() == WHITE) ||
-                (gameData.blackUsername() != null && command.getSide() == BLACK)) {
-            String errorMessageJson = new Gson().toJson(new ErrorMessage("Already Taken"));
-            connections.getConnection(command.getGameID(), username).send(errorMessageJson);
-            return;
-        }
 
-        String side = "";
-        if (command.getSide() == ConnectCommand.Side.WHITE) {
-            gameData = new GameData(gameData.gameID(),
-                    username, gameData.blackUsername(),gameData.gameName(), gameData.game());
+        String side;
+        if (username.equals(gameData.whiteUsername())) {
             side = "white";
-        } else if (command.getSide() == ConnectCommand.Side.BLACK) {
-            gameData = new GameData(gameData.gameID(),
-                    gameData.whiteUsername(), username,gameData.gameName(), gameData.game());
+        } else if (username.equals(gameData.blackUsername())) {
             side = "black";
         } else {
             side = "observer";
@@ -137,10 +127,11 @@ public class WebSocketHandler {
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
             return;
         }
-        if ((gameData.whiteUsername().equals(username)
-                && gameData.game().getTeamTurn() != ChessGame.TeamColor.WHITE) ||
-                (gameData.blackUsername().equals(username)
-                && gameData.game().getTeamTurn() != ChessGame.TeamColor.BLACK)) {
+        ChessGame.TeamColor currentTurn = gameData.game().getTeamTurn();
+        if ((ChessGame.TeamColor.WHITE.equals(currentTurn) &&
+                !username.equals(gameData.whiteUsername())) ||
+                (ChessGame.TeamColor.BLACK.equals(currentTurn) &&
+                        !username.equals(gameData.blackUsername()))) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("It's not your turn"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
             return;
@@ -159,40 +150,41 @@ public class WebSocketHandler {
             newGame.makeMove(move);
             GameData newData = new GameData(gameData.gameID(), gameData.whiteUsername(),
                     gameData.blackUsername(), gameData.gameName(), newGame);
+
+            //3. send a load game message to all the clients (including the root client)
+            // with an updated game
+            //sendMessage(session.getRemote(), new LoadGameMessage(gameData.game()));
+            String loadGameMessageJson = new Gson().toJson(new LoadGameMessage(gameData.game()));
+            connections.getConnection(command.getGameID(), username).send(loadGameMessageJson);
+            LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
+            connections.broadcast(username,gameData.gameID(), loadGameMessage);
+
+            //4. sends a notification message to all other clients in the game
+            // informing them what move was made
+            String moveDescription = username + " made a move: " +
+                    move.getStartPosition() + " to " + move.getEndPosition();
+            var notification = new NotificationMessage(moveDescription);
+            connections.broadcast(username, gameData.gameID(), notification);
+
+            //5. if the move results in check, checkmate, or stalement the server
+            //sends a notification message to all clients
+            resultsInBadNews(username, gameData, session);
+
+            //gameDAO.updateGame(gameData.gameID(), gameData);
             gameDAO.updateGame(gameData.gameID(), newData);
         } catch (InvalidMoveException e) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("Made move failed"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
-            return;
         }
 
 
-        //3. send a load game message to all the clients (including the root client)
-        // with an updated game
-        //sendMessage(session.getRemote(), new LoadGameMessage(gameData.game()));
-        String loadGameMessageJson = new Gson().toJson(new LoadGameMessage(gameData.game()));
-        connections.getConnection(command.getGameID(), username).send(loadGameMessageJson);
-        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
-        connections.broadcast(username,gameData.gameID(), loadGameMessage);
 
-        //4. sends a notification message to all other clients in the game
-        // informing them what move was made
-        String moveDescription = username + " made a move: " +
-                move.getStartPosition() + " to " + move.getEndPosition();
-        var notification = new NotificationMessage(moveDescription);
-        connections.broadcast(username, gameData.gameID(), notification);
-
-        //5. if the move results in check, checkmate, or stalement the server
-        //sends a notification message to all clients
-        resultsInBadNews(username, gameData, session);
-
-        //gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
     private void leaveGame(Session session, String username, LeaveGameCommand command) throws IOException {
         //1. If a player is leaving, update game to remove root client (game is updated
         //in database)
-        GameData  gameData = gameDAO.getGame(command.getGameID());
+        GameData gameData = gameDAO.getGame(command.getGameID());
         if (gameData == null) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is not found"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);

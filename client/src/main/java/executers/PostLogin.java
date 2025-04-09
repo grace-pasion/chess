@@ -23,15 +23,16 @@ public class PostLogin {
     private boolean isWhite;
     private NotificationHandler notificationHandler;
     private final WebSocketFacade ws;
+    private int gameID;
 
     /**
      * This is just a constructor that initializes our
      * server.
      * @param serverUrl a string representing the server url
      */
-    public PostLogin(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
+    public PostLogin(String serverUrl, NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
         server = new ServerFacade(serverUrl);
-        this.ws = new WebSocketFacade(serverUrl, notificationHandler);
+        this.ws = ws;
         transferInGame = false;
     }
 
@@ -142,8 +143,10 @@ public class PostLogin {
                         "Invalid parameters. For join games: join <GAME_ID> [WHITE|BLACK]";
             }
             int gameId;
+
             try {
                 gameId = Integer.parseInt(params[0]);
+                this.gameID = gameId;
             } catch (NumberFormatException e) {
                 return SET_TEXT_COLOR_RED+"The Game ID is supposed to be a number";
             }
@@ -161,20 +164,9 @@ public class PostLogin {
                 side = ConnectCommand.Side.BLACK;
             }
             ws.connect(authToken, gameId, side);
+
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameId);
             server.joinGame(joinGameRequest, authToken);
-
-
-//            ListGameRequest listGameRequest = new ListGameRequest(authToken);
-//            ListGameResult listGameResult = server.listGame(listGameRequest);
-//            var games = listGameResult.getGames();
-//            //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
-//            for (GameData game : games) {
-//                if (game.gameID() == gameId) {
-//                    gameData = game;
-//                    break;
-//                }
-//            }
 
             transferInGame = true;
             return SET_TEXT_COLOR_BLUE+
@@ -292,6 +284,9 @@ public class PostLogin {
         return isWhite;
     }
 
+    public int getGameID() {
+        return gameID;
+    }
     /**
      * This updates whether player is still allowed to transfer to in-game
      * (useful for when they go back from in-game, and they
