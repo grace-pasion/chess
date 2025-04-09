@@ -1,5 +1,6 @@
 package executers;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
@@ -9,6 +10,8 @@ import websocket.messages.NotificationMessage;
 import websocketFacade.NotificationHandler;
 import websocketFacade.WebSocketFacade;
 import ui.ChessBoardRender;
+
+import java.io.PrintStream;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
@@ -29,9 +32,10 @@ public class InGame {
     private int gameID;
     private String authToken;
     private boolean outOfGame;
-    private GameData gameData;
+    private ChessGame game;
     private ChessBoardRender render;
     private boolean isWhite;
+    private boolean adios;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
@@ -42,6 +46,7 @@ public class InGame {
         //this.gameID = gameID;
         this.notificationHandler = notificationHandler;
         this.webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
+        adios = false;
         render = new ChessBoardRender(new String[8][8]);
 
     }
@@ -78,17 +83,19 @@ public class InGame {
     private String leave() {
         webSocketFacade.leave(authToken, gameID);
         outOfGame = true;
+        adios = true;
         return SET_TEXT_COLOR_BLUE + "You have left the game.";
     }
 
     private String resign() {
         webSocketFacade.resign(authToken, gameID);
         outOfGame = true;
+        adios = true;
         return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
     }
 
     private String redraw() {
-        render.setBoard(gameData.game().getBoard());
+        render.setBoard(game.getBoard());
         render.drawChessBoard(System.out, isWhite);
         return SET_TEXT_COLOR_BLUE + "ChessBoard has been printed.";
     }
@@ -124,6 +131,9 @@ public class InGame {
         ChessPosition end = new ChessPosition(endRow, endCol);
         ChessMove move = new ChessMove(start, end, null);
         webSocketFacade.makeMove(authToken, gameID,  move);
+        game.getBoard().movePiece(start, end);
+        render.setBoard(game.getBoard());
+        render.drawChessBoard(System.out, isWhite);
         return SET_TEXT_COLOR_BLUE + "Made move.";
     }
 
@@ -156,11 +166,15 @@ public class InGame {
         return outOfGame;
     }
 
-    public void setGameData(GameData gameData) {
-        this.gameData = gameData;
+    public void setGame(ChessGame game) {
+        this.game= game;
     }
 
     public void setIsWhite(boolean isWhite) {
         this.isWhite = isWhite;
+    }
+
+    public boolean getAdios() {
+        return adios;
     }
 }
