@@ -63,7 +63,8 @@ public class ChessBoardRender {
      */
     private void drawBoard(PrintStream out, boolean isWhite) {
         for (int row = 0; row < 8; row++) {
-            drawChessboardRow(out, row, isWhite);
+            int displayRow = isWhite ? (7 - row) : row;
+            drawChessboardRow(out, displayRow, isWhite);
         }
     }
 
@@ -109,7 +110,7 @@ public class ChessBoardRender {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print(" ");
-        out.print(isWhite ? (8 - row) : (row + 1));
+        out.print(row+1);
         out.print(" ");
     }
 
@@ -269,6 +270,7 @@ public class ChessBoardRender {
     }
 
     public void setBoard(ChessBoard board) {
+
         ChessPiece[][] squares = board.getBoard();
         for (int row= 0; row < 8; row++) {
             for (int col = 0; col <8 ; col++) {
@@ -306,8 +308,6 @@ public class ChessBoardRender {
                     }
 
                 }
-
-
             }
         }
     }

@@ -150,6 +150,7 @@ public class Repl implements NotificationHandler {
         return result;
     }
 
+
     /**
      * This is just a bunch of print statements that will appear to the user
      * when they initially start the server
@@ -188,8 +189,11 @@ public class Repl implements NotificationHandler {
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
         this.game = loadGameMessage.getGame();
+        //issue is that newBoard sends with white always ontop. Need
+        // to flip it if it is white
         ChessBoard newBoard = loadGameMessage.getGame().getBoard();
         render.setBoard(newBoard);
+        this.isWhite = postLogin.isWhiteOrBlack();
         render.drawChessBoard(System.out, isWhite);
     }
 
