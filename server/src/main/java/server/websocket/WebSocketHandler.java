@@ -45,19 +45,19 @@ public class WebSocketHandler {
                 case CONNECT -> {
                     ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
                     //connections.add(connectCommand.getGameID(), username, session);
-                    connect(session, username, connectCommand);
+                    connect(session, username, connectCommand, gameData);
                 }
                 case MAKE_MOVE -> {
                     MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(session, username, moveCommand);
+                    makeMove(session, username, moveCommand, gameData);
                 }
                 case LEAVE -> {
                     LeaveGameCommand leaveCommand = new Gson().fromJson(message, LeaveGameCommand.class);
-                    leaveGame(session, username, leaveCommand);
+                    leaveGame(session, username, leaveCommand, gameData);
                 }
                 case RESIGN -> {
                     ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
-                    resign(session, username, resignCommand);
+                    resign(session, username, resignCommand, gameData);
                 }
             }
         } catch (Exception ex) {
@@ -69,8 +69,8 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(Session session, String username, ConnectCommand command) throws IOException {
-        GameData gameData = gameDAO.getGame(command.getGameID());
+    private void connect(Session session, String username, ConnectCommand command,  GameData gameData) throws IOException {
+        //GameData gameData = gameDAO.getGame(command.getGameID());
         connections.add(command.getGameID(), username, session);
 
         if (gameData == null) {
@@ -101,15 +101,15 @@ public class WebSocketHandler {
         var notification = new NotificationMessage(message);
         connections.broadcast(username,gameData.gameID(), notification);
 
-        gameDAO.updateGame(gameData.gameID(), gameData);
+        //gameDAO.updateGame(gameData.gameID(), gameData);
     }
 
 
-    private void makeMove(Session session, String username, MakeMoveCommand command) throws IOException {
+    private void makeMove(Session session, String username, MakeMoveCommand command,  GameData gameData) throws IOException {
         //steps need to do according to gameplay.md
         //1. server verifies the validity of the move
 
-        GameData gameData = gameDAO.getGame(command.getGameID());
+        //GameData gameData = gameDAO.getGame(command.getGameID());
 
 
         if (!gameData.whiteUsername().equals(username)
@@ -181,10 +181,10 @@ public class WebSocketHandler {
 
     }
 
-    private void leaveGame(Session session, String username, LeaveGameCommand command) throws IOException {
+    private void leaveGame(Session session, String username, LeaveGameCommand command,  GameData gameData) throws IOException {
         //1. If a player is leaving, update game to remove root client (game is updated
         //in database)
-        GameData gameData = gameDAO.getGame(command.getGameID());
+        //GameData gameData = gameDAO.getGame(command.getGameID());
         if (gameData == null) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is not found"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
@@ -217,9 +217,9 @@ public class WebSocketHandler {
 
     }
 
-    private void resign(Session session, String username, ResignCommand command) throws IOException {
+    private void resign(Session session, String username, ResignCommand command,  GameData gameData) throws IOException {
         //1. server marks the game as over (no more moves can be made). Game is updated in the database
-        GameData gameData = gameDAO.getGame(command.getGameID());
+        //GameData gameData = gameDAO.getGame(command.getGameID());
         if (gameData == null) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("The Game is not found"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
