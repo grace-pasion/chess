@@ -114,6 +114,7 @@ public class Repl implements NotificationHandler {
         if (postLogin.isTransferInGame()) {
             currentState = "inGame";
             isWhite = postLogin.isWhiteOrBlack();
+            inGame.setAuthToken(authToken);
             //render.initializeBoard(isWhite);
         }
         if (result.equalsIgnoreCase("quit")
@@ -206,6 +207,8 @@ public class Repl implements NotificationHandler {
     public void errorMessage(ErrorMessage errorMessage) {
         System.out.println(SET_TEXT_COLOR_RED + errorMessage.getErrorMessage());
     }
+
+
 
 
 

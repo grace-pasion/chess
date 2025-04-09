@@ -70,8 +70,7 @@ public class InGame {
         var cmd = (tokens.length >0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch(cmd) {
-            case "quit" -> "quit";
-            case "leave" -> leave();
+            case "quit", "leave" -> leave();
             case "resign" -> resign();
             case "move" -> move(params);
             case "redraw" -> redraw();
@@ -82,15 +81,12 @@ public class InGame {
 
     private String leave() {
         webSocketFacade.leave(authToken, gameID);
-        outOfGame = true;
         adios = true;
         return SET_TEXT_COLOR_BLUE + "You have left the game.";
     }
 
     private String resign() {
         webSocketFacade.resign(authToken, gameID);
-        outOfGame = true;
-        adios = true;
         return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
     }
 
@@ -126,10 +122,26 @@ public class InGame {
                 || endRow < 1 || endRow > 8 || endCol < 1 || endCol > 8) {
             return SET_TEXT_COLOR_RED + "Rows must be 1-8 and columns a-h.";
         }
+
+        if ((isWhite && game.getTeamTurn() != ChessGame.TeamColor.WHITE) ||
+                (!isWhite && game.getTeamTurn() != ChessGame.TeamColor.BLACK)) {
+            return SET_TEXT_COLOR_RED + "It's not your turn to move!";
+        }
+
         //SOMEHOW DEAL WITH PAWN PROMOTION
+        //if pawn promotion is true
+        //go into a new function
+        //this new function will let the user pick the piece they want for pawn promotion
+        //then set that current piece to that piece they want
         ChessPosition start = new ChessPosition(startRow, startCol);
         ChessPosition end = new ChessPosition(endRow, endCol);
+
+
         ChessMove move = new ChessMove(start, end, null);
+        if (!game.validMoves(start).contains(move)) {
+            return SET_TEXT_COLOR_RED +
+                    "This is not a legal move for the selected piece!";
+        }
         webSocketFacade.makeMove(authToken, gameID,  move);
         game.getBoard().movePiece(start, end);
         render.setBoard(game.getBoard());
@@ -162,9 +174,6 @@ public class InGame {
                 SET_TEXT_COLOR_RED+" - with possible commands";
     }
 
-    public boolean isOutOfGame() {
-        return outOfGame;
-    }
 
     public void setGame(ChessGame game) {
         this.game= game;
