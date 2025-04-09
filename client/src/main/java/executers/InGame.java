@@ -88,7 +88,7 @@ public class InGame {
     }
 
     private String redraw() {
-        render.setBoard(game.getBoard());
+        render.setBoard(game.getBoard(), isWhite);
         render.drawChessBoard(System.out, isWhite);
         return SET_TEXT_COLOR_BLUE + "ChessBoard has been printed.";
     }
@@ -141,7 +141,7 @@ public class InGame {
         }
         webSocketFacade.makeMove(authToken, gameID,  move);
         game.getBoard().movePiece(start, end);
-        render.setBoard(game.getBoard());
+        render.setBoard(game.getBoard(), isWhite);
         render.drawChessBoard(System.out, isWhite);
         return SET_TEXT_COLOR_BLUE + "Made move.";
     }

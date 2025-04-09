@@ -192,9 +192,10 @@ public class Repl implements NotificationHandler {
         inGame.setGame(game);
         //issue is that newBoard sends with white always ontop. Need
         // to flip it if it is white
-        ChessBoard newBoard = loadGameMessage.getGame().getBoard();
-        render.setBoard(newBoard);
         this.isWhite = postLogin.isWhiteOrBlack();
+        ChessBoard newBoard = loadGameMessage.getGame().getBoard();
+        render.setBoard(newBoard, isWhite);
+
         render.drawChessBoard(System.out, isWhite);
     }
 

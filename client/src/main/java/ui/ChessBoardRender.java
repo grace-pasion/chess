@@ -82,20 +82,22 @@ public class ChessBoardRender {
         drawRowNumbers(row, isWhite);
 
         for (int col = 0; col < 8; col++) {
+            int displayCol = isWhite ? col : (7 - col);
             boolean isBlackSquare = (row + col) % 2 == 1;
+
             if (isBlackSquare) {
                 out.print(SET_BG_COLOR_RED);
-                if (Objects.equals(chessBoard[row][col], EMPTY)) {
+                if (Objects.equals(chessBoard[row][displayCol], EMPTY)) {
                     out.print(SET_TEXT_COLOR_RED+BLACK_PAWN);
                 } else {
-                    out.print(chessBoard[row][col]);
+                    out.print(chessBoard[row][displayCol]);
                 }
             } else {
                 out.print(SET_BG_COLOR_MAGENTA);
-                if (Objects.equals(chessBoard[row][col], EMPTY)) {
+                if (Objects.equals(chessBoard[row][displayCol], EMPTY)) {
                     out.print(SET_TEXT_COLOR_MAGENTA+BLACK_PAWN);
                 } else {
-                    out.print(chessBoard[row][col]);
+                    out.print(chessBoard[row][displayCol]);
                 }
             }
         }
@@ -234,19 +236,18 @@ public class ChessBoardRender {
                 out.print(isBlackSquare ? SET_BG_COLOR_RED : SET_BG_COLOR_MAGENTA);
             }
 
-            if (currentSquare == null || currentSquare.isEmpty()) {
-                if (isLegalMove && isBlackSquare) {
-                    out.print(SET_TEXT_COLOR_DARK_GREEN+BLACK_PAWN);
-                } else if (isLegalMove) {
-                    out.print(SET_TEXT_COLOR_GREEN+BLACK_PAWN);
-                } else if (isBlackSquare) {
-                    out.print(SET_TEXT_COLOR_RED + BLACK_PAWN);
+            if ((Objects.equals(currentSquare, SET_TEXT_COLOR_MAGENTA + BLACK_PAWN)
+                    || Objects.equals(currentSquare, SET_TEXT_COLOR_RED + BLACK_PAWN))
+                    && isLegalMove) {
+                if (isBlackSquare) {
+                    out.print(SET_TEXT_COLOR_DARK_GREEN + BLACK_PAWN);
                 } else {
-                    out.print(SET_TEXT_COLOR_MAGENTA + BLACK_PAWN);
+                    out.print(SET_TEXT_COLOR_GREEN + BLACK_PAWN);
                 }
             } else {
-                out.print(isBlackSquare ? SET_TEXT_COLOR_RED +
-                        currentSquare : SET_TEXT_COLOR_MAGENTA + currentSquare);  // Print the piece with the right color
+                out.print(currentSquare);
+//                out.print(isBlackSquare ? SET_TEXT_COLOR_RED +
+//                        currentSquare : SET_TEXT_COLOR_MAGENTA + currentSquare);  // Print the piece with the right color
             }
 
         }
@@ -260,7 +261,7 @@ public class ChessBoardRender {
                                    ChessPosition position, ChessPiece piece, boolean isWhite) {
         out.print(ERASE_SCREEN);
         out.println();
-        setBoard(board);
+        setBoard(board, isWhite);
         drawBorder(out, isWhite);
 
         for (int row = 0; row < 8; row++) {
@@ -273,7 +274,7 @@ public class ChessBoardRender {
 
     }
 
-    public void setBoard(ChessBoard board) {
+    public void setBoard(ChessBoard board, boolean isWhite) {
 
         ChessPiece[][] squares = board.getBoard();
         for (int row= 0; row < 8; row++) {
@@ -281,11 +282,20 @@ public class ChessBoardRender {
                 ChessPiece piece = squares[row][col];
                 boolean isBlackSquare = (row + col) % 2 == 1;
                 if (piece == null) {
-                    if (isBlackSquare) {
-                        chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+                    if (isWhite) {
+                        if (isBlackSquare) {
+                            chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+                        } else {
+                            chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
+                        }
                     } else {
-                        chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
+                        if (!isBlackSquare) {
+                            chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+                        } else {
+                            chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
+                        }
                     }
+
                 } else {
                     if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         chessBoard[row][col] = SET_TEXT_COLOR_BLACK;
