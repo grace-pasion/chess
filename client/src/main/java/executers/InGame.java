@@ -174,7 +174,7 @@ public class InGame {
             piece = game.getBoard().getPiece(start);
         }
         render.drawBoardWithMoves(System.out, game.getBoard(),
-                start, piece);
+                start, piece, isWhite);
 
         return SET_TEXT_COLOR_BLUE + "All the valid moves";
     }

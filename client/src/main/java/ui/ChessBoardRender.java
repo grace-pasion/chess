@@ -212,11 +212,12 @@ public class ChessBoardRender {
         drawRowNumbers(row, isWhite);
 
         for (int col = 0; col < 8; col++) {
+            int displayCol = isWhite ? col : (7 - col);
             boolean isBlackSquare = (row + col) % 2 == 1;
             boolean isLegalMove = false;
 
             // Check if the current square is a legal move
-            ChessPosition targetPosition = new ChessPosition(row, col);
+            ChessPosition targetPosition = new ChessPosition(row, displayCol);
             for (ChessMove move : legalMoves) {
                 ChessPosition legalMoveEndPosition = move.getEndPosition();
                 if (legalMoveEndPosition.getRow() - 1 == targetPosition.getRow() &&
@@ -226,7 +227,7 @@ public class ChessBoardRender {
                 }
             }
 
-            String currentSquare = chessBoard[row][col];
+            String currentSquare = chessBoard[row][displayCol];
             if (isLegalMove) {
                 out.print(isBlackSquare ? SET_BG_COLOR_DARK_GREEN : SET_BG_COLOR_GREEN);
             } else {
@@ -256,13 +257,10 @@ public class ChessBoardRender {
     }
 
     public void drawBoardWithMoves(PrintStream out, ChessBoard board,
-                                   ChessPosition position, ChessPiece piece) {
+                                   ChessPosition position, ChessPiece piece, boolean isWhite) {
         out.print(ERASE_SCREEN);
         out.println();
         setBoard(board);
-        ChessGame.TeamColor color = piece.getTeamColor();
-        boolean isWhite = color.equals(ChessGame.TeamColor.WHITE);
-
         drawBorder(out, isWhite);
 
         for (int row = 0; row < 8; row++) {
