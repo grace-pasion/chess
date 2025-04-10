@@ -303,4 +303,8 @@ public class PostLogin {
     public boolean getIsPlayer() {
         return isPlayer;
     }
+
+    public WebSocketFacade getWebSocket() {
+        return ws;
+    }
 }

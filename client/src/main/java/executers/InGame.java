@@ -259,4 +259,8 @@ public class InGame {
     public void setGameOver(boolean isOver) {
         this.isGameOver = isOver;
     }
+
+    public void setWebSocketFacade(WebSocketFacade ws) {
+        this.webSocketFacade = ws;
+    }
 }

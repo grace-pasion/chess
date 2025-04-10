@@ -122,6 +122,7 @@ public class Repl implements NotificationHandler {
             inGame.setAuthToken(authToken);
             int gameID = postLogin.getGameID();
             inGame.setGameID(gameID);
+            inGame.setWebSocketFacade(postLogin.getWebSocket());
             //render.initializeBoard(isWhite);
         }
         if (result.equalsIgnoreCase("quit")

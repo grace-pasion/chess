@@ -31,9 +31,7 @@ public class ConnectionManager {
         ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
         if (connections != null) {
             connections.remove(visitorName);
-            if (connections.isEmpty()) {
-                gameConnections.remove(gameID);
-            }
+//            if (connections.isEmpty()) {gameConnections.remove(gameID);}
         }
     }
 

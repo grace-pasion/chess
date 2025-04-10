@@ -256,7 +256,10 @@ public class WebSocketHandler {
         //sendMessage(session.getRemote(), notification);
         String notificationJson = new Gson().toJson(new NotificationMessage("You resigned. The game is over"));
         connections.getConnection(command.getGameID(), username).send(notificationJson);
-
+        //should never see a stack trace when fail
+        //join after rejoining not working
+        //invalid authToken problem
+        //are you sure you want to resign?
     }
 
 
