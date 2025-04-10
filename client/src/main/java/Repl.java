@@ -211,7 +211,8 @@ public class Repl implements NotificationHandler {
     public void notification(NotificationMessage notificationMessage) {
         String notification = notificationMessage.getMessage();
         System.out.println(SET_TEXT_COLOR_BLUE + notificationMessage.getMessage());
-        if (notification.contains("Checkmate:") || notification.contains("Stalemate:")) {
+        if (notification.contains("Checkmate:") ||
+                notification.contains("Stalemate:") || notification.contains("resigned")) {
             inGame.setGameOver(true);
         }
     }
