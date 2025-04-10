@@ -35,6 +35,7 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            Thread.sleep(100);
             GameData gameData =  gameDAO.getGame(command.getGameID());
             //validate authTokens by checking it and throwing errors if it is not got
             String username = getUsername(command.getAuthToken());
@@ -69,7 +70,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(Session session, String username, ConnectCommand command,  GameData gameData) throws IOException {
+    private void connect(Session session, String username, ConnectCommand command,  GameData gameData) throws IOException, InterruptedException {
         //GameData gameData = gameDAO.getGame(command.getGameID());
         connections.add(command.getGameID(), username, session);
 
