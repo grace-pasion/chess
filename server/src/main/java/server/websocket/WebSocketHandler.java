@@ -110,10 +110,12 @@ public class WebSocketHandler {
         //1. server verifies the validity of the move
 
         //GameData gameData = gameDAO.getGame(command.getGameID());
+        String whiteUser = gameData.whiteUsername();
+        String blackUser = gameData.blackUsername();
+        boolean isWhitePlayer = whiteUser != null && whiteUser.equals(username);
+        boolean isBlackPlayer = blackUser != null && blackUser.equals(username);
 
-
-        if (!gameData.whiteUsername().equals(username)
-                && !gameData.blackUsername().equals(username)) {
+        if (!isWhitePlayer && !isBlackPlayer) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("You are an observer stay in your lane dawg"));
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
             return;

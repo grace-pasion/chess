@@ -24,7 +24,7 @@ public class PostLogin {
     private NotificationHandler notificationHandler;
     private final WebSocketFacade ws;
     private int gameID;
-
+    private boolean isPlayer;
     /**
      * This is just a constructor that initializes our
      * server.
@@ -156,7 +156,7 @@ public class PostLogin {
                 return SET_TEXT_COLOR_RED+"Invalid. Must choose WHITE or BLACK";
             }
             isWhite = playerColor.equals("WHITE");
-
+            isPlayer = true;
             ConnectCommand.Side side;
             if (isWhite) {
                 side = ConnectCommand.Side.WHITE;
@@ -187,15 +187,18 @@ public class PostLogin {
      */
     private String watch(String... params) throws ResponseException{
         isWhite = true;
+        isPlayer = false;
         if (params.length != 1) {
             return SET_TEXT_COLOR_RED+"Invalid parameters. For watch games: watch <GAME_ID>";
         }
         int gameId;
+
         try {
             gameId = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
             return SET_TEXT_COLOR_RED+"The Game ID must be a number";
         }
+
 
         try {
             ListGameRequest listGameRequest = new ListGameRequest(authToken);
@@ -204,7 +207,7 @@ public class PostLogin {
             //NEED TO DO SOME MORE LOGIC IN HERE FOR PHASE 6
             for (GameData game : games) {
                 if (game.gameID() == gameId) {
-
+                    this.gameID = gameId;
                     ConnectCommand.Side side = ConnectCommand.Side.OBSERVER;
                     ws.connect(authToken, gameId, side);
 
@@ -296,5 +299,9 @@ public class PostLogin {
      */
     public void changeTransfer(boolean stillCanTransfer) {
         transferInGame = stillCanTransfer;
+    }
+
+    public boolean getIsPlayer() {
+        return isPlayer;
     }
 }

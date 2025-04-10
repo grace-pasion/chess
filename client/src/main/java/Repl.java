@@ -37,6 +37,7 @@ public class Repl implements NotificationHandler {
     private ChessBoardRender render;
     private ChessGame game;
     private WebSocketFacade ws;
+    private boolean isPlayer;
 
     //DEAL WITH PAWN PROMOTION
 
@@ -118,6 +119,9 @@ public class Repl implements NotificationHandler {
         if (postLogin.isTransferInGame()) {
             currentState = "inGame";
             isWhite = postLogin.isWhiteOrBlack();
+
+            isPlayer = postLogin.getIsPlayer();
+            inGame.setIsPlayer(isPlayer);
             inGame.setAuthToken(authToken);
             int gameID = postLogin.getGameID();
             inGame.setGameID(gameID);

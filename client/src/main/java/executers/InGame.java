@@ -10,6 +10,7 @@ import ui.ChessBoardRender;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
@@ -32,6 +33,7 @@ public class InGame {
     private ChessBoardRender render;
     private boolean isWhite;
     private boolean adios;
+    private boolean isPlayer;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
@@ -98,6 +100,12 @@ public class InGame {
             return SET_TEXT_COLOR_RED + "You need to input it as: move <start> <end>";
         }
 
+        if (game.isGameOver()) {
+            return SET_TEXT_COLOR_RED + "The game is over. You can't move";
+        }
+        if (!isPlayer) {
+            return SET_TEXT_COLOR_RED + "You are an observer, so you can't make moves";
+        }
         if (params[0].length() != 2 || params[1].length() != 2) {
             return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
         }
@@ -125,16 +133,31 @@ public class InGame {
             return SET_TEXT_COLOR_RED + "It's not your turn to move!";
         }
 
-        //SOMEHOW DEAL WITH PAWN PROMOTION
-        //if pawn promotion is true
-        //go into a new function
-        //this new function will let the user pick the piece they want for pawn promotion
-        //then set that current piece to that piece they want
+
         ChessPosition start = new ChessPosition(startRow, startCol);
         ChessPosition end = new ChessPosition(endRow, endCol);
 
-
         ChessMove move = new ChessMove(start, end, null);
+
+        ChessPiece piece = game.getBoard().getPiece(start);
+
+        if (piece == null || piece.getTeamColor() != (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK)) {
+            return SET_TEXT_COLOR_RED + "You can only move your own pieces!";
+        }
+
+        if ((isWhite && endRow == 8 && piece.getPieceType() == ChessPiece.PieceType.PAWN) ||
+                (!isWhite && endRow == 1 && piece.getPieceType() == ChessPiece.PieceType.PAWN)) {
+
+            // Ask user to select a promotion piece (e.g., Queen, Rook, Bishop, or Knight)
+            ChessPiece.PieceType promotionPiece = askPromotionPieceFromUser();
+            if (promotionPiece == null) {
+                return SET_TEXT_COLOR_RED + "Invalid promotion piece selected.";
+            }
+
+            // Create a new move with the promotion piece
+            move = new ChessMove(start, end, promotionPiece);
+        }
+
         if (!game.validMoves(start).contains(move)) {
             return SET_TEXT_COLOR_RED +
                     "This is not a legal move for the selected piece!";
@@ -146,6 +169,22 @@ public class InGame {
         return SET_TEXT_COLOR_BLUE + "Made move.";
     }
 
+    public ChessPiece.PieceType askPromotionPieceFromUser() {
+        System.out.println(SET_TEXT_COLOR_BLUE+"Chose" +
+                " Pawn Promotion Piece:\n+Q -> Queen\nR -> Rook\nB -> Bishop\nK -> Knight");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine();
+        return switch (choice) {
+            case "Q" -> ChessPiece.PieceType.QUEEN;
+            case "R" -> ChessPiece.PieceType.ROOK;
+            case "B" -> ChessPiece.PieceType.BISHOP;
+            case "K" -> ChessPiece.PieceType.KNIGHT;
+            default -> {
+                System.out.println(SET_TEXT_COLOR_RED + "Invalid choice. Please choose Q, R, B, or K.");
+                yield askPromotionPieceFromUser();
+            }
+        };
+    }
 
     private String highlightMoves(String... params) {
         if (params.length != 1) {
@@ -154,6 +193,8 @@ public class InGame {
         if (params[0].length() != 2) {
             return SET_TEXT_COLOR_RED + "Position needs to be <row><col>";
         }
+
+
         String startPosition = params[0].toLowerCase();
         int startRow;
         int startCol;
@@ -212,5 +253,9 @@ public class InGame {
 
     public boolean getAdios() {
         return adios;
+    }
+
+    public void setIsPlayer(boolean isPlayer) {
+        this.isPlayer = isPlayer;
     }
 }
