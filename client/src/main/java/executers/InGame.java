@@ -114,7 +114,7 @@ public class InGame {
         if (params.length != 2) {
             return SET_TEXT_COLOR_RED + "You need to input it as: move <start> <end>";
         }
-        if (game.isGameOver() || isGameOver) {
+        if (game.isGameOver() || isGameOver) { //isGameOver
             return SET_TEXT_COLOR_RED + "The game is over. You can't move";
         }
         if (!isPlayer) {
@@ -269,6 +269,9 @@ public class InGame {
         return adios;
     }
 
+    public void setAdios(boolean adios) {
+        this.adios = adios;
+    }
     public void setIsPlayer(boolean isPlayer) {
         this.isPlayer = isPlayer;
     }

@@ -110,6 +110,7 @@ public class Repl implements NotificationHandler {
      * @return a string of the result
      */
     private String handlePostLogin() {
+        inGame.setAdios(false);
         printStatement = "[LOGGED_IN] >>> ";
         String line = initialize();
         String result = postLogin.eval(line);
@@ -199,6 +200,7 @@ public class Repl implements NotificationHandler {
     public void loadGame(LoadGameMessage loadGameMessage) {
         this.game = loadGameMessage.getGame();
         inGame.setGame(game);
+        inGame.setGameOver(game.isGameOver());
         //issue is that newBoard sends with white always ontop. Need
         // to flip it if it is white
         this.isWhite = postLogin.isWhiteOrBlack();

@@ -323,27 +323,29 @@ public class WebSocketHandler {
     }
 
     private void resultsInBadNews(String username, GameData gameData, Session session) throws IOException {
-        if (gameData.game().isInCheck(gameData.game().getTeamTurn())
-                && !(gameData.game().isInCheckmate(gameData.game().getTeamTurn())
-                && !(gameData.game().isInStalemate(gameData.game().getTeamTurn())))) {
-            var checkNotification = new NotificationMessage("Check: " + gameData.game().getTeamTurn() + " is in check.");
+       if (gameData.game().isInCheck(gameData.game().getTeamTurn())
+           && !gameData.game().isInCheckmate(gameData.game().getTeamTurn())
+                && !gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+            var checkNotification = new NotificationMessage("Check: " + username + " is in check.");
             connections.broadcast(username, gameData.gameID(),checkNotification);
             String notificationJson = new Gson().toJson(new NotificationMessage("Check: "
                     + gameData.game().getTeamTurn() + " is in check."));
             connections.getConnection(gameData.gameID(), username).send(notificationJson);
         } else if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
-            var checkmateNotification = new NotificationMessage("Checkmate: " + gameData.game().getTeamTurn() + " is in checkmate.");
-            connections.broadcast(username,gameData.gameID(), checkmateNotification);
-            String notificationJson = new Gson().toJson(new NotificationMessage("Checkmate: "
-                    + gameData.game().getTeamTurn() + " is in checkmate."));
-            connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
             gameDAO.updateGame(gameData.gameID(), gameData);
+            var checkmateNotification = new NotificationMessage("Checkmate: " + username + " is in checkmate.");
+            connections.broadcast(username,gameData.gameID(), checkmateNotification);
+            String notificationJson = new Gson().toJson(new NotificationMessage("Checkmate: "
+                    + username + " is in checkmate."));
+            connections.getConnection(gameData.gameID(), username).send(notificationJson);
         } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+            gameData.game().setGameOver(true);
+            gameDAO.updateGame(gameData.gameID(), gameData);
             var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
             connections.broadcast(username, gameData.gameID(),stalemateNotification);
             String notificationJson = new Gson().toJson(new NotificationMessage("Stalemate: "
-                    + gameData.game().getTeamTurn() + " is in stalemate."));
+                    + username + " is in stalemate."));
             connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
             gameDAO.updateGame(gameData.gameID(), gameData);
