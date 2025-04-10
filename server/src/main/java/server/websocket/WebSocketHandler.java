@@ -123,6 +123,7 @@ public class WebSocketHandler {
         if (gameData.game().isInCheckmate(gameData.game().getTeamTurn()) ||
                 gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             gameData.game().setGameOver(true);
+            gameDAO.updateGame(gameData.gameID(), gameData);
         }
         if ((gameData.game().isGameOver())) {
             String errorMessageJson = new Gson().toJson(new ErrorMessage("The game is over"));
@@ -295,7 +296,9 @@ public class WebSocketHandler {
     }
 
     private void resultsInBadNews(String username, GameData gameData, Session session) throws IOException {
-        if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
+        if (gameData.game().isInCheck(gameData.game().getTeamTurn())
+                && !(gameData.game().isInCheckmate(gameData.game().getTeamTurn())
+                && !(gameData.game().isInStalemate(gameData.game().getTeamTurn())))) {
             var checkNotification = new NotificationMessage("Check: " + gameData.game().getTeamTurn() + " is in check.");
             connections.broadcast(username, gameData.gameID(),checkNotification);
             String notificationJson = new Gson().toJson(new NotificationMessage("Check: "
@@ -308,6 +311,7 @@ public class WebSocketHandler {
                     + gameData.game().getTeamTurn() + " is in checkmate."));
             connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
+            gameDAO.updateGame(gameData.gameID(), gameData);
         } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
             var stalemateNotification = new NotificationMessage("Stalemate: The game is in stalemate.");
             connections.broadcast(username, gameData.gameID(),stalemateNotification);
@@ -315,6 +319,7 @@ public class WebSocketHandler {
                     + gameData.game().getTeamTurn() + " is in stalemate."));
             connections.getConnection(gameData.gameID(), username).send(notificationJson);
             gameData.game().setGameOver(true);
+            gameDAO.updateGame(gameData.gameID(), gameData);
         }
     }
 

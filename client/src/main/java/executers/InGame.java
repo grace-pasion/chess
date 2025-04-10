@@ -31,7 +31,7 @@ public class InGame {
     private boolean isWhite;
     private boolean adios;
     private boolean isPlayer;
-    private boolean gameOver;
+    private boolean isGameOver;
     /**
      * This is just a constructor to make sure we have the
      * right server URL
@@ -43,7 +43,6 @@ public class InGame {
         this.notificationHandler = notificationHandler;
         this.webSocketFacade = ws;
         adios = false;
-        gameOver = false;
         render = new ChessBoardRender(new String[8][8]);
 
     }
@@ -98,10 +97,7 @@ public class InGame {
         if (params.length != 2) {
             return SET_TEXT_COLOR_RED + "You need to input it as: move <start> <end>";
         }
-        if (game.isGameOver()) {
-            this.gameOver = true;
-        }
-        if (gameOver) {
+        if (game.isGameOver() || isGameOver) {
             return SET_TEXT_COLOR_RED + "The game is over. You can't move";
         }
         if (!isPlayer) {
@@ -258,5 +254,9 @@ public class InGame {
 
     public void setIsPlayer(boolean isPlayer) {
         this.isPlayer = isPlayer;
+    }
+
+    public void setGameOver(boolean isOver) {
+        this.isGameOver = isOver;
     }
 }
