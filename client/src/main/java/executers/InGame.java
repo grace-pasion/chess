@@ -7,6 +7,7 @@ import websocketfacade.WebSocketFacade;
 import ui.ChessBoardRender;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
@@ -83,9 +84,25 @@ public class InGame {
     }
 
     private String resign() {
-        webSocketFacade.resign(authToken, gameID);
-        return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
+        System.out.println(SET_TEXT_COLOR_BLUE + "Are you sure you" +
+                " would like to resign: \nY -> Yes\nN -> No");
+        Scanner scanner = new Scanner(System.in);
+        String choice = "nothing";
+        while (!Objects.equals(choice, "N") && !Objects.equals(choice, "Y")) {
+            choice = scanner.nextLine();
+            if (Objects.equals(choice, "Y")) {
+                webSocketFacade.resign(authToken, gameID);
+                return SET_TEXT_COLOR_BLUE + "You have resigned from the game.";
+            } else if (Objects.equals(choice, "N")) {
+                return "You did not resign, so you are still playing";
+            } else {
+                System.out.println(SET_TEXT_COLOR_RED + "Should be Y or N");
+            }
+
+        }
+        return "need to choice to resign again";
     }
+
 
     private String redraw() {
         render.setBoard(game.getBoard(), isWhite);

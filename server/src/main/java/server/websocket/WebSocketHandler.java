@@ -165,8 +165,11 @@ public class WebSocketHandler {
 
             //4. sends a notification message to all other clients in the game
             // informing them what move was made
+            String startMove = setMove(move.getStartPosition());
+            String endMove = setMove(move.getEndPosition());
+
             String moveDescription = username + " made a move: " +
-                    move.getStartPosition() + " to " + move.getEndPosition();
+                    startMove+ " to " + endMove;
             var notification = new NotificationMessage(moveDescription);
             connections.broadcast(username, gameData.gameID(), notification);
 
@@ -181,10 +184,30 @@ public class WebSocketHandler {
             connections.getConnection(command.getGameID(), username).send(errorMessageJson);
         }
 
-
-
     }
 
+    private String setMove(ChessPosition position) {
+        int col = position.getColumn();
+        String startMove = position.getRow()+"";
+        if (col == 1) {
+            startMove += "a";
+        } else if (col ==2 ){
+            startMove += "b";
+        }else if (col ==3 ) {
+            startMove += "c";
+        } else if (col == 4) {
+            startMove += "d";
+        } else if (col == 5) {
+            startMove += "e";
+        } else if (col == 6) {
+            startMove += "f";
+        } else if (col == 7) {
+            startMove += "g";
+        } else {
+            startMove += "h";
+        }
+        return startMove;
+    }
     private void leaveGame(Session session, String username, LeaveGameCommand command,  GameData gameData) throws IOException {
         //1. If a player is leaving, update game to remove root client (game is updated
         //in database)
