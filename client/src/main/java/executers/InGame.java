@@ -2,13 +2,10 @@ package executers;
 
 import chess.*;
 import facade.exception.ResponseException;
-import model.GameData;
-import websocket.messages.NotificationMessage;
-import websocketFacade.NotificationHandler;
-import websocketFacade.WebSocketFacade;
+import websocketfacade.NotificationHandler;
+import websocketfacade.WebSocketFacade;
 import ui.ChessBoardRender;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Scanner;
 

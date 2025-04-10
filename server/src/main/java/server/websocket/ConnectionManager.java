@@ -39,7 +39,9 @@ public class ConnectionManager {
 
     public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
         ConcurrentHashMap<String, Connection> connections = gameConnections.get(gameID);
-        if (connections == null) return;
+        if (connections == null) {
+            return;
+        }
 
         ArrayList<String> toRemove = new ArrayList<>();
 

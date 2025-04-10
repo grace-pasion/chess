@@ -6,10 +6,9 @@ import result.ListGameResult;
 import facade.ServerFacade;
 import facade.exception.ResponseException;
 import websocket.commands.ConnectCommand;
-import websocketFacade.NotificationHandler;
-import websocketFacade.WebSocketFacade;
+import websocketfacade.NotificationHandler;
+import websocketfacade.WebSocketFacade;
 
-import javax.management.Notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 

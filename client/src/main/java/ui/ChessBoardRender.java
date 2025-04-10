@@ -36,24 +36,6 @@ public class ChessBoardRender {
         drawBorder(out, isWhite);
     }
 
-    /**
-     * This puts the pieces in the correct spot within the chessboard
-     * (where the current player is at the bottom)
-     *
-     * @param isWhite true if the player is white
-     */
-    public void initializeBoard(boolean isWhite) {
-        if (isWhite) {
-            initializeWhite();
-        } else {
-            initializeBlack();
-        }
-        for (int i = 2; i < 6; i++) {
-            for (int j = 0; j < 8; j++) {
-                chessBoard[i][j] = EMPTY;
-            }
-        }
-    }
 
     /**
      * This loops through each row and draws each row
@@ -282,19 +264,7 @@ public class ChessBoardRender {
                 ChessPiece piece = squares[row][col];
                 boolean isBlackSquare = (row + col) % 2 == 1;
                 if (piece == null) {
-                    if (isWhite) {
-                        if (isBlackSquare) {
-                            chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
-                        } else {
-                            chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
-                        }
-                    } else {
-                        if (!isBlackSquare) {
-                            chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
-                        } else {
-                            chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
-                        }
-                    }
+                    coloring(isWhite, isBlackSquare, row, col);
 
                 } else {
                     if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
@@ -322,6 +292,22 @@ public class ChessBoardRender {
                     }
 
                 }
+            }
+        }
+    }
+
+    private void coloring(boolean isWhite, boolean isBlackSquare, int row, int col) {
+        if (isWhite) {
+            if (isBlackSquare) {
+                chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+            } else {
+                chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
+            }
+        } else {
+            if (!isBlackSquare) {
+                chessBoard[row][col] = SET_TEXT_COLOR_RED+BLACK_PAWN;
+            } else {
+                chessBoard[row][col] = SET_TEXT_COLOR_MAGENTA+BLACK_PAWN;
             }
         }
     }

@@ -1,5 +1,4 @@
 import chess.ChessBoard;
-import chess.ChessPiece;
 import executers.InGame;
 import executers.PostLogin;
 import executers.PreLogin;
@@ -13,13 +12,11 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-import websocketFacade.NotificationHandler;
+import websocketfacade.NotificationHandler;
 import chess.ChessGame;
-import websocketFacade.WebSocketFacade;
+import websocketfacade.WebSocketFacade;
 
 import static ui.EscapeSequences.*;
-import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
-import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
 
 /**
  * This is my read eval print loop class. It handles three phases, which
